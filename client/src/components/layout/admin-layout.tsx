@@ -1,0 +1,160 @@
+import { useState } from "react";
+import { Link, useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { 
+  BarChart3, 
+  Package, 
+  ShoppingCart, 
+  Users, 
+  FileText, 
+  TrendingUp, 
+  Settings,
+  Bell,
+  ExternalLink,
+  Menu,
+  X,
+  Shirt
+} from "lucide-react";
+
+interface AdminLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  const [location] = useLocation();
+  const { user } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navigation = [
+    { name: "Dashboard", href: "/", icon: BarChart3 },
+    { name: "Productos", href: "/admin/products", icon: Package },
+    { name: "Pedidos", href: "/admin/orders", icon: ShoppingCart },
+    { name: "Clientes", href: "/admin/customers", icon: Users },
+    { name: "Presupuestos", href: "/admin/quotes", icon: FileText },
+    { name: "Reportes", href: "/admin/reports", icon: TrendingUp },
+    { name: "Configuración", href: "/admin/settings", icon: Settings },
+  ];
+
+  return (
+    <div className="min-h-screen bg-uniform-neutral-50">
+      {/* Top Navigation */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-uniform-primary rounded-lg flex items-center justify-center">
+                <Shirt className="text-white h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-uniform-neutral-900">Uniformes Laguna</h1>
+                <p className="text-sm text-uniform-secondary">Panel de Administración</p>
+              </div>
+            </div>
+
+            {/* Admin Actions */}
+            <div className="flex items-center space-x-4">
+              {/* View Store Button */}
+              <Button 
+                variant="outline"
+                size="sm"
+                className="hidden md:flex items-center space-x-2"
+                onClick={() => window.open('/store', '_blank')}
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>Ver Tienda</span>
+              </Button>
+              
+              {/* Notifications */}
+              <Button variant="ghost" size="sm" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  3
+                </span>
+              </Button>
+
+              {/* User Menu */}
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 avatar-gradient-1 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
+                    {user?.firstName?.[0] || 'A'}
+                  </span>
+                </div>
+                <div className="hidden md:block">
+                  <p className="text-sm font-medium text-uniform-neutral-900">
+                    {user?.firstName} {user?.lastName}
+                  </p>
+                  <p className="text-xs text-uniform-secondary">Administrador</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.location.href = '/api/logout'}
+                >
+                  Salir
+                </Button>
+              </div>
+
+              {/* Mobile Menu Toggle */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex">
+        {/* Sidebar Navigation */}
+        <aside className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:flex w-64 bg-white shadow-sm border-r flex-col fixed md:sticky top-16 h-[calc(100vh-4rem)] z-40`}>
+          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            {navigation.map((item) => {
+              const isActive = location === item.href || 
+                (item.href !== '/' && location.startsWith(item.href));
+              
+              return (
+                <Link key={item.name} href={item.href}>
+                  <a
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-uniform-primary text-white'
+                        : 'text-uniform-secondary hover:bg-uniform-neutral-100'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span className="font-medium">{item.name}</span>
+                    {item.name === 'Pedidos' && (
+                      <span className="ml-auto bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
+                        5
+                      </span>
+                    )}
+                  </a>
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
+
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
+        {/* Main Content Area */}
+        <main className="flex-1 bg-uniform-neutral-50 min-h-[calc(100vh-4rem)]">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
