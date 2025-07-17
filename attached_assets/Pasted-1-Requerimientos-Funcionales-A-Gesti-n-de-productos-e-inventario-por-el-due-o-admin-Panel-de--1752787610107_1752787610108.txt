@@ -1,0 +1,107 @@
+1. Requerimientos Funcionales
+🔹 A. Gestión de productos e inventario (por el dueño/admin)
+Panel de administración (dashboard seguro con login).
+
+Subida de nuevos productos (nombre, categoría, tallas, colores, fotos, precio).
+
+Edición y eliminación de productos existentes.
+
+Control de inventario (stock por talla/color).
+
+Control de productos activos/inactivos (mostrar u ocultar del público).
+
+🔹 B. Presupuestos y cotizaciones
+Creación manual de presupuestos desde el panel admin (como mini CRM).
+
+Selección de productos y cantidades para armar el presupuesto.
+
+Exportar presupuesto a PDF o enviarlo por correo directamente al cliente.
+
+Personalización de encabezado y pie (logo, datos fiscales, condiciones de venta).
+
+🔹 C. Reportes de ventas y productos más vendidos
+Panel con estadísticas:
+
+Total de ventas por día/mes.
+
+Ranking de productos más vendidos.
+
+Ticket promedio.
+
+Clientes frecuentes.
+
+Filtros por rango de fechas.
+
+🔹 D. Gestión de clientes (opcional pero recomendable)
+Base de datos de clientes.
+
+Historial de compras.
+
+Etiquetas o clasificación por tipo de cliente (empresa, particular, etc.).
+
+🔹 E. Página pública de la tienda (para clientes)
+Catálogo de productos con filtros por:
+
+Categoría
+
+Talla
+
+Color
+
+Precio
+
+Vista individual del producto con galería de fotos.
+
+Carrito de compras.
+
+Registro o compra como invitado.
+
+🔹 F. Pagos en línea
+Integración con pasarela de pagos para aceptar:
+
+Tarjeta de crédito y débito (Stripe, Mercado Pago, Conekta, PayPal, etc.).
+
+Opcional: transferencia bancaria y pago contra entrega.
+
+🔹 G. Envíos y logística
+Configuración de tarifas de envío (por zona o monto de compra).
+
+Generación de guía de envío (si se integra con una paquetería como Estafeta o DHL).
+
+Confirmación de pedido por email/WhatsApp.
+
+✅ 2. Requerimientos Técnicos
+🔹 A. Plataforma
+Web app responsive (funciona desde móvil, tablet o PC).
+
+Hosting escalable y seguro.
+
+Dominio personalizado (ej: uniformeslaguna.com).
+
+🔹 B. Panel de administración
+Protegido con login y permisos.
+
+UI intuitiva y fácil de usar por alguien sin conocimientos técnicos.
+
+🔹 C. CMS (Sistema de gestión de contenido)
+El admin podrá modificar contenido (texto, banners, productos) sin ayuda de un developer.
+
+Sugerencia: usar tecnologías como Strapi, Sanity, Directus, o un backend personalizado con panel React o Next.js.
+
+✅ 3. Extras opcionales
+Multitienda (si el dueño tiene más de una sucursal).
+
+Módulo para descuentos o cupones.
+
+Área de clientes con seguimiento de pedidos.
+
+Chat en vivo o integración con WhatsApp.
+
+✅ 4. Requerimientos no funcionales
+Seguridad: en pagos, datos personales y acceso al panel.
+
+Escalabilidad: que pueda crecer con más productos, clientes, etc.
+
+Soporte técnico: acceso a soporte básico si algo falla.
+
+Velocidad y SEO: página rápida y bien posicionada en Google.
