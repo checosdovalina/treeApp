@@ -392,7 +392,7 @@ export class DatabaseStorage implements IStorage {
       .from(products)
       .leftJoin(orderItems, eq(products.id, orderItems.productId))
       .groupBy(products.id)
-      .orderBy(sql`salesCount DESC`)
+      .orderBy(sql<number>`CAST(COALESCE(SUM(${orderItems.quantity}), 0) AS INTEGER) DESC`)
       .limit(limit);
 
     return result;
