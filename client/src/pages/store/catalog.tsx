@@ -1,107 +1,195 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import StoreLayout from "@/components/layout/store-layout";
+import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/lib/cart";
+import CustomerLayout from "@/components/layout/customer-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import ProductCard from "@/components/store/product-card";
-import { Search, Filter, Grid3X3, List, Shirt } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
+import { isUnauthorizedError } from "@/lib/authUtils";
+import { 
+  ShoppingCart, 
+  Heart, 
+  Star, 
+  Search, 
+  Filter,
+  Package,
+  Phone,
+  Grid,
+  List,
+  ArrowUpDown
+} from "lucide-react";
 
-export default function StoreCatalog() {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
-  const [priceRange, setPriceRange] = useState("");
+export default function CatalogPage() {
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const { addItem } = useCart();
+  const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
 
-  const { data: products, isLoading } = useQuery({
-    queryKey: ['/api/products', { 
-      search, 
-      categoryId: category, 
-      isActive: true,
-      limit: 50
-    }],
-  });
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({
+        title: "Acceso requerido",
+        description: "Debes iniciar sesión para ver el catálogo completo.",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
+      return;
+    }
+  }, [isAuthenticated, isLoading, toast]);
 
   const { data: categories } = useQuery({
     queryKey: ['/api/categories'],
-  });
-
-  const filteredProducts = products?.filter((product: any) => {
-    let matchesPrice = true;
-    
-    if (priceRange) {
-      const price = parseFloat(product.price);
-      switch (priceRange) {
-        case "0-100":
-          matchesPrice = price <= 100;
-          break;
-        case "100-200":
-          matchesPrice = price > 100 && price <= 200;
-          break;
-        case "200+":
-          matchesPrice = price > 200;
-          break;
+    enabled: isAuthenticated,
+    retry: false,
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Sesión expirada",
+          description: "Redirigiendo al login...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
       }
-    }
-    
-    return matchesPrice;
+    },
   });
 
-  const sortedProducts = filteredProducts?.sort((a: any, b: any) => {
-    switch (sortBy) {
-      case "price-asc":
-        return parseFloat(a.price) - parseFloat(b.price);
-      case "price-desc":
-        return parseFloat(b.price) - parseFloat(a.price);
-      case "name":
-      default:
-        return a.name.localeCompare(b.name);
-    }
+  const { data: products, isLoading: productsLoading } = useQuery({
+    queryKey: ['/api/products', { 
+      search: searchTerm, 
+      category: selectedCategory, 
+      isActive: true,
+      sortBy 
+    }],
+    enabled: isAuthenticated,
+    retry: false,
   });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-uniform-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando catálogo...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <CustomerLayout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto p-6">
+            <Package className="h-16 w-16 text-uniform-primary mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Catálogo de Uniformes
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Inicia sesión para explorar nuestra colección completa de uniformes
+            </p>
+            <Button 
+              onClick={() => window.location.href = "/login"}
+              className="bg-uniform-primary hover:bg-blue-700"
+            >
+              Iniciar Sesión
+            </Button>
+          </div>
+        </div>
+      </CustomerLayout>
+    );
+  }
+
+  const handleAddToCart = (product: any) => {
+    if (!selectedSize || !selectedColor) {
+      toast({
+        title: "Selecciona opciones",
+        description: "Por favor selecciona talla y color antes de agregar al carrito.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    addItem({
+      id: product.id.toString(),
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0],
+      size: selectedSize,
+      color: selectedColor,
+      quantity: 1,
+    });
+
+    toast({
+      title: "Agregado al carrito",
+      description: `${product.name} (${selectedSize}, ${selectedColor})`,
+    });
+
+    // Reset selections
+    setSelectedSize("");
+    setSelectedColor("");
+    setSelectedProduct(null);
+  };
+
+  const handleWhatsApp = (product: any) => {
+    const message = `Hola, me interesa el producto: ${product.name} - $${product.price}`;
+    const whatsappUrl = `https://wa.me/5218711234567?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   return (
-    <StoreLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-uniform-neutral-900 mb-4">Catálogo de Productos</h1>
-          <p className="text-uniform-secondary">
-            Encuentra el uniforme perfecto para tu empresa o uso personal
-          </p>
-        </div>
+    <CustomerLayout>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Catálogo de Uniformes
+            </h1>
+            <p className="text-lg text-gray-600">
+              Explora nuestra colección completa de uniformes profesionales
+            </p>
+          </div>
 
-        {/* Filters */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
-                  Buscar productos
-                </label>
+          {/* Filters and Search */}
+          <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              {/* Search */}
+              <div className="lg:col-span-2">
                 <div className="relative">
                   <Input
-                    placeholder="Buscar uniformes..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Buscar productos..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
                   />
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-uniform-secondary h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 </div>
               </div>
 
+              {/* Category Filter */}
               <div>
-                <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
-                  Categoría
-                </label>
-                <Select value={category} onValueChange={setCategory}>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Todas" />
+                    <SelectValue placeholder="Categoría" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las categorías</SelectItem>
+                    <SelectItem value="">Todas</SelectItem>
                     {categories?.map((cat: any) => (
                       <SelectItem key={cat.id} value={cat.id.toString()}>
                         {cat.name}
@@ -111,221 +199,256 @@ export default function StoreCatalog() {
                 </Select>
               </div>
 
+              {/* Sort By */}
               <div>
-                <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
-                  Precio
-                </label>
-                <Select value={priceRange} onValueChange={setPriceRange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Cualquier precio" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Cualquier precio</SelectItem>
-                    <SelectItem value="0-100">$0 - $100</SelectItem>
-                    <SelectItem value="100-200">$100 - $200</SelectItem>
-                    <SelectItem value="200+">$200+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
-                  Ordenar por
-                </label>
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Ordenar por" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="name">Nombre A-Z</SelectItem>
                     <SelectItem value="price-asc">Precio: menor a mayor</SelectItem>
                     <SelectItem value="price-desc">Precio: mayor a menor</SelectItem>
+                    <SelectItem value="newest">Más recientes</SelectItem>
+                    <SelectItem value="popular">Más populares</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="flex items-end space-x-2">
-                <Button 
-                  variant="outline" 
+              {/* View Toggle */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={viewMode === "grid" ? "default" : "outline"}
                   size="sm"
+                  onClick={() => setViewMode("grid")}
                   className="flex-1"
                 >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filtrar
+                  <Grid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  className="flex-1"
+                >
+                  <List className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Results Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <p className="text-uniform-secondary">
-              {sortedProducts?.length || 0} productos encontrados
-            </p>
-            {(search || category || priceRange) && (
-              <div className="flex items-center space-x-2">
-                {search && (
-                  <Badge variant="secondary">
-                    Búsqueda: "{search}"
-                  </Badge>
-                )}
-                {category && (
-                  <Badge variant="secondary">
-                    Categoría: {categories?.find((c: any) => c.id.toString() === category)?.name}
-                  </Badge>
-                )}
-                {priceRange && (
-                  <Badge variant="secondary">
-                    Precio: ${priceRange}
-                  </Badge>
-                )}
+          {/* Results Summary */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="text-sm text-gray-600">
+              {products?.length ? (
+                <>Mostrando {products.length} productos</>
+              ) : (
+                <>No se encontraron productos</>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="h-4 w-4 text-gray-400" />
+              <span className="text-sm text-gray-600">
+                {sortBy === "name" ? "Nombre A-Z" :
+                 sortBy === "price-asc" ? "Precio: menor a mayor" :
+                 sortBy === "price-desc" ? "Precio: mayor a menor" :
+                 sortBy === "newest" ? "Más recientes" : "Más populares"}
+              </span>
+            </div>
+          </div>
+
+          {/* Products Grid/List */}
+          {productsLoading ? (
+            <div className={`grid gap-6 ${viewMode === "grid" 
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+              : "grid-cols-1"}`}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Card key={i} className="overflow-hidden">
+                  <div className="w-full h-64 bg-gray-200 animate-pulse"></div>
+                  <CardContent className="p-4">
+                    <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded animate-pulse mb-4"></div>
+                    <div className="h-6 bg-gray-200 rounded animate-pulse"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : !products || products.length === 0 ? (
+            <div className="text-center py-16">
+              <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No hay productos disponibles
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {searchTerm || selectedCategory 
+                  ? "Intenta ajustar tus filtros de búsqueda"
+                  : "Pronto tendremos productos disponibles para ti"
+                }
+              </p>
+              {(searchTerm || selectedCategory) && (
                 <Button 
-                  variant="ghost" 
-                  size="sm"
+                  variant="outline"
                   onClick={() => {
-                    setSearch("");
-                    setCategory("");
-                    setPriceRange("");
+                    setSearchTerm("");
+                    setSelectedCategory("");
                   }}
                 >
                   Limpiar filtros
                 </Button>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Button
-              variant={viewMode === "grid" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("grid")}
-            >
-              <Grid3X3 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("list")}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Products Grid/List */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <Card key={i} className="overflow-hidden">
-                <div className="h-64 bg-gray-200 animate-pulse"></div>
-                <CardContent className="p-4">
-                  <div className="h-4 bg-gray-200 animate-pulse mb-2"></div>
-                  <div className="h-4 bg-gray-200 animate-pulse w-2/3"></div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : sortedProducts?.length === 0 ? (
-          <div className="text-center py-16">
-            <Shirt className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-uniform-neutral-900 mb-2">
-              No se encontraron productos
-            </h3>
-            <p className="text-uniform-secondary mb-4">
-              Intenta ajustar los filtros o términos de búsqueda
-            </p>
-            <Button 
-              variant="outline"
-              onClick={() => {
-                setSearch("");
-                setCategory("");
-                setPriceRange("");
-              }}
-            >
-              Ver todos los productos
-            </Button>
-          </div>
-        ) : (
-          <>
-            {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {sortedProducts?.map((product: any) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {sortedProducts?.map((product: any) => (
-                  <Card key={product.id} className="overflow-hidden">
-                    <CardContent className="p-6">
-                      <div className="flex items-center space-x-6">
-                        <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                          {product.images?.length > 0 ? (
-                            <img 
-                              src={product.images[0]} 
-                              alt={product.name}
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                          ) : (
-                            <Shirt className="h-8 w-8 text-gray-400" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-uniform-neutral-900 mb-2">
-                            {product.name}
-                          </h3>
-                          <p className="text-uniform-secondary text-sm mb-3">
-                            {product.description || 'Sin descripción'}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                              <span className="text-2xl font-bold text-uniform-neutral-900">
-                                ${product.price}
-                              </span>
-                              <div className="text-sm text-uniform-secondary">
-                                <div>Tallas: {product.sizes?.join(', ') || 'No definidas'}</div>
-                                <div>Colores: {product.colors?.join(', ') || 'No definidos'}</div>
-                              </div>
-                            </div>
-                            <Button className="bg-uniform-primary hover:bg-blue-700">
-                              Ver Detalles
-                            </Button>
-                          </div>
+              )}
+            </div>
+          ) : (
+            <div className={`grid gap-6 ${viewMode === "grid" 
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mobile-grid-auto" 
+              : "grid-cols-1"}`}>
+              {products.map((product: any) => (
+                <Card key={product.id} className={`overflow-hidden hover:shadow-lg transition-shadow product-card-hover ${
+                  viewMode === "list" ? "flex flex-col md:flex-row" : ""
+                }`}>
+                  <div className={`relative ${viewMode === "list" ? "md:w-48 md:flex-shrink-0" : ""}`}>
+                    <div className={`bg-gray-200 flex items-center justify-center ${
+                      viewMode === "list" ? "h-full md:h-48" : "w-full h-64"
+                    }`}>
+                      {product.images?.length > 0 ? (
+                        <img 
+                          src={product.images[0]} 
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Package className="h-16 w-16 text-gray-400" />
+                      )}
+                    </div>
+                    
+                    <div className="absolute top-3 right-3">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="p-2 bg-white/90 hover:bg-white mobile-touch-target"
+                      >
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    {product.isActive && (
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-green-500">
+                          Disponible
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <CardContent className={`p-4 ${viewMode === "list" ? "flex-1" : ""}`}>
+                    <div className={viewMode === "list" ? "flex flex-col h-full" : ""}>
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 mobile-text-responsive">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {product.description || 'Producto de calidad premium'}
+                      </p>
+                      
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-xl lg:text-2xl font-bold text-gray-900">
+                          ${product.price}
+                        </span>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                          <span className="text-sm text-gray-600 ml-1">4.8</span>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+                      
+                      {/* Colors */}
+                      {product.colors && product.colors.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Colores:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {product.colors.slice(0, 6).map((color: string, index: number) => (
+                              <button
+                                key={index}
+                                onClick={() => setSelectedColor(color)}
+                                className={`w-6 h-6 rounded-full border-2 mobile-touch-target ${
+                                  selectedColor === color 
+                                    ? 'border-gray-900 ring-2 ring-gray-300' 
+                                    : 'border-gray-300'
+                                }`}
+                                style={{ backgroundColor: color.toLowerCase() }}
+                                title={color}
+                              />
+                            ))}
+                            {product.colors.length > 6 && (
+                              <span className="text-xs text-gray-500 flex items-center">
+                                +{product.colors.length - 6}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Sizes */}
+                      {product.sizes && product.sizes.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Tallas:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {product.sizes.map((size: string, index: number) => (
+                              <button
+                                key={index}
+                                onClick={() => setSelectedSize(size)}
+                                className={`px-3 py-1 text-xs border rounded mobile-touch-target ${
+                                  selectedSize === size
+                                    ? 'border-uniform-primary bg-uniform-primary text-white'
+                                    : 'border-gray-300 hover:border-gray-400'
+                                }`}
+                              >
+                                {size}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className={`flex gap-2 ${viewMode === "list" ? "mt-auto" : ""}`}>
+                        <Button
+                          size="sm"
+                          className="flex-1 bg-uniform-primary hover:bg-blue-700 btn-mobile-optimized"
+                          onClick={() => {
+                            setSelectedProduct(product);
+                            handleAddToCart(product);
+                          }}
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          Agregar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleWhatsApp(product)}
+                          className="mobile-touch-target"
+                        >
+                          <Phone className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
-            {/* Pagination */}
-            {sortedProducts?.length > 0 && (
-              <div className="flex items-center justify-center mt-12">
-                <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="sm">
-                    Anterior
-                  </Button>
-                  <Button size="sm" className="bg-uniform-primary">
-                    1
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    2
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    3
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Siguiente
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
+          {/* Load More / Pagination */}
+          {products && products.length > 0 && (
+            <div className="flex justify-center mt-12">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="btn-mobile-optimized"
+              >
+                Cargar más productos
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
-    </StoreLayout>
+    </CustomerLayout>
   );
 }

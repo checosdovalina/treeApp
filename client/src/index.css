@@ -117,6 +117,34 @@
   transform: translateY(-4px);
 }
 
+/* Mobile-optimized styles */
+@media (max-width: 768px) {
+  .product-card-hover:hover {
+    transform: none; /* Disable hover effects on mobile */
+  }
+  
+  /* Improved touch targets */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better spacing for mobile */
+  .mobile-spacing {
+    padding: 1rem;
+  }
+  
+  /* Responsive text sizes */
+  .mobile-text-responsive {
+    font-size: clamp(0.875rem, 4vw, 1rem);
+  }
+  
+  /* Mobile-first grid */
+  .mobile-grid-auto {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
 /* Gradient backgrounds for avatars */
 .avatar-gradient-1 {
   background: linear-gradient(135deg, hsl(259, 78%, 64%), hsl(322, 100%, 75%));
@@ -132,4 +160,66 @@
 
 .avatar-gradient-4 {
   background: linear-gradient(135deg, hsl(45, 93%, 47%), hsl(32, 95%, 56%));
+}
+
+/* Utility classes for responsive design */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Smooth scrolling for mobile */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Improved button styles for mobile */
+.btn-mobile-optimized {
+  padding: 12px 24px;
+  font-size: 16px; /* Prevents zoom on iOS */
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+/* Safe area handling for mobile devices */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
 }
