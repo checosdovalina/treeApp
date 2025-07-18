@@ -7,6 +7,8 @@ This is a full-stack e-commerce application for "Uniformes Laguna," a uniform/cl
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+User language: Spanish (communicate in Spanish)
+User role: Administrator seeking to access admin functions
 
 ## System Architecture
 
