@@ -184,12 +184,12 @@ export default function CatalogPage() {
 
               {/* Category Filter */}
               <div>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <Select value={selectedCategory || "all"} onValueChange={(value) => setSelectedCategory(value === "all" ? "" : value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Categoría" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas</SelectItem>
+                    <SelectItem value="all">Todas</SelectItem>
                     {categories?.map((cat: any) => (
                       <SelectItem key={cat.id} value={cat.id.toString()}>
                         {cat.name}

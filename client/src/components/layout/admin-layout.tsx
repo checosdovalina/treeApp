@@ -120,8 +120,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               
               return (
                 <Link key={item.name} href={item.href}>
-                  <a
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  <div
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer ${
                       isActive
                         ? 'bg-uniform-primary text-white'
                         : 'text-uniform-secondary hover:bg-uniform-neutral-100'
@@ -135,7 +135,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         5
                       </span>
                     )}
-                  </a>
+                  </div>
                 </Link>
               );
             })}
