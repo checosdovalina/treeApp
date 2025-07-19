@@ -199,12 +199,12 @@ export default function AdminProducts() {
                     <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
                       Categoría
                     </label>
-                    <Select value={category} onValueChange={setCategory}>
+                    <Select value={category || "all"} onValueChange={(value) => setCategory(value === "all" ? "" : value)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Todas las categorías" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Todas las categorías</SelectItem>
+                        <SelectItem value="all">Todas las categorías</SelectItem>
                         {categories?.map((cat: any) => (
                           <SelectItem key={cat.id} value={cat.id.toString()}>
                             {cat.name}
@@ -218,12 +218,12 @@ export default function AdminProducts() {
                     <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
                       Estado
                     </label>
-                    <Select value={status} onValueChange={setStatus}>
+                    <Select value={status || "all"} onValueChange={(value) => setStatus(value === "all" ? "" : value)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Todos</SelectItem>
+                        <SelectItem value="all">Todos</SelectItem>
                         <SelectItem value="true">Activos</SelectItem>
                         <SelectItem value="false">Inactivos</SelectItem>
                       </SelectContent>

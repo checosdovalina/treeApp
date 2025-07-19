@@ -147,12 +147,12 @@ export default function AdminOrders() {
                 <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
                   Estado
                 </label>
-                <Select value={status} onValueChange={setStatus}>
+                <Select value={status || "all"} onValueChange={(value) => setStatus(value === "all" ? "" : value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Todos los estados" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos los estados</SelectItem>
+                    <SelectItem value="all">Todos los estados</SelectItem>
                     <SelectItem value="pending">Pendiente</SelectItem>
                     <SelectItem value="processing">Procesando</SelectItem>
                     <SelectItem value="shipped">Enviado</SelectItem>

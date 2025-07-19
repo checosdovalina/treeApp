@@ -26,7 +26,18 @@ export default function StoreIndex() {
   const { toast } = useToast();
 
   const { data: featuredProducts, isLoading } = useQuery({
-    queryKey: ['/api/products', { featured: true, limit: 8 }],
+    queryKey: ['/api/products', 'featured'],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.append('isActive', 'true');
+      params.append('limit', '8');
+      
+      const response = await fetch(`/api/products?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+      return response.json();
+    },
     retry: false,
   });
 

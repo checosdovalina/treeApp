@@ -70,12 +70,20 @@ export default function CatalogPage() {
   });
 
   const { data: products, isLoading: productsLoading } = useQuery({
-    queryKey: ['/api/products', { 
-      search: searchTerm, 
-      category: selectedCategory, 
-      isActive: true,
-      sortBy 
-    }],
+    queryKey: ['/api/products', searchTerm, selectedCategory, sortBy],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('search', searchTerm);
+      if (selectedCategory) params.append('categoryId', selectedCategory);
+      params.append('isActive', 'true');
+      if (sortBy) params.append('sortBy', sortBy);
+      
+      const response = await fetch(`/api/products?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+      return response.json();
+    },
     enabled: isAuthenticated,
     retry: false,
   });
