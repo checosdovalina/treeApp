@@ -55,18 +55,7 @@ export default function CatalogPage() {
     queryKey: ['/api/categories'],
     enabled: isAuthenticated,
     retry: false,
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Sesión expirada",
-          description: "Redirigiendo al login...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
+
   });
 
   const { data: products, isLoading: productsLoading } = useQuery({
@@ -198,11 +187,11 @@ export default function CatalogPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas</SelectItem>
-                    {categories?.map((cat: any) => (
+                    {categories && Array.isArray(categories) ? categories.map((cat: any) => (
                       <SelectItem key={cat.id} value={cat.id.toString()}>
                         {cat.name}
                       </SelectItem>
-                    ))}
+                    )) : null}
                   </SelectContent>
                 </Select>
               </div>
