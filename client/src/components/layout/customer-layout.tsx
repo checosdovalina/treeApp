@@ -56,10 +56,10 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   <Building className="h-6 w-6 text-white" />
                 </div>
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-bold text-uniform-neutral-900">
+                  <h1 className="text-xl font-poppins font-bold text-uniform-darker">
                     Uniformes Laguna
                   </h1>
-                  <p className="text-xs text-gray-500">Tu tienda de uniformes</p>
+                  <p className="text-xs text-uniform-secondary font-roboto">Tu tienda de uniformes</p>
                 </div>
               </Link>
             </div>

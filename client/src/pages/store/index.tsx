@@ -81,11 +81,11 @@ export default function StoreIndex() {
         <div className="absolute inset-0 bg-black opacity-20"></div>
         <div className="relative container mx-auto px-4 py-24 lg:py-32">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-poppins font-bold mb-6 leading-tight text-white">
               UNIFORMES
               <span className="block text-yellow-400">LAGUNA</span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-2xl mx-auto font-roboto">
               Calidad premium en uniformes profesionales para todas las industrias
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -107,10 +107,10 @@ export default function StoreIndex() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-darker mb-4">
               CATEGORÍAS
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-uniform-dark text-lg max-w-2xl mx-auto font-roboto">
               Encuentra el uniforme perfecto para tu profesión
             </p>
           </div>
@@ -146,10 +146,10 @@ export default function StoreIndex() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-darker mb-4">
               PRODUCTOS DESTACADOS
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-uniform-dark text-lg max-w-2xl mx-auto font-roboto">
               Los uniformes más populares y de mejor calidad
             </p>
           </div>
@@ -198,7 +198,7 @@ export default function StoreIndex() {
                         <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="font-poppins font-semibold text-uniform-darker mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {product.name}
                     </h3>
                     
@@ -275,8 +275,8 @@ export default function StoreIndex() {
               <div className="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Shield className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Calidad Premium</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-poppins font-semibold mb-2 text-uniform-darker">Calidad Premium</h3>
+              <p className="text-uniform-dark font-roboto">
                 Materiales de primera calidad y confección profesional para durabilidad superior.
               </p>
             </div>
@@ -284,8 +284,8 @@ export default function StoreIndex() {
               <div className="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Diseños Modernos</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-poppins font-semibold mb-2 text-uniform-darker">Diseños Modernos</h3>
+              <p className="text-uniform-dark font-roboto">
                 Estilos contemporáneos que combinan funcionalidad con apariencia profesional.
               </p>
             </div>
@@ -293,8 +293,8 @@ export default function StoreIndex() {
               <div className="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Atención Personalizada</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-poppins font-semibold mb-2 text-uniform-darker">Atención Personalizada</h3>
+              <p className="text-uniform-dark font-roboto">
                 Servicio directo por WhatsApp y cotizaciones especiales para empresas.
               </p>
             </div>
@@ -305,10 +305,10 @@ export default function StoreIndex() {
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-poppins font-bold mb-4 text-white">
             ¿NECESITAS UNIFORMES PARA TU EMPRESA?
           </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto text-blue-100">
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-blue-100 font-roboto">
             Cotizaciones especiales para pedidos por volumen con descuentos atractivos y personalización.
           </p>
           <Button size="lg" className="bg-yellow-400 text-blue-900 hover:bg-yellow-300 font-semibold px-8 py-4 text-lg">
