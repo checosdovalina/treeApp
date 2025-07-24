@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 import { 
   BarChart3, 
   Package, 
@@ -44,12 +45,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-uniform-primary rounded-lg flex items-center justify-center">
-                <Shirt className="text-white h-6 w-6" />
-              </div>
+              <img 
+                src={treeLogo} 
+                alt="TREE Uniformes & Kodiak Industrial"
+                className="h-10 w-auto"
+              />
               <div>
-                <h1 className="text-xl font-bold text-uniform-neutral-900">Uniformes Laguna</h1>
-                <p className="text-sm text-uniform-secondary">Panel de Administración</p>
+                <h1 className="text-xl font-bold text-gray-900">TREE Admin</h1>
+                <p className="text-sm text-gray-600">Panel de Administración</p>
               </div>
             </div>
 

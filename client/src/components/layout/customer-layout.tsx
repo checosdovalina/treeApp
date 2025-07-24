@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/lib/cart";
+import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 import { 
   ShoppingCart, 
   User, 
@@ -51,15 +52,17 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <Link href="/store" className="flex items-center space-x-2">
-                <div className="bg-uniform-primary rounded-lg p-2">
-                  <Building className="h-6 w-6 text-white" />
-                </div>
+              <Link href="/store" className="flex items-center space-x-3">
+                <img 
+                  src={treeLogo} 
+                  alt="TREE Uniformes & Kodiak Industrial"
+                  className="h-10 w-auto"
+                />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-poppins font-bold text-uniform-darker">
-                    Uniformes Laguna
+                  <h1 className="text-lg font-poppins font-bold text-gray-900">
+                    TREE Uniformes
                   </h1>
-                  <p className="text-xs text-uniform-secondary font-roboto">Tu tienda de uniformes</p>
+                  <p className="text-xs text-gray-600 font-roboto">& Kodiak Industrial</p>
                 </div>
               </Link>
             </div>
@@ -139,15 +142,17 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="border-b border-gray-200 pb-4 mb-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="bg-uniform-primary rounded-lg p-2">
-                          <Building className="h-6 w-6 text-white" />
-                        </div>
+                      <div className="flex items-center space-x-3">
+                        <img 
+                          src={treeLogo} 
+                          alt="TREE Uniformes & Kodiak Industrial"
+                          className="h-10 w-auto"
+                        />
                         <div>
-                          <h1 className="text-lg font-bold text-uniform-neutral-900">
-                            Uniformes Laguna
+                          <h1 className="text-lg font-bold text-gray-900">
+                            TREE Uniformes
                           </h1>
-                          <p className="text-xs text-gray-500">Tu tienda de uniformes</p>
+                          <p className="text-xs text-gray-600">& Kodiak Industrial</p>
                         </div>
                       </div>
                     </div>
@@ -232,18 +237,21 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Company Info */}
             <div className="md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="bg-uniform-primary rounded-lg p-2">
-                  <Building className="h-6 w-6 text-white" />
-                </div>
+              <div className="flex items-center space-x-3 mb-4">
+                <img 
+                  src={treeLogo} 
+                  alt="TREE Uniformes & Kodiak Industrial"
+                  className="h-12 w-auto"
+                />
                 <div>
-                  <h3 className="text-xl font-bold">Uniformes Laguna</h3>
-                  <p className="text-sm text-gray-400">Calidad que viste profesionalismo</p>
+                  <h3 className="text-xl font-bold">TREE Uniformes</h3>
+                  <p className="text-sm text-gray-400">& Kodiak Industrial</p>
                 </div>
               </div>
               <p className="text-gray-300 mb-4">
-                Especializados en uniformes corporativos, escolares y de trabajo. 
-                Ofrecemos productos de la más alta calidad con diseños modernos y funcionales.
+                TREE Uniformes & Kodiak Industrial - Especializados en uniformes corporativos, 
+                escolares e industriales. Ofrecemos productos de la más alta calidad con diseños 
+                modernos y funcionales para todas tus necesidades profesionales.
               </p>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
@@ -252,7 +260,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Mail className="h-4 w-4 text-uniform-primary" />
-                  <span className="text-sm">contacto@uniformeslaguna.com</span>
+                  <span className="text-sm">contacto@treeuniforms.com</span>
                 </div>
               </div>
             </div>
@@ -281,7 +289,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 Uniformes Laguna. Todos los derechos reservados.</p>
+            <p>&copy; 2025 TREE Uniformes & Kodiak Industrial. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

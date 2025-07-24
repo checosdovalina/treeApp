@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 import { Shirt, Shield, Users, TrendingUp } from "lucide-react";
 
 export default function Landing() {
@@ -10,12 +11,14 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-uniform-primary rounded-lg flex items-center justify-center">
-                <Shirt className="text-white h-6 w-6" />
-              </div>
+              <img 
+                src={treeLogo} 
+                alt="TREE Uniformes & Kodiak Industrial"
+                className="h-10 w-auto"
+              />
               <div>
-                <h1 className="text-xl font-bold text-uniform-neutral-900">Uniformes Laguna</h1>
-                <p className="text-sm text-uniform-secondary">Plataforma E-commerce</p>
+                <h1 className="text-xl font-bold text-gray-900">TREE Uniformes</h1>
+                <p className="text-sm text-gray-600">& Kodiak Industrial</p>
               </div>
             </div>
             <Button 
@@ -31,12 +34,13 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="relative py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-uniform-neutral-900 mb-6">
-            Uniformes Profesionales de Calidad
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            TREE Uniformes & Kodiak Industrial
           </h1>
-          <p className="text-xl text-uniform-secondary mb-8 max-w-3xl mx-auto">
-            Equipamos a tu empresa con uniformes que reflejan profesionalismo y calidad. 
-            Catálogo completo para todas las industrias con gestión integral de inventario.
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Especialistas en uniformes corporativos e industriales. Equipamos a tu empresa 
+            con productos que reflejan profesionalismo y seguridad. Catálogo completo 
+            para todas las industrias con gestión integral de inventario.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
