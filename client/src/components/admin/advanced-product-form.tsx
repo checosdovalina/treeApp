@@ -407,14 +407,17 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="font-roboto">Seleccionar Marca</FormLabel>
-                            <Select value={field.value} onValueChange={field.onChange}>
+                            <Select 
+                              value={field.value || "no-brand"} 
+                              onValueChange={(value) => field.onChange(value === "no-brand" ? "" : value)}
+                            >
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Selecciona una marca (opcional)" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="">Sin marca</SelectItem>
+                                <SelectItem value="no-brand">Sin marca</SelectItem>
                                 {brands.map((brand) => (
                                   <SelectItem key={brand.id} value={brand.name}>
                                     {brand.name}
