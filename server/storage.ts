@@ -2,6 +2,9 @@ import {
   users,
   products,
   categories,
+  brands,
+  sizes,
+  colors,
   inventory,
   orders,
   orderItems,
@@ -12,6 +15,12 @@ import {
   type InsertProduct,
   type Category,
   type InsertCategory,
+  type Brand,
+  type InsertBrand,
+  type Size,
+  type InsertSize,
+  type Color,
+  type InsertColor,
   type Inventory,
   type InsertInventory,
   type Order,
@@ -32,6 +41,18 @@ export interface IStorage {
   // Category operations
   getCategories(): Promise<Category[]>;
   createCategory(category: InsertCategory): Promise<Category>;
+  
+  // Brand operations
+  getBrands(): Promise<Brand[]>;
+  createBrand(brand: InsertBrand): Promise<Brand>;
+  
+  // Size operations
+  getSizes(): Promise<Size[]>;
+  createSize(size: InsertSize): Promise<Size>;
+  
+  // Color operations
+  getColors(): Promise<Color[]>;
+  createColor(color: InsertColor): Promise<Color>;
   
   // Product operations
   getProducts(filters?: {
@@ -109,6 +130,36 @@ export class DatabaseStorage implements IStorage {
   async createCategory(category: InsertCategory): Promise<Category> {
     const [newCategory] = await db.insert(categories).values(category).returning();
     return newCategory;
+  }
+
+  // Brand operations
+  async getBrands(): Promise<Brand[]> {
+    return await db.select().from(brands).orderBy(brands.name);
+  }
+
+  async createBrand(brand: InsertBrand): Promise<Brand> {
+    const [newBrand] = await db.insert(brands).values(brand).returning();
+    return newBrand;
+  }
+
+  // Size operations
+  async getSizes(): Promise<Size[]> {
+    return await db.select().from(sizes).orderBy(sizes.sortOrder, sizes.name);
+  }
+
+  async createSize(size: InsertSize): Promise<Size> {
+    const [newSize] = await db.insert(sizes).values(size).returning();
+    return newSize;
+  }
+
+  // Color operations
+  async getColors(): Promise<Color[]> {
+    return await db.select().from(colors).orderBy(colors.name);
+  }
+
+  async createColor(color: InsertColor): Promise<Color> {
+    const [newColor] = await db.insert(colors).values(color).returning();
+    return newColor;
   }
 
   // Product operations

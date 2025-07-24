@@ -4,7 +4,10 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { 
   insertProductSchema, 
-  insertCategorySchema, 
+  insertCategorySchema,
+  insertBrandSchema,
+  insertSizeSchema,
+  insertColorSchema,
   insertOrderSchema,
   insertOrderItemSchema,
   insertQuoteSchema
@@ -60,6 +63,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating category:", error);
       res.status(400).json({ message: "Failed to create category" });
+    }
+  });
+
+  // Brands
+  app.get('/api/brands', async (req, res) => {
+    try {
+      const brands = await storage.getBrands();
+      res.json(brands);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+      res.status(500).json({ message: "Failed to fetch brands" });
+    }
+  });
+
+  app.post('/api/brands', isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const data = insertBrandSchema.parse(req.body);
+      const brand = await storage.createBrand(data);
+      res.json(brand);
+    } catch (error) {
+      console.error("Error creating brand:", error);
+      res.status(400).json({ message: "Failed to create brand" });
+    }
+  });
+
+  // Sizes
+  app.get('/api/sizes', async (req, res) => {
+    try {
+      const sizes = await storage.getSizes();
+      res.json(sizes);
+    } catch (error) {
+      console.error("Error fetching sizes:", error);
+      res.status(500).json({ message: "Failed to fetch sizes" });
+    }
+  });
+
+  app.post('/api/sizes', isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const data = insertSizeSchema.parse(req.body);
+      const size = await storage.createSize(data);
+      res.json(size);
+    } catch (error) {
+      console.error("Error creating size:", error);
+      res.status(400).json({ message: "Failed to create size" });
+    }
+  });
+
+  // Colors
+  app.get('/api/colors', async (req, res) => {
+    try {
+      const colors = await storage.getColors();
+      res.json(colors);
+    } catch (error) {
+      console.error("Error fetching colors:", error);
+      res.status(500).json({ message: "Failed to fetch colors" });
+    }
+  });
+
+  app.post('/api/colors', isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const data = insertColorSchema.parse(req.body);
+      const color = await storage.createColor(data);
+      res.json(color);
+    } catch (error) {
+      console.error("Error creating color:", error);
+      res.status(400).json({ message: "Failed to create color" });
     }
   });
 

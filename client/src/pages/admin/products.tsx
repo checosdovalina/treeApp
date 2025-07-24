@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProductForm from "@/components/admin/product-form";
+import { AdvancedProductForm } from "@/components/admin/advanced-product-form";
 import CategoryManager from "@/components/admin/category-manager";
 import InventoryManager from "@/components/admin/inventory-manager";
 import { Plus, Search, Edit, Trash2, Package, FolderOpen, BarChart3, AlertTriangle } from "lucide-react";
@@ -136,26 +136,16 @@ export default function AdminProducts() {
             <h1 className="text-3xl font-bold text-uniform-neutral-900">Gestión de Productos</h1>
             <p className="text-uniform-secondary mt-2">Administra tu catálogo de uniformes, categorías e inventario</p>
           </div>
-          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <DialogTrigger asChild>
+          <AdvancedProductForm
+            product={editingProduct}
+            onSuccess={handleFormClose}
+            trigger={
               <Button className="bg-uniform-primary hover:bg-blue-700">
                 <Plus className="h-4 w-4 mr-2" />
                 Agregar Producto
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingProduct ? 'Editar Producto' : 'Agregar Nuevo Producto'}
-                </DialogTitle>
-              </DialogHeader>
-              <ProductForm
-                product={editingProduct}
-                onSuccess={handleFormClose}
-                onCancel={handleFormClose}
-              />
-            </DialogContent>
-          </Dialog>
+            }
+          />
         </div>
 
         {/* Tabs */}
@@ -267,10 +257,15 @@ export default function AdminProducts() {
                       <p className="text-uniform-secondary mb-4">
                         Comienza agregando tu primer producto al catálogo
                       </p>
-                      <Button onClick={() => setIsFormOpen(true)}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Agregar Producto
-                      </Button>
+                      <AdvancedProductForm
+                        onSuccess={() => {}}
+                        trigger={
+                          <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Agregar Producto
+                          </Button>
+                        }
+                      />
                     </div>
                   ) : (
                     products?.map((product: any) => (
@@ -292,14 +287,19 @@ export default function AdminProducts() {
                           </div>
                           <div className="absolute top-3 right-3">
                             <div className="flex space-x-1">
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                className="p-2 bg-white/90 hover:bg-white"
-                                onClick={() => handleEdit(product)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
+                              <AdvancedProductForm
+                                product={product}
+                                onSuccess={() => {}}
+                                trigger={
+                                  <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    className="p-2 bg-white/90 hover:bg-white"
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                }
+                              />
                               <Button
                                 size="sm"
                                 variant="secondary"

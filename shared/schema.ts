@@ -46,12 +46,37 @@ export const categories = pgTable("categories", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Brands table
+export const brands = pgTable("brands", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Sizes table
+export const sizes = pgTable("sizes", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 20 }).notNull().unique(),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Colors table
+export const colors = pgTable("colors", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 50 }).notNull().unique(),
+  hexCode: varchar("hex_code", { length: 7 }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Products table
 export const products = pgTable("products", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 200 }).notNull(),
   description: text("description"),
   categoryId: integer("category_id").references(() => categories.id),
+  brand: varchar("brand", { length: 100 }),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   images: text("images").array().default([]),
   sizes: text("sizes").array().default([]),
@@ -146,6 +171,18 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
 }));
 
+export const brandsRelations = relations(brands, ({ many }) => ({
+  products: many(products),
+}));
+
+export const sizesRelations = relations(sizes, ({ many }) => ({
+  inventory: many(inventory),
+}));
+
+export const colorsRelations = relations(colors, ({ many }) => ({
+  inventory: many(inventory),
+}));
+
 export const inventoryRelations = relations(inventory, ({ one }) => ({
   product: one(products, {
     fields: [inventory.productId],
@@ -185,6 +222,21 @@ export const insertCategorySchema = createInsertSchema(categories).omit({
   createdAt: true,
 });
 
+export const insertBrandSchema = createInsertSchema(brands).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSizeSchema = createInsertSchema(sizes).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertColorSchema = createInsertSchema(colors).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
@@ -220,6 +272,15 @@ export type User = typeof users.$inferSelect;
 
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categories.$inferSelect;
+
+export type InsertBrand = z.infer<typeof insertBrandSchema>;
+export type Brand = typeof brands.$inferSelect;
+
+export type InsertSize = z.infer<typeof insertSizeSchema>;
+export type Size = typeof sizes.$inferSelect;
+
+export type InsertColor = z.infer<typeof insertColorSchema>;
+export type Color = typeof colors.$inferSelect;
 
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;
