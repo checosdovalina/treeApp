@@ -35,6 +35,10 @@ import type { Product, Category, Brand, Size, Color } from "@shared/schema";
 // Schema de validación para el formulario de producto
 const productFormSchema = z.object({
   name: z.string().min(1, "El nombre es requerido").max(200, "El nombre es muy largo"),
+  sku: z.string().optional().refine(
+    (val) => !val || /^[A-Z0-9-_]+$/.test(val),
+    "El SKU solo puede contener letras mayúsculas, números, guiones y guiones bajos"
+  ),
   description: z.string().optional(),
   categoryId: z.number().min(1, "Selecciona una categoría"),
   brand: z.string().optional(),
@@ -86,6 +90,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       name: product?.name || "",
+      sku: product?.sku || "",
       description: product?.description || "",
       categoryId: product?.categoryId || 0,
       brand: product?.brand || "",
@@ -261,19 +266,39 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                   <CardTitle className="text-lg font-poppins">Información Básica</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-roboto">Nombre del Producto</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ej: Camisa Médica Premium" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-roboto">Nombre del Producto</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ej: Camisa Médica Premium" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="sku"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-roboto">SKU (Opcional)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Ej: CMP-001" 
+                              {...field} 
+                              onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}

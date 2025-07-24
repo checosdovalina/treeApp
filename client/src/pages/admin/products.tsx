@@ -323,6 +323,11 @@ export default function AdminProducts() {
                           <h3 className="font-semibold text-uniform-neutral-900 mb-2 line-clamp-1">
                             {product.name}
                           </h3>
+                          {product.sku && (
+                            <p className="text-xs text-blue-600 font-mono mb-1">
+                              SKU: {product.sku}
+                            </p>
+                          )}
                           <p className="text-sm text-uniform-secondary mb-3 line-clamp-2">
                             {product.description || 'Sin descripción'}
                           </p>

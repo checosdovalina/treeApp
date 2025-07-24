@@ -164,6 +164,13 @@ The architecture is designed to handle both B2B (quote-based) and B2C (direct pu
 - **Footer Updates**: Updated company information and contact details to reflect new branding
 - **Landing Page**: Redesigned landing page with new brand messaging and visual identity
 
+#### SKU Implementation (July 2025)
+- **Database Schema Update**: Added SKU (Stock Keeping Unit) column to products table with unique constraint
+- **Product Form Enhancement**: Extended advanced product form to include SKU input field with validation
+- **SKU Display**: Integrated SKU display in both admin product management and customer catalog
+- **Data Migration**: Added unique SKU codes to existing products following standard format
+- **Validation Rules**: Implemented SKU format validation (uppercase letters, numbers, hyphens, underscores)
+
 ### Recent Changes and Improvements (January 2025)
 
 #### Authentication System Enhancements

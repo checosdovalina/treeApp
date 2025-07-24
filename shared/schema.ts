@@ -74,6 +74,7 @@ export const colors = pgTable("colors", {
 export const products = pgTable("products", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 200 }).notNull(),
+  sku: varchar("sku", { length: 50 }).unique(),
   description: text("description"),
   categoryId: integer("category_id").references(() => categories.id),
   brand: varchar("brand", { length: 100 }),

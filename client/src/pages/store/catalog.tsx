@@ -341,6 +341,11 @@ export default function CatalogPage() {
                       <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 mobile-text-responsive">
                         {product.name}
                       </h3>
+                      {product.sku && (
+                        <p className="text-xs text-blue-600 font-mono mb-1">
+                          SKU: {product.sku}
+                        </p>
+                      )}
                       <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                         {product.description || 'Producto de calidad premium'}
                       </p>
