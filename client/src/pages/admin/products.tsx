@@ -45,7 +45,7 @@ export default function AdminProducts() {
   }, [isAuthenticated, isLoading, toast]);
 
   const { data: products, isLoading: productsLoading } = useQuery({
-    queryKey: ['/api/products', { search, category, isActive: status }],
+    queryKey: ['/api/products', search, category, status],
     enabled: isAuthenticated,
   });
 
@@ -89,7 +89,7 @@ export default function AdminProducts() {
     return <div>Loading...</div>;
   }
 
-  if (!isAuthenticated || user?.role !== 'admin') {
+  if (!isAuthenticated || (user as any)?.role !== 'admin') {
     return null;
   }
 
@@ -195,11 +195,11 @@ export default function AdminProducts() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todas las categorías</SelectItem>
-                        {categories?.map((cat: any) => (
+                        {categories && Array.isArray(categories) ? categories.map((cat: any) => (
                           <SelectItem key={cat.id} value={cat.id.toString()}>
                             {cat.name}
                           </SelectItem>
-                        ))}
+                        )) : null}
                       </SelectContent>
                     </Select>
                   </div>
@@ -248,7 +248,7 @@ export default function AdminProducts() {
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {products?.length === 0 ? (
+                  {products && Array.isArray(products) && products.length === 0 ? (
                     <div className="col-span-full text-center py-16">
                       <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                       <h3 className="text-lg font-medium text-uniform-neutral-900 mb-2">
@@ -268,7 +268,7 @@ export default function AdminProducts() {
                       />
                     </div>
                   ) : (
-                    products?.map((product: any) => (
+                    products && Array.isArray(products) ? products.map((product: any) => (
                       <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow product-card-hover">
                         <div className="relative">
                           <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
@@ -367,15 +367,15 @@ export default function AdminProducts() {
                           </div>
                         </CardContent>
                       </Card>
-                    ))
+                    )) : null
                   )}
                 </div>
 
                 {/* Pagination */}
-                {products?.length > 0 && (
+                {products && Array.isArray(products) && products.length > 0 && (
                   <div className="flex items-center justify-between mt-8">
                     <div className="text-sm text-uniform-secondary">
-                      Mostrando {products.length} productos
+                      Mostrando {Array.isArray(products) ? products.length : 0} productos
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button variant="outline" size="sm">

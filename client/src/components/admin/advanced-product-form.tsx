@@ -153,7 +153,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
     mutationFn: async (data: ProductFormData) => {
       const payload = {
         ...data,
-        price: parseFloat(data.price),
+        // Keep price as string since backend expects string
       };
       
       if (product) {

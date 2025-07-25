@@ -61,7 +61,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
       const productData = {
         ...data,
         categoryId: parseInt(data.categoryId),
-        price: parseFloat(data.price),
+        // Keep price as string since backend expects string
         sizes,
         colors,
         images,
@@ -169,11 +169,11 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {categories?.map((category: any) => (
+                    {categories && Array.isArray(categories) ? categories.map((category: any) => (
                       <SelectItem key={category.id} value={category.id.toString()}>
                         {category.name}
                       </SelectItem>
-                    ))}
+                    )) : null}
                   </SelectContent>
                 </Select>
                 <FormMessage />

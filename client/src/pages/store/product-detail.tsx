@@ -34,7 +34,7 @@ export default function ProductDetail() {
     mutationFn: async () => {
       if (!product) throw new Error('Product not found');
       return addToCart({
-        id: product.id,
+        id: product.id.toString(),
         name: product.name,
         price: parseFloat(product.price),
         image: product.images?.[0] || '',
