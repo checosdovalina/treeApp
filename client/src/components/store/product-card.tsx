@@ -28,13 +28,15 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const addToCartMutation = useMutation({
-    mutationFn: () => addToCart({
-      id: product.id.toString(),
-      name: product.name,
-      price: parseFloat(product.price),
-      image: product.images?.[0] || '',
-      quantity: 1
-    }),
+    mutationFn: async () => {
+      return addToCart({
+        id: product.id.toString(),
+        name: product.name,
+        price: parseFloat(product.price),
+        image: product.images?.[0] || '',
+        quantity: 1
+      });
+    },
     onSuccess: () => {
       toast({
         title: "Producto agregado",
@@ -68,7 +70,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       >
         <div className="relative">
           <div className="aspect-square bg-gray-100 overflow-hidden">
-            {product.images?.length > 0 ? (
+            {product.images && product.images.length > 0 ? (
               <img 
                 src={product.images[0]} 
                 alt={product.name}
@@ -144,14 +146,26 @@ export default function ProductCard({ product }: ProductCardProps) {
               <div className="flex items-center space-x-1">
                 <span className="text-sm text-uniform-secondary">Colores:</span>
                 <div className="flex space-x-1">
-                  {product.colors.slice(0, 3).map((color, index) => (
-                    <div
-                      key={index}
-                      className="w-4 h-4 rounded-full border-2 border-gray-300"
-                      style={{ backgroundColor: color.toLowerCase() }}
-                      title={color}
-                    />
-                  ))}
+                  {product.colors.slice(0, 3).map((color, index) => {
+                    const colors = {
+                      'Blanco': '#FFFFFF', 'Negro': '#000000', 'Azul': '#0066CC',
+                      'Azul Marino': '#001F3F', 'Azul Claro': '#87CEEB', 'Rojo': '#FF0000',
+                      'Verde': '#008000', 'Verde Quirófano': '#00CED1', 'Amarillo': '#FFFF00',
+                      'Naranja': '#FFA500', 'Naranja Alta Visibilidad': '#FF6600',
+                      'Gris': '#808080', 'Gris Claro': '#D3D3D3', 'Morado': '#800080',
+                      'Rosa': '#FFC0CB', 'Café': '#8B4513', 'Beige': '#F5F5DC'
+                    };
+                    const hexColor = colors[color as keyof typeof colors] || '#CCCCCC';
+                    
+                    return (
+                      <div
+                        key={index}
+                        className="w-4 h-4 rounded-full border-2 border-gray-300"
+                        style={{ backgroundColor: hexColor }}
+                        title={color}
+                      />
+                    );
+                  })}
                   {product.colors.length > 3 && (
                     <span className="text-xs text-uniform-secondary ml-1">
                       +{product.colors.length - 3}

@@ -299,9 +299,13 @@ export default function CatalogPage() {
               ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mobile-grid-auto" 
               : "grid-cols-1"}`}>
               {products.map((product: any) => (
-                <Card key={product.id} className={`overflow-hidden hover:shadow-lg transition-shadow product-card-hover ${
-                  viewMode === "list" ? "flex flex-col md:flex-row" : ""
-                }`}>
+                <Card 
+                  key={product.id} 
+                  className={`overflow-hidden hover:shadow-lg transition-shadow product-card-hover cursor-pointer ${
+                    viewMode === "list" ? "flex flex-col md:flex-row" : ""
+                  }`}
+                  onClick={() => window.open(`/store/product/${product.id}`, '_blank')}
+                >
                   <div className={`relative ${viewMode === "list" ? "md:w-48 md:flex-shrink-0" : ""}`}>
                     <div className={`bg-gray-200 flex items-center justify-center ${
                       viewMode === "list" ? "h-full md:h-48" : "w-full h-64"
@@ -365,19 +369,34 @@ export default function CatalogPage() {
                         <div className="mb-4">
                           <p className="text-sm font-medium text-gray-700 mb-2">Colores:</p>
                           <div className="flex flex-wrap gap-2">
-                            {product.colors.slice(0, 6).map((color: string, index: number) => (
-                              <button
-                                key={index}
-                                onClick={() => setSelectedColor(color)}
-                                className={`w-6 h-6 rounded-full border-2 mobile-touch-target ${
-                                  selectedColor === color 
-                                    ? 'border-gray-900 ring-2 ring-gray-300' 
-                                    : 'border-gray-300'
-                                }`}
-                                style={{ backgroundColor: color.toLowerCase() }}
-                                title={color}
-                              />
-                            ))}
+                            {product.colors.slice(0, 6).map((color: string, index: number) => {
+                              const colors = {
+                                'Blanco': '#FFFFFF', 'Negro': '#000000', 'Azul': '#0066CC',
+                                'Azul Marino': '#001F3F', 'Azul Claro': '#87CEEB', 'Rojo': '#FF0000',
+                                'Verde': '#008000', 'Verde Quirófano': '#00CED1', 'Amarillo': '#FFFF00',
+                                'Naranja': '#FFA500', 'Naranja Alta Visibilidad': '#FF6600',
+                                'Gris': '#808080', 'Gris Claro': '#D3D3D3', 'Morado': '#800080',
+                                'Rosa': '#FFC0CB', 'Café': '#8B4513', 'Beige': '#F5F5DC'
+                              };
+                              const hexColor = colors[color as keyof typeof colors] || '#CCCCCC';
+                              
+                              return (
+                                <button
+                                  key={index}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedColor(color);
+                                  }}
+                                  className={`w-6 h-6 rounded-full border-2 mobile-touch-target ${
+                                    selectedColor === color 
+                                      ? 'border-gray-900 ring-2 ring-gray-300' 
+                                      : 'border-gray-300'
+                                  }`}
+                                  style={{ backgroundColor: hexColor }}
+                                  title={color}
+                                />
+                              );
+                            })}
                             {product.colors.length > 6 && (
                               <span className="text-xs text-gray-500 flex items-center">
                                 +{product.colors.length - 6}
@@ -395,7 +414,10 @@ export default function CatalogPage() {
                             {product.sizes.map((size: string, index: number) => (
                               <button
                                 key={index}
-                                onClick={() => setSelectedSize(size)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedSize(size);
+                                }}
                                 className={`px-3 py-1 text-xs border rounded mobile-touch-target ${
                                   selectedSize === size
                                     ? 'border-uniform-primary bg-uniform-primary text-white'
@@ -413,7 +435,8 @@ export default function CatalogPage() {
                         <Button
                           size="sm"
                           className="flex-1 bg-uniform-primary hover:bg-blue-700 btn-mobile-optimized"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setSelectedProduct(product);
                             handleAddToCart(product);
                           }}
@@ -424,7 +447,10 @@ export default function CatalogPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleWhatsApp(product)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleWhatsApp(product);
+                          }}
                           className="mobile-touch-target"
                         >
                           <Phone className="h-4 w-4" />

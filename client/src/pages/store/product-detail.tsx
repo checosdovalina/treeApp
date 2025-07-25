@@ -235,20 +235,35 @@ export default function ProductDetail() {
             {product.colors?.length > 0 && (
               <div>
                 <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
-                  Color
+                  Color {selectedColor && `- ${selectedColor}`}
                 </label>
-                <Select value={selectedColor} onValueChange={setSelectedColor}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecciona un color" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {product.colors.map((color: string) => (
-                      <SelectItem key={color} value={color}>
-                        {color}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex flex-wrap gap-3">
+                  {product.colors.map((color: string) => {
+                    const colors = {
+                      'Blanco': '#FFFFFF', 'Negro': '#000000', 'Azul': '#0066CC',
+                      'Azul Marino': '#001F3F', 'Azul Claro': '#87CEEB', 'Rojo': '#FF0000',
+                      'Verde': '#008000', 'Verde Quirófano': '#00CED1', 'Amarillo': '#FFFF00',
+                      'Naranja': '#FFA500', 'Naranja Alta Visibilidad': '#FF6600',
+                      'Gris': '#808080', 'Gris Claro': '#D3D3D3', 'Morado': '#800080',
+                      'Rosa': '#FFC0CB', 'Café': '#8B4513', 'Beige': '#F5F5DC'
+                    };
+                    const hexColor = colors[color as keyof typeof colors] || '#CCCCCC';
+                    
+                    return (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={`w-10 h-10 rounded-full border-4 transition-all ${
+                          selectedColor === color 
+                            ? 'border-uniform-primary ring-2 ring-blue-200 scale-110' 
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                        style={{ backgroundColor: hexColor }}
+                        title={color}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             )}
 
@@ -356,7 +371,30 @@ export default function ProductDetail() {
                     </div>
                     <div>
                       <h4 className="font-medium mb-2">Colores disponibles</h4>
-                      <p className="text-uniform-secondary">{product.colors?.join(', ') || 'No especificados'}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {product.colors?.map((color: string, index: number) => {
+                          const colors = {
+                            'Blanco': '#FFFFFF', 'Negro': '#000000', 'Azul': '#0066CC',
+                            'Azul Marino': '#001F3F', 'Azul Claro': '#87CEEB', 'Rojo': '#FF0000',
+                            'Verde': '#008000', 'Verde Quirófano': '#00CED1', 'Amarillo': '#FFFF00',
+                            'Naranja': '#FFA500', 'Naranja Alta Visibilidad': '#FF6600',
+                            'Gris': '#808080', 'Gris Claro': '#D3D3D3', 'Morado': '#800080',
+                            'Rosa': '#FFC0CB', 'Café': '#8B4513', 'Beige': '#F5F5DC'
+                          };
+                          const hexColor = colors[color as keyof typeof colors] || '#CCCCCC';
+                          
+                          return (
+                            <div key={index} className="flex items-center gap-2">
+                              <div
+                                className="w-4 h-4 rounded-full border-2 border-gray-300"
+                                style={{ backgroundColor: hexColor }}
+                                title={color}
+                              />
+                              <span className="text-sm text-uniform-secondary">{color}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                     <div>
                       <h4 className="font-medium mb-2">Material</h4>

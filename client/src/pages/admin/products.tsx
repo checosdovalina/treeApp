@@ -269,7 +269,11 @@ export default function AdminProducts() {
                     </div>
                   ) : (
                     products && Array.isArray(products) ? products.map((product: any) => (
-                      <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow product-card-hover">
+                      <Card 
+                        key={product.id} 
+                        className="overflow-hidden hover:shadow-md transition-shadow product-card-hover cursor-pointer"
+                        onClick={() => window.open(`/store/product/${product.id}`, '_blank')}
+                      >
                         <div className="relative">
                           <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
                             {product.images?.length > 0 ? (
@@ -349,14 +353,26 @@ export default function AdminProducts() {
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-uniform-secondary">Colores:</span>
                               <div className="flex space-x-1">
-                                {product.colors?.slice(0, 3).map((color: string, index: number) => (
-                                  <div
-                                    key={index}
-                                    className="w-4 h-4 rounded-full border-2 border-gray-300"
-                                    style={{ backgroundColor: color.toLowerCase() }}
-                                    title={color}
-                                  />
-                                ))}
+                                {product.colors?.slice(0, 3).map((color: string, index: number) => {
+                                  const colors = {
+                                    'Blanco': '#FFFFFF', 'Negro': '#000000', 'Azul': '#0066CC',
+                                    'Azul Marino': '#001F3F', 'Azul Claro': '#87CEEB', 'Rojo': '#FF0000',
+                                    'Verde': '#008000', 'Verde Quirófano': '#00CED1', 'Amarillo': '#FFFF00',
+                                    'Naranja': '#FFA500', 'Naranja Alta Visibilidad': '#FF6600',
+                                    'Gris': '#808080', 'Gris Claro': '#D3D3D3', 'Morado': '#800080',
+                                    'Rosa': '#FFC0CB', 'Café': '#8B4513', 'Beige': '#F5F5DC'
+                                  };
+                                  const hexColor = colors[color as keyof typeof colors] || '#CCCCCC';
+                                  
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="w-4 h-4 rounded-full border-2 border-gray-300"
+                                      style={{ backgroundColor: hexColor }}
+                                      title={color}
+                                    />
+                                  );
+                                })}
                                 {product.colors?.length > 3 && (
                                   <span className="text-xs text-uniform-secondary">
                                     +{product.colors.length - 3}
