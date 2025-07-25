@@ -27,9 +27,9 @@ export default function BrandsPage() {
   });
 
   // Count products per brand
-  const getProductCount = (brandId: number) => {
+  const getProductCount = (brandName: string) => {
     if (!products || !Array.isArray(products)) return 0;
-    return products.filter((product: any) => product.brandId === brandId).length;
+    return products.filter((product: any) => product.brand === brandName).length;
   };
 
   if (isLoading) {
@@ -82,7 +82,7 @@ export default function BrandsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {activeBrands.map((brand: Brand) => {
-              const productCount = getProductCount(brand.id);
+              const productCount = getProductCount(brand.name);
               
               return (
                 <Link 
