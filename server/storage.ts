@@ -45,6 +45,8 @@ export interface IStorage {
   // Brand operations
   getBrands(): Promise<Brand[]>;
   createBrand(brand: InsertBrand): Promise<Brand>;
+  updateBrand(id: number, updates: Partial<InsertBrand>): Promise<Brand>;
+  deleteBrand(id: number): Promise<void>;
   
   // Size operations
   getSizes(): Promise<Size[]>;
@@ -141,6 +143,19 @@ export class DatabaseStorage implements IStorage {
   async createBrand(brand: InsertBrand): Promise<Brand> {
     const [newBrand] = await db.insert(brands).values(brand).returning();
     return newBrand;
+  }
+
+  async updateBrand(id: number, updates: Partial<InsertBrand>): Promise<Brand> {
+    const [updatedBrand] = await db
+      .update(brands)
+      .set(updates)
+      .where(eq(brands.id, id))
+      .returning();
+    return updatedBrand;
+  }
+
+  async deleteBrand(id: number): Promise<void> {
+    await db.delete(brands).where(eq(brands.id, id));
   }
 
   // Size operations

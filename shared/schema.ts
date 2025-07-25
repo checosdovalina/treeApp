@@ -51,6 +51,8 @@ export const brands = pgTable("brands", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }).notNull().unique(),
   description: text("description"),
+  logo: text("logo"), // URL or base64 image
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

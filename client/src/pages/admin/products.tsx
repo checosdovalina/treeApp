@@ -10,8 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdvancedProductForm } from "@/components/admin/advanced-product-form";
 import CategoryManager from "@/components/admin/category-manager";
+import BrandManager from "@/components/admin/brand-manager";
 import InventoryManager from "@/components/admin/inventory-manager";
-import { Plus, Search, Edit, Trash2, Package, FolderOpen, BarChart3, AlertTriangle } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Package, FolderOpen, Tag, BarChart3, AlertTriangle } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -150,7 +151,7 @@ export default function AdminProducts() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="products" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               Productos
@@ -158,6 +159,10 @@ export default function AdminProducts() {
             <TabsTrigger value="categories" className="flex items-center gap-2">
               <FolderOpen className="h-4 w-4" />
               Categorías
+            </TabsTrigger>
+            <TabsTrigger value="brands" className="flex items-center gap-2">
+              <Tag className="h-4 w-4" />
+              Marcas
             </TabsTrigger>
             <TabsTrigger value="inventory" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
@@ -415,6 +420,10 @@ export default function AdminProducts() {
 
           <TabsContent value="categories" className="space-y-6">
             <CategoryManager />
+          </TabsContent>
+
+          <TabsContent value="brands" className="space-y-6">
+            <BrandManager />
           </TabsContent>
 
           <TabsContent value="inventory" className="space-y-6">

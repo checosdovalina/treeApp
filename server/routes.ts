@@ -110,6 +110,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put('/api/brands/:id', isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const data = insertBrandSchema.partial().parse(req.body);
+      const brand = await storage.updateBrand(id, data);
+      res.json(brand);
+    } catch (error) {
+      console.error("Error updating brand:", error);
+      res.status(400).json({ message: "Failed to update brand" });
+    }
+  });
+
+  app.delete('/api/brands/:id', isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteBrand(id);
+      res.json({ message: "Brand deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting brand:", error);
+      res.status(500).json({ message: "Failed to delete brand" });
+    }
+  });
+
   // Sizes
   app.get('/api/sizes', async (req, res) => {
     try {
