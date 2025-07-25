@@ -105,10 +105,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
   // Mutations para crear nuevas entidades
   const createCategoryMutation = useMutation({
     mutationFn: async (data: { name: string; description?: string }) => {
-      return await apiRequest("/api/categories", {
-        method: "POST",
-        body: data,
-      });
+      return await apiRequest("POST", "/api/categories", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
@@ -119,10 +116,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
 
   const createBrandMutation = useMutation({
     mutationFn: async (data: { name: string; description?: string }) => {
-      return await apiRequest("/api/brands", {
-        method: "POST",
-        body: data,
-      });
+      return await apiRequest("POST", "/api/brands", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/brands"] });
@@ -133,10 +127,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
 
   const createSizeMutation = useMutation({
     mutationFn: async (data: { name: string; sortOrder?: number }) => {
-      return await apiRequest("/api/sizes", {
-        method: "POST",
-        body: data,
-      });
+      return await apiRequest("POST", "/api/sizes", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/sizes"] });
@@ -147,10 +138,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
 
   const createColorMutation = useMutation({
     mutationFn: async (data: { name: string; hexCode?: string }) => {
-      return await apiRequest("/api/colors", {
-        method: "POST",
-        body: data,
-      });
+      return await apiRequest("POST", "/api/colors", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/colors"] });
@@ -169,15 +157,9 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
       };
       
       if (product) {
-        return await apiRequest(`/api/products/${product.id}`, {
-          method: "PUT",
-          body: payload,
-        });
+        return await apiRequest("PUT", `/api/products/${product.id}`, payload);
       } else {
-        return await apiRequest("/api/products", {
-          method: "POST",
-          body: payload,
-        });
+        return await apiRequest("POST", "/api/products", payload);
       }
     },
     onSuccess: () => {
@@ -209,6 +191,28 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
       form.setValue("images", [...currentImages, newImageUrl.trim()]);
       setNewImageUrl("");
     }
+  };
+
+  const handleImageFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach((file) => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          if (result) {
+            const currentImages = form.getValues("images");
+            form.setValue("images", [...currentImages, result]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    // Reset input
+    event.target.value = '';
   };
 
   const removeImage = (index: number) => {
@@ -651,17 +655,47 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label className="text-sm font-roboto">Agregar Nueva Imagen</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="URL de la imagen"
-                        value={newImageUrl}
-                        onChange={(e) => setNewImageUrl(e.target.value)}
-                      />
-                      <Button type="button" size="sm" onClick={addImage} disabled={!newImageUrl.trim()}>
-                        <Upload className="h-4 w-4" />
-                      </Button>
+                    
+                    {/* Opciones para agregar imágenes */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {/* Input para URL de imagen */}
+                      <div className="space-y-2">
+                        <Label className="text-xs text-gray-600">Desde URL</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="https://ejemplo.com/imagen.jpg"
+                            value={newImageUrl}
+                            onChange={(e) => setNewImageUrl(e.target.value)}
+                          />
+                          <Button type="button" size="sm" onClick={addImage} disabled={!newImageUrl.trim()}>
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Input para cargar archivos */}
+                      <div className="space-y-2">
+                        <Label className="text-xs text-gray-600">Desde Dispositivo</Label>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          className="w-full"
+                          onClick={() => document.getElementById('image-upload')?.click()}
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          Subir Archivos
+                        </Button>
+                        <input
+                          id="image-upload"
+                          type="file"
+                          multiple
+                          accept="image/png,image/jpeg,image/jpg,image/webp"
+                          onChange={handleImageFileUpload}
+                          className="hidden"
+                        />
+                      </div>
                     </div>
                   </div>
                   

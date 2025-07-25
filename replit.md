@@ -171,6 +171,14 @@ The architecture is designed to handle both B2B (quote-based) and B2C (direct pu
 - **Data Migration**: Added unique SKU codes to existing products following standard format
 - **Validation Rules**: Implemented SKU format validation (uppercase letters, numbers, hyphens, underscores)
 
+#### Image Upload System (July 2025)
+- **Local File Support**: Added ability to upload images directly from device (PNG, JPG, JPEG, WEBP)
+- **Dual Input Methods**: Supports both URL-based and file-based image uploads
+- **Base64 Conversion**: Converts uploaded files to base64 for storage and display
+- **Multi-file Upload**: Allows multiple image selection in a single upload
+- **File Validation**: Validates file types and handles upload errors gracefully
+- **Preview System**: Real-time preview of uploaded images with remove functionality
+
 ### Recent Changes and Improvements (January 2025)
 
 #### Authentication System Enhancements
