@@ -158,6 +158,12 @@ export class DatabaseStorage implements IStorage {
     await db.delete(brands).where(eq(brands.id, id));
   }
 
+  // Helper method to get brand name by ID
+  async getBrandName(brandId: number): Promise<string | null> {
+    const [brand] = await db.select({ name: brands.name }).from(brands).where(eq(brands.id, brandId));
+    return brand?.name || null;
+  }
+
   // Size operations
   async getSizes(): Promise<Size[]> {
     return await db.select().from(sizes).orderBy(sizes.sortOrder, sizes.name);
@@ -196,7 +202,11 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (filters?.brandId) {
-      conditions.push(eq(products.brandId, filters.brandId));
+      // First try to find brand by ID, then use brand name
+      const brandName = await this.getBrandName(filters.brandId);
+      if (brandName) {
+        conditions.push(eq(products.brand, brandName));
+      }
     }
     
     if (filters?.isActive !== undefined) {
