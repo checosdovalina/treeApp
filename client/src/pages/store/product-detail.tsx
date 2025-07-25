@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw, Shirt } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { addToCart } from "@/lib/cart";
+import type { Product, InventoryItem } from "../../lib/types";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -19,26 +20,29 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
-  const { data: product, isLoading } = useQuery({
-    queryKey: ['/api/products', id],
-    enabled: !!id,
+  const { data: product, isLoading } = useQuery<Product>({
+    queryKey: [`/api/products/${id}`],
+    enabled: !!id && !isNaN(Number(id)),
   });
 
-  const { data: inventory } = useQuery({
-    queryKey: ['/api/products', id, 'inventory'],
-    enabled: !!id,
+  const { data: inventory = [] } = useQuery<InventoryItem[]>({
+    queryKey: [`/api/products/${id}/inventory`],
+    enabled: !!id && !isNaN(Number(id)),
   });
 
   const addToCartMutation = useMutation({
-    mutationFn: () => addToCart({
-      id: product.id,
-      name: product.name,
-      price: parseFloat(product.price),
-      image: product.images?.[0] || '',
-      size: selectedSize,
-      color: selectedColor,
-      quantity
-    }),
+    mutationFn: async () => {
+      if (!product) throw new Error('Product not found');
+      return addToCart({
+        id: product.id,
+        name: product.name,
+        price: parseFloat(product.price),
+        image: product.images?.[0] || '',
+        size: selectedSize,
+        color: selectedColor,
+        quantity
+      });
+    },
     onSuccess: () => {
       toast({
         title: "Producto agregado",
@@ -92,6 +96,8 @@ export default function ProductDetail() {
   }
 
   const handleAddToCart = () => {
+    if (!product) return;
+    
     if (!selectedSize && product.sizes?.length > 0) {
       toast({
         title: "Selecciona una talla",
@@ -115,7 +121,7 @@ export default function ProductDetail() {
 
   const getStockForVariant = () => {
     if (!inventory || !selectedSize || !selectedColor) return 0;
-    const variant = inventory.find((item: any) => 
+    const variant = inventory.find((item) => 
       item.size === selectedSize && item.color === selectedColor
     );
     return variant?.quantity || 0;
