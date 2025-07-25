@@ -14,6 +14,7 @@ import AdminQuotes from "@/pages/admin/quotes";
 import AdminReports from "@/pages/admin/reports";
 import StoreHome from "@/pages/store/index";
 import StoreCatalog from "@/pages/store/catalog";
+import StoreBrands from "@/pages/store/brands";
 import ProductDetail from "@/pages/store/product-detail";
 import Cart from "@/pages/store/cart";
 import CustomerDashboard from "@/pages/customer/dashboard";
@@ -42,6 +43,7 @@ function Router() {
         <Route path="/login" component={LoginPage} />
         <Route path="/store" component={StoreHome} />
         <Route path="/store/catalog" component={StoreCatalog} />
+        <Route path="/store/brands" component={StoreBrands} />
         <Route path="/store/product/:id" component={ProductDetail} />
         <Route path="/store/cart" component={Cart} />
         <Route component={NotFound} />
@@ -67,6 +69,7 @@ function Router() {
           {/* Admin can also access store routes */}
           <Route path="/store" component={StoreHome} />
           <Route path="/store/catalog" component={StoreCatalog} />
+          <Route path="/store/brands" component={StoreBrands} />
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
         </>
@@ -76,6 +79,7 @@ function Router() {
           <Route path="/" component={StoreHome} />
           <Route path="/store" component={StoreHome} />
           <Route path="/store/catalog" component={StoreCatalog} />
+          <Route path="/store/brands" component={StoreBrands} />
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
           

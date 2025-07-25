@@ -57,6 +57,7 @@ export interface IStorage {
   // Product operations
   getProducts(filters?: {
     categoryId?: number;
+    brandId?: number;
     isActive?: boolean;
     search?: string;
     limit?: number;
@@ -165,6 +166,7 @@ export class DatabaseStorage implements IStorage {
   // Product operations
   async getProducts(filters?: {
     categoryId?: number;
+    brandId?: number;
     isActive?: boolean;
     search?: string;
     limit?: number;
@@ -176,6 +178,10 @@ export class DatabaseStorage implements IStorage {
     
     if (filters?.categoryId) {
       conditions.push(eq(products.categoryId, filters.categoryId));
+    }
+    
+    if (filters?.brandId) {
+      conditions.push(eq(products.brandId, filters.brandId));
     }
     
     if (filters?.isActive !== undefined) {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/lib/cart";
 import CustomerLayout from "@/components/layout/customer-layout";
@@ -21,20 +22,32 @@ import {
   Phone,
   Grid,
   List,
-  ArrowUpDown
+  ArrowUpDown,
+  X
 } from "lucide-react";
 
 export default function CatalogPage() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const { addItem } = useCart();
   const { toast } = useToast();
+  const [location] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+
+  // Get brand from URL params
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const brandParam = urlParams.get('brand');
+    if (brandParam) {
+      setSelectedBrand(brandParam);
+    }
+  }, [location]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -55,15 +68,21 @@ export default function CatalogPage() {
     queryKey: ['/api/categories'],
     enabled: isAuthenticated,
     retry: false,
+  });
 
+  const { data: brands } = useQuery({
+    queryKey: ['/api/brands'],
+    enabled: isAuthenticated,
+    retry: false,
   });
 
   const { data: products, isLoading: productsLoading } = useQuery({
-    queryKey: ['/api/products', searchTerm, selectedCategory, sortBy],
+    queryKey: ['/api/products', searchTerm, selectedCategory, selectedBrand, sortBy],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (selectedCategory) params.append('categoryId', selectedCategory);
+      if (selectedBrand) params.append('brandId', selectedBrand);
       params.append('isActive', 'true');
       if (sortBy) params.append('sortBy', sortBy);
       
@@ -165,7 +184,7 @@ export default function CatalogPage() {
 
           {/* Filters and Search */}
           <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
               {/* Search */}
               <div className="lg:col-span-2">
                 <div className="relative">
@@ -190,6 +209,23 @@ export default function CatalogPage() {
                     {categories && Array.isArray(categories) ? categories.map((cat: any) => (
                       <SelectItem key={cat.id} value={cat.id.toString()}>
                         {cat.name}
+                      </SelectItem>
+                    )) : null}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Brand Filter */}
+              <div>
+                <Select value={selectedBrand || "all"} onValueChange={(value) => setSelectedBrand(value === "all" ? "" : value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Marca" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    {brands && Array.isArray(brands) ? brands.filter((brand: any) => brand.isActive).map((brand: any) => (
+                      <SelectItem key={brand.id} value={brand.id.toString()}>
+                        {brand.name}
                       </SelectItem>
                     )) : null}
                   </SelectContent>
@@ -233,6 +269,54 @@ export default function CatalogPage() {
               </div>
             </div>
           </div>
+
+          {/* Active Filters */}
+          {(selectedCategory || selectedBrand || searchTerm) && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm text-gray-600">Filtros activos:</span>
+                {selectedCategory && (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    {categories?.find((cat: any) => cat.id.toString() === selectedCategory)?.name}
+                    <X 
+                      className="h-3 w-3 cursor-pointer" 
+                      onClick={() => setSelectedCategory("")}
+                    />
+                  </Badge>
+                )}
+                {selectedBrand && (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    {brands?.find((brand: any) => brand.id.toString() === selectedBrand)?.name}
+                    <X 
+                      className="h-3 w-3 cursor-pointer" 
+                      onClick={() => setSelectedBrand("")}
+                    />
+                  </Badge>
+                )}
+                {searchTerm && (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    "{searchTerm}"
+                    <X 
+                      className="h-3 w-3 cursor-pointer" 
+                      onClick={() => setSearchTerm("")}
+                    />
+                  </Badge>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => {
+                    setSelectedCategory("");
+                    setSelectedBrand("");
+                    setSearchTerm("");
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Limpiar filtros
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Results Summary */}
           <div className="flex items-center justify-between mb-6">
