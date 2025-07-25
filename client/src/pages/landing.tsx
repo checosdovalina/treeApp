@@ -53,6 +53,13 @@ export default function Landing() {
             <Button 
               size="lg"
               variant="outline"
+              onClick={() => window.location.href = '/auth/register'}
+            >
+              Registrarse
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
               onClick={() => window.location.href = '/api/login'}
             >
               Acceso Administrador

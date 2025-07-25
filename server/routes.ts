@@ -10,7 +10,9 @@ import {
   insertColorSchema,
   insertOrderSchema,
   insertOrderItemSchema,
-  insertQuoteSchema
+  insertQuoteSchema,
+  customerRegistrationSchema,
+  quoteRequestSchema
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -49,6 +51,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Customer registration route
+  app.post('/api/register/customer', async (req, res) => {
+    try {
+      const customerData = customerRegistrationSchema.parse(req.body);
+      
+      // Generate a unique customer ID
+      const customerId = `customer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Create customer user
+      const customerUser = {
+        id: customerId,
+        email: customerData.email,
+        firstName: customerData.firstName,
+        lastName: customerData.lastName,
+        role: 'customer' as const,
+        phone: customerData.phone,
+        company: customerData.company || null,
+        address: customerData.address,
+        city: customerData.city,
+        state: customerData.state,
+        zipCode: customerData.zipCode,
+        isActive: true,
+        profileImageUrl: null
+      };
+
+      const user = await storage.upsertUser(customerUser);
+      res.json({ 
+        message: 'Cliente registrado exitosamente',
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          company: user.company
+        }
+      });
+    } catch (error) {
+      console.error("Error registering customer:", error);
+      if (error.code === '23505') { // Unique constraint violation
+        return res.status(400).json({ message: "El email ya está registrado" });
+      }
+      res.status(400).json({ message: "Error al registrar el cliente" });
+    }
+  });
+
+  // Quote request route
+  app.post('/api/quotes/request', async (req, res) => {
+    try {
+      const quoteData = quoteRequestSchema.parse(req.body);
+      const { customerId, customerInfo } = req.body;
+      
+      // If customer is not logged in, create a temporary customer
+      let finalCustomerId = customerId;
+      if (!customerId && customerInfo) {
+        const tempCustomerId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const tempCustomer = {
+          id: tempCustomerId,
+          email: customerInfo.email,
+          firstName: customerInfo.firstName,
+          lastName: customerInfo.lastName,
+          role: 'customer' as const,
+          phone: customerInfo.phone,
+          company: customerInfo.company || null,
+          address: customerInfo.address || '',
+          city: customerInfo.city || '',
+          state: customerInfo.state || '',
+          zipCode: customerInfo.zipCode || '',
+          isActive: true,
+          profileImageUrl: null
+        };
+        await storage.upsertUser(tempCustomer);
+        finalCustomerId = tempCustomerId;
+      }
+
+      // Calculate total estimated amount
+      let totalAmount = 0;
+      const items = [];
+      
+      for (const item of quoteData.products) {
+        const product = await storage.getProduct(item.productId);
+        if (product) {
+          const itemTotal = parseFloat(product.price) * item.quantity;
+          totalAmount += itemTotal;
+          items.push({
+            productName: product.name,
+            quantity: item.quantity,
+            size: item.size,
+            color: item.color,
+            unitPrice: parseFloat(product.price),
+            total: itemTotal,
+            notes: item.notes
+          });
+        }
+      }
+
+      // Create quote
+      const quote = {
+        customerId: finalCustomerId,
+        items: JSON.stringify(items),
+        totalAmount: totalAmount.toString(),
+        urgency: quoteData.urgency,
+        notes: quoteData.notes || '',
+        preferredDeliveryDate: quoteData.preferredDeliveryDate ? new Date(quoteData.preferredDeliveryDate) : null,
+        status: 'pending' as const
+      };
+
+      const newQuote = await storage.createQuote(quote);
+      res.json({ 
+        message: 'Solicitud de presupuesto enviada exitosamente',
+        quote: newQuote
+      });
+    } catch (error) {
+      console.error("Error creating quote request:", error);
+      res.status(400).json({ message: "Error al crear la solicitud de presupuesto" });
     }
   });
 

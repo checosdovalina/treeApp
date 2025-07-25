@@ -34,6 +34,13 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   role: varchar("role").notNull().default("customer"), // admin, customer
+  phone: varchar("phone", { length: 20 }),
+  company: varchar("company", { length: 200 }),
+  address: text("address"),
+  city: varchar("city", { length: 100 }),
+  state: varchar("state", { length: 100 }),
+  zipCode: varchar("zip_code", { length: 10 }),
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -269,6 +276,33 @@ export const insertQuoteSchema = createInsertSchema(quotes).omit({
   updatedAt: true,
 });
 
+// Customer registration schema
+export const customerRegistrationSchema = z.object({
+  firstName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  lastName: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
+  email: z.string().email("Email inválido"),
+  phone: z.string().min(10, "El teléfono debe tener al menos 10 dígitos"),
+  company: z.string().optional(),
+  address: z.string().min(10, "La dirección debe tener al menos 10 caracteres"),
+  city: z.string().min(2, "La ciudad debe tener al menos 2 caracteres"),
+  state: z.string().min(2, "El estado debe tener al menos 2 caracteres"),
+  zipCode: z.string().min(5, "El código postal debe tener al menos 5 caracteres"),
+});
+
+// Quote request schema
+export const quoteRequestSchema = z.object({
+  products: z.array(z.object({
+    productId: z.number(),
+    quantity: z.number().min(1),
+    size: z.string(),
+    color: z.string(),
+    notes: z.string().optional(),
+  })),
+  urgency: z.enum(["normal", "urgent", "very_urgent"]),
+  notes: z.string().optional(),
+  preferredDeliveryDate: z.string().optional(),
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -299,3 +333,5 @@ export type OrderItem = typeof orderItems.$inferSelect;
 
 export type InsertQuote = z.infer<typeof insertQuoteSchema>;
 export type Quote = typeof quotes.$inferSelect;
+export type CustomerRegistration = z.infer<typeof customerRegistrationSchema>;
+export type QuoteRequest = z.infer<typeof quoteRequestSchema>;

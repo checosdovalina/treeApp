@@ -41,11 +41,13 @@ function Router() {
       <Switch>
         <Route path="/" component={Landing} />
         <Route path="/login" component={LoginPage} />
+        <Route path="/auth/register" component={() => import("./pages/auth/customer-register")} />
         <Route path="/store" component={StoreHome} />
         <Route path="/store/catalog" component={StoreCatalog} />
         <Route path="/store/brands" component={StoreBrands} />
         <Route path="/store/product/:id" component={ProductDetail} />
         <Route path="/store/cart" component={Cart} />
+        <Route path="/store/quote-request" component={() => import("./pages/store/quote-request")} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -72,6 +74,7 @@ function Router() {
           <Route path="/store/brands" component={StoreBrands} />
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
+          <Route path="/store/quote-request" component={() => import("./pages/store/quote-request")} />
         </>
       ) : (
         <>
@@ -82,6 +85,7 @@ function Router() {
           <Route path="/store/brands" component={StoreBrands} />
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
+          <Route path="/store/quote-request" component={() => import("./pages/store/quote-request")} />
           
           {/* Customer dashboard and account routes */}
           <Route path="/customer" component={CustomerDashboard} />

@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useCart } from "@/lib/cart";
+import { useCart } from "@/hooks/useCart";
 import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 import { 
   ShoppingCart, 
@@ -37,6 +37,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
     { name: "Inicio", href: "/store", icon: Home },
     { name: "Catálogo", href: "/store/catalog", icon: Package },
     { name: "Marcas", href: "/store/brands", icon: Tag },
+    { name: "Presupuesto", href: "/store/quote-request", icon: FileText },
     { name: "Mi Cuenta", href: "/customer/dashboard", icon: User },
     { name: "Favoritos", href: "/customer/favorites", icon: Heart },
     { name: "Cotizaciones", href: "/customer/quotes", icon: FileText },
