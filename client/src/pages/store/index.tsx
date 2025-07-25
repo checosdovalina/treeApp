@@ -82,8 +82,8 @@ export default function StoreIndex() {
         <div className="relative container mx-auto px-4 py-24 lg:py-32">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-poppins font-bold mb-6 leading-tight text-white">
-              UNIFORMES
-              <span className="block text-yellow-400">LAGUNA</span>
+              TREE UNIFORMES
+              <span className="block text-yellow-400">& KODIAK INDUSTRIAL</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-2xl mx-auto font-roboto">
               Calidad premium en uniformes profesionales para todas las industrias

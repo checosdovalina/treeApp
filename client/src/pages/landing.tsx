@@ -160,10 +160,15 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-uniform-primary rounded-lg flex items-center justify-center">
-                  <Shirt className="text-white h-6 w-6" />
+                <img 
+                  src="/assets/TREE LOGO_1753399074765.png" 
+                  alt="TREE Uniformes & Kodiak Industrial"
+                  className="h-10 w-auto filter brightness-0 invert"
+                />
+                <div>
+                  <h3 className="text-xl font-bold">TREE Uniformes</h3>
+                  <p className="text-sm text-gray-400">& Kodiak Industrial</p>
                 </div>
-                <h3 className="text-xl font-bold">Uniformes Laguna</h3>
               </div>
               <p className="text-gray-300">
                 Equipamos a tu empresa con uniformes que reflejan profesionalismo y calidad. 
@@ -186,13 +191,13 @@ export default function Landing() {
               <div className="space-y-2 text-gray-300">
                 <p>📍 Laguna, Coahuila, México</p>
                 <p>📞 +52 871 123 4567</p>
-                <p>✉️ info@uniformeslaguna.com</p>
+                <p>✉️ info@treeuniformes.com</p>
               </div>
             </div>
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-            <p className="text-gray-400">© 2024 Uniformes Laguna. Todos los derechos reservados.</p>
+            <p className="text-gray-400">© 2024 TREE Uniformes & Kodiak Industrial. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

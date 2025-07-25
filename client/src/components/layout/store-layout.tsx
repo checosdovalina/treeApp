@@ -16,6 +16,7 @@ import {
   Mail,
   MapPin
 } from "lucide-react";
+import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -47,11 +48,14 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
             {/* Logo */}
             <Link href="/store">
               <a className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-uniform-primary rounded-lg flex items-center justify-center">
-                  <Shirt className="text-white h-6 w-6" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-uniform-neutral-900">Uniformes Laguna</h1>
+                <img 
+                  src={treeLogo} 
+                  alt="TREE Uniformes & Kodiak Industrial"
+                  className="h-10 w-auto"
+                />
+                <div className="hidden sm:block">
+                  <h1 className="text-xl font-bold text-uniform-neutral-900">TREE Uniformes</h1>
+                  <p className="text-sm text-gray-600">& Kodiak Industrial</p>
                 </div>
               </a>
             </Link>
@@ -201,13 +205,18 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
             {/* Company Info */}
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-uniform-primary rounded-lg flex items-center justify-center">
-                  <Shirt className="text-white h-6 w-6" />
+                <img 
+                  src={treeLogo} 
+                  alt="TREE Uniformes & Kodiak Industrial"
+                  className="h-10 w-auto filter brightness-0 invert"
+                />
+                <div>
+                  <h3 className="text-xl font-bold">TREE Uniformes</h3>
+                  <p className="text-sm text-gray-400">& Kodiak Industrial</p>
                 </div>
-                <h3 className="text-xl font-bold">Uniformes Laguna</h3>
               </div>
               <p className="text-gray-300 mb-4">
-                Equipamos a tu empresa con uniformes que reflejan profesionalismo y calidad. 
+                Equipamos a tu empresa con uniformes industriales y corporativos que reflejan profesionalismo y calidad. 
                 Más de 10 años de experiencia en el sector.
               </p>
               <div className="flex space-x-4">
@@ -259,7 +268,7 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="h-4 w-4 text-uniform-primary flex-shrink-0" />
-                  <span className="text-gray-300">info@uniformeslaguna.com</span>
+                  <span className="text-gray-300">info@treeuniformes.com</span>
                 </div>
               </div>
             </div>
@@ -267,7 +276,7 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
 
           {/* Copyright */}
           <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-            <p className="text-gray-400">© 2024 Uniformes Laguna. Todos los derechos reservados.</p>
+            <p className="text-gray-400">© 2024 TREE Uniformes & Kodiak Industrial. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

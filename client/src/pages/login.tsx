@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Shield, Users, ArrowRight, Building, User } from "lucide-react";
 import { useLocation } from "wouter";
+import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 
 export default function LoginPage() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -46,15 +47,17 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="bg-uniform-primary rounded-full p-3">
-              <Building className="h-8 w-8 text-white" />
-            </div>
+            <img 
+              src={treeLogo} 
+              alt="TREE Uniformes & Kodiak Industrial"
+              className="h-16 w-auto"
+            />
           </div>
           <h1 className="text-3xl font-bold text-uniform-neutral-900 mb-2">
-            Uniformes Laguna
+            TREE Uniformes
           </h1>
           <p className="text-gray-600">
-            Bienvenido a nuestra plataforma de uniformes
+            Bienvenido a nuestra plataforma de uniformes industriales y corporativos
           </p>
         </div>
 

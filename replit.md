@@ -1,8 +1,8 @@
-# Replit.md - Uniformes Laguna E-commerce Platform
+# Replit.md - TREE Uniformes & Kodiak Industrial E-commerce Platform  
 
 ## Overview
 
-This is a full-stack e-commerce application for "Uniformes Laguna," a uniform/clothing business. The system provides both admin management capabilities and a public store interface. It's built with React (frontend), Express.js (backend), and PostgreSQL database using Drizzle ORM.
+This is a full-stack e-commerce application for "TREE Uniformes & Kodiak Industrial," a uniform/clothing business specializing in industrial and corporate uniforms. The system provides both admin management capabilities and a public store interface. It's built with React (frontend), Express.js (backend), and PostgreSQL database using Drizzle ORM.
 
 ## User Preferences
 
