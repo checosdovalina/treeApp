@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw, Shirt } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { addToCart } from "@/lib/cart";
+import ImageModal from "@/components/ui/image-modal";
 import type { Product, InventoryItem } from "../../lib/types";
 
 export default function ProductDetail() {
@@ -19,6 +20,7 @@ export default function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: [`/api/products/${id}`],
@@ -150,9 +152,11 @@ export default function ProductDetail() {
             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
               {product.images?.length > 0 ? (
                 <img 
-                  src={product.images[selectedImage]} 
+                  src={product.images[selectedImage]}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover cursor-zoom-in"
+                  onDoubleClick={() => setIsImageModalOpen(true)}
+                  title="Doble clic para ampliar"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
@@ -174,7 +178,12 @@ export default function ProductDetail() {
                     <img 
                       src={image} 
                       alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover cursor-zoom-in"
+                      onDoubleClick={() => {
+                        setSelectedImage(index);
+                        setIsImageModalOpen(true);
+                      }}
+                      title="Doble clic para ampliar"
                     />
                   </button>
                 ))}
@@ -421,6 +430,14 @@ export default function ProductDetail() {
           </Tabs>
         </div>
       </div>
+
+      {/* Image Modal */}
+      <ImageModal
+        src={product.images?.[selectedImage] || ''}
+        alt={product.name}
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+      />
     </StoreLayout>
   );
 }

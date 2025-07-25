@@ -7,6 +7,7 @@ import { Heart, ShoppingCart, Star, Shirt } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { addToCart } from "@/lib/cart";
 import { useToast } from "@/hooks/use-toast";
+import ImageModal from "@/components/ui/image-modal";
 
 interface ProductCardProps {
   product: {
@@ -26,6 +27,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   const addToCartMutation = useMutation({
     mutationFn: async () => {
@@ -61,6 +63,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     });
   };
 
+  const handleImageDoubleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsImageModalOpen(true);
+  };
+
   return (
     <Link href={`/store/product/${product.id}`}>
       <Card 
@@ -74,7 +82,9 @@ export default function ProductCard({ product }: ProductCardProps) {
               <img 
                 src={product.images[0]} 
                 alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-zoom-in"
+                onDoubleClick={handleImageDoubleClick}
+                title="Doble clic para ampliar"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -186,6 +196,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           </Button>
         </CardContent>
       </Card>
+      
+      {/* Image Modal */}
+      <ImageModal
+        src={product.images?.[0] || ''}
+        alt={product.name}
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+      />
     </Link>
   );
 }
