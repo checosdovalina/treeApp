@@ -107,11 +107,10 @@ export default function StoreIndex() {
                 </span>
               </div>
               
-              <h1 className="text-5xl md:text-7xl font-poppins font-black mb-8 leading-tight drop-shadow-lg">
-                <span className="text-white">TREE</span>
+              <h1 className="text-4xl md:text-6xl font-poppins font-black mb-8 leading-tight drop-shadow-lg">
                 <span className="block text-uniform-gold drop-shadow-lg">UNIFORMES</span>
                 <span className="block text-2xl md:text-3xl text-white font-semibold mt-2 drop-shadow-md">
-                  & KODIAK INDUSTRIAL
+                  PROFESIONALES
                 </span>
               </h1>
               
