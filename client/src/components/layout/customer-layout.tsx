@@ -55,7 +55,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <div className="flex items-center">
+            <div className="flex items-center mr-8">
               <Link href="/store" className="flex items-center">
                 <img 
                   src={treeLogo} 
