@@ -60,7 +60,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                 <img 
                   src={treeLogo} 
                   alt="TREE Uniformes & Kodiak Industrial"
-                  className="h-12 w-auto"
+                  className="h-16 w-auto"
                 />
               </Link>
             </div>
