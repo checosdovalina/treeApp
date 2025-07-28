@@ -132,6 +132,21 @@ export default function ProductDetail() {
   const stock = getStockForVariant();
   const isInStock = stock > 0;
 
+  // Helper function to get valid image URL
+  const getValidImageUrl = (images: string[], index: number = 0): string => {
+    if (!images?.length) return '';
+    const targetImage = images[index];
+    if (targetImage?.startsWith('data:image/') || 
+        (targetImage?.startsWith('http') && !targetImage.includes('example.com'))) {
+      return targetImage;
+    }
+    // Buscar la primera imagen válida
+    return images.find((img: string) => 
+      img.startsWith('data:image/') || 
+      (img.startsWith('http') && !img.includes('example.com'))
+    ) || targetImage || '';
+  };
+
   return (
     <StoreLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -159,15 +174,7 @@ export default function ProductDetail() {
                   );
                 }
                 
-                // Encontrar la imagen válida en el índice seleccionado
-                const currentImage = product.images[selectedImage];
-                const validImage = currentImage?.startsWith('data:image/') || 
-                                 (currentImage?.startsWith('http') && !currentImage.includes('example.com')) 
-                                 ? currentImage 
-                                 : product.images.find((img: string) => 
-                                     img.startsWith('data:image/') || 
-                                     (img.startsWith('http') && !img.includes('example.com'))
-                                   ) || product.images[selectedImage];
+                const validImage = getValidImageUrl(product.images, selectedImage);
                 
                 return (
                   <img 
@@ -177,11 +184,9 @@ export default function ProductDetail() {
                     onDoubleClick={() => setIsImageModalOpen(true)}
                     title="Doble clic para ampliar"
                     onError={(e) => {
+                      // Solo ocultar la imagen si falla, mantener funcionalidad de doble clic
                       const target = e.target as HTMLImageElement;
-                      const parent = target.parentElement;
-                      if (parent) {
-                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-24 w-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>';
-                      }
+                      target.style.display = 'none';
                     }}
                   />
                 );
@@ -199,7 +204,7 @@ export default function ProductDetail() {
                     }`}
                   >
                     <img 
-                      src={image.startsWith('data:image/') || (image.startsWith('http') && !image.includes('example.com')) ? image : product.images.find((img: string) => img.startsWith('data:image/') || (img.startsWith('http') && !img.includes('example.com'))) || image} 
+                      src={getValidImageUrl(product.images, index)} 
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover cursor-zoom-in"
                       onDoubleClick={() => {
@@ -209,10 +214,7 @@ export default function ProductDetail() {
                       title="Doble clic para ampliar"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        const parent = target.parentElement;
-                        if (parent) {
-                          parent.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>';
-                        }
+                        target.style.display = 'none';
                       }}
                     />
                   </button>
@@ -463,7 +465,7 @@ export default function ProductDetail() {
 
       {/* Image Modal */}
       <ImageModal
-        src={product.images?.[selectedImage] || ''}
+        src={getValidImageUrl(product.images, selectedImage)}
         alt={product.name}
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
