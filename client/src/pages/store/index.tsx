@@ -76,41 +76,44 @@ export default function StoreIndex() {
 
   return (
     <CustomerLayout>
-      {/* Hero Section - Completely Redesigned */}
-      <section className="relative min-h-screen bg-gradient-to-br from-uniform-blue via-blue-700 to-blue-900 text-white overflow-hidden flex items-center" style={{ marginTop: '-80px', paddingTop: '80px' }}>
+      {/* Hero Section - Improved Contrast */}
+      <section className="relative min-h-screen bg-gradient-to-br from-slate-900 via-uniform-blue to-blue-900 text-white overflow-hidden flex items-center" style={{ marginTop: '-80px', paddingTop: '80px' }}>
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-5">
           <div className="absolute top-20 left-10 w-32 h-32 border border-uniform-gold rounded-full"></div>
           <div className="absolute top-40 right-20 w-24 h-24 border border-uniform-gold rounded-full"></div>
           <div className="absolute bottom-40 left-20 w-20 h-20 border border-uniform-gold rounded-full"></div>
           <div className="absolute bottom-20 right-40 w-28 h-28 border border-uniform-gold rounded-full"></div>
         </div>
         
-        <div className="container mx-auto px-4 py-20">
+        {/* Dark overlay for better text contrast */}
+        <div className="absolute inset-0 bg-black/20"></div>
+        
+        <div className="container mx-auto px-4 py-20 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left">
               <div className="mb-6">
-                <span className="inline-block bg-uniform-gold text-uniform-blue px-6 py-2 rounded-full text-sm font-poppins font-semibold mb-4">
-                  ✨ Calidad Premium Garantizada
+                <span className="inline-block bg-uniform-gold text-slate-900 px-8 py-3 rounded-full text-sm font-poppins font-bold mb-4 shadow-lg">
+                  ✨ CALIDAD PREMIUM GARANTIZADA
                 </span>
               </div>
               
-              <h1 className="text-5xl md:text-7xl font-poppins font-bold mb-8 leading-tight">
+              <h1 className="text-5xl md:text-7xl font-poppins font-black mb-8 leading-tight drop-shadow-lg">
                 <span className="text-white">TREE</span>
-                <span className="block text-uniform-gold">UNIFORMES</span>
-                <span className="block text-2xl md:text-3xl text-blue-200 font-medium mt-2">
-                  & Kodiak Industrial
+                <span className="block text-uniform-gold drop-shadow-lg">UNIFORMES</span>
+                <span className="block text-2xl md:text-3xl text-white font-semibold mt-2 drop-shadow-md">
+                  & KODIAK INDUSTRIAL
                 </span>
               </h1>
               
-              <p className="text-xl md:text-2xl mb-10 text-blue-100 max-w-xl font-roboto leading-relaxed">
+              <p className="text-xl md:text-2xl mb-10 text-gray-100 max-w-xl font-roboto leading-relaxed drop-shadow-sm">
                 Especialistas en uniformes profesionales para hospitales, industrias, restaurantes y empresas corporativas.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <div className="flex flex-col sm:flex-row gap-6 mb-12">
                 <Link href="/store/catalog">
-                  <Button size="lg" className="bg-uniform-gold text-uniform-blue hover:bg-yellow-400 font-poppins font-bold px-10 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl">
+                  <Button size="lg" className="bg-uniform-gold text-slate-900 hover:bg-yellow-400 font-poppins font-black px-12 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl border-2 border-uniform-gold">
                     <Package className="mr-3 h-6 w-6" />
                     EXPLORAR CATÁLOGO
                   </Button>
@@ -118,7 +121,7 @@ export default function StoreIndex() {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-2 border-uniform-gold text-uniform-gold hover:bg-uniform-gold hover:text-uniform-blue font-poppins font-bold px-10 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl"
+                  className="border-3 border-white text-white hover:bg-white hover:text-slate-900 font-poppins font-black px-12 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl backdrop-blur-sm"
                   onClick={() => {
                     const message = "¡Hola! Me interesa obtener información sobre uniformes profesionales y solicitar una cotización personalizada.";
                     const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent(message)}`;
@@ -131,18 +134,18 @@ export default function StoreIndex() {
               </div>
               
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-blue-400/30">
+              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/30">
                 <div className="text-center">
-                  <div className="text-3xl font-poppins font-bold text-uniform-gold">500+</div>
-                  <div className="text-sm text-blue-200 font-roboto">Empresas Satisfechas</div>
+                  <div className="text-4xl font-poppins font-black text-uniform-gold drop-shadow-lg">500+</div>
+                  <div className="text-sm text-white font-roboto font-medium drop-shadow-sm">Empresas Satisfechas</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-poppins font-bold text-uniform-gold">15+</div>
-                  <div className="text-sm text-blue-200 font-roboto">Años de Experiencia</div>
+                  <div className="text-4xl font-poppins font-black text-uniform-gold drop-shadow-lg">15+</div>
+                  <div className="text-sm text-white font-roboto font-medium drop-shadow-sm">Años de Experiencia</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-poppins font-bold text-uniform-gold">24h</div>
-                  <div className="text-sm text-blue-200 font-roboto">Respuesta Garantizada</div>
+                  <div className="text-4xl font-poppins font-black text-uniform-gold drop-shadow-lg">24h</div>
+                  <div className="text-sm text-white font-roboto font-medium drop-shadow-sm">Respuesta Garantizada</div>
                 </div>
               </div>
             </div>
@@ -150,30 +153,30 @@ export default function StoreIndex() {
             {/* Right Content - Visual */}
             <div className="relative">
               <div className="relative z-10">
-                <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-2xl">
+                <div className="bg-white/15 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-2xl">
                   <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-uniform-gold/20 rounded-xl p-4 text-center">
-                      <Users className="h-8 w-8 mx-auto mb-2 text-uniform-gold" />
-                      <div className="text-sm text-white font-poppins">Corporativo</div>
+                    <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
+                      <Users className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
+                      <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Corporativo</div>
                     </div>
-                    <div className="bg-uniform-gold/20 rounded-xl p-4 text-center">
-                      <Shield className="h-8 w-8 mx-auto mb-2 text-uniform-gold" />
-                      <div className="text-sm text-white font-poppins">Industrial</div>
+                    <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
+                      <Shield className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
+                      <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Industrial</div>
                     </div>
-                    <div className="bg-uniform-gold/20 rounded-xl p-4 text-center">
-                      <Package className="h-8 w-8 mx-auto mb-2 text-uniform-gold" />
-                      <div className="text-sm text-white font-poppins">Médico</div>
+                    <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
+                      <Package className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
+                      <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Médico</div>
                     </div>
-                    <div className="bg-uniform-gold/20 rounded-xl p-4 text-center">
-                      <TrendingUp className="h-8 w-8 mx-auto mb-2 text-uniform-gold" />
-                      <div className="text-sm text-white font-poppins">Gastronomía</div>
+                    <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
+                      <TrendingUp className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
+                      <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Gastronomía</div>
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-uniform-gold font-poppins font-semibold mb-2">
+                    <div className="text-uniform-gold font-poppins font-bold mb-2 text-lg drop-shadow-sm">
                       Soluciones Completas
                     </div>
-                    <div className="text-white/80 text-sm font-roboto">
+                    <div className="text-white text-sm font-roboto font-medium drop-shadow-sm">
                       Desde el diseño hasta la entrega
                     </div>
                   </div>
