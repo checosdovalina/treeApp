@@ -120,8 +120,7 @@ export default function StoreIndex() {
                 </Link>
                 <Button 
                   size="lg" 
-                  variant="outline" 
-                  className="border-3 border-white text-white hover:bg-white hover:text-slate-900 font-poppins font-black px-12 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl backdrop-blur-sm"
+                  className="bg-white/90 border-2 border-white text-slate-900 hover:bg-white hover:text-slate-800 font-poppins font-black px-12 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl backdrop-blur-sm"
                   onClick={() => {
                     const message = "¡Hola! Me interesa obtener información sobre uniformes profesionales y solicitar una cotización personalizada.";
                     const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent(message)}`;
