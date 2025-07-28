@@ -245,8 +245,8 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
         </div>
       </header>
 
-      {/* Main Content with proper spacing */}
-      <main className="flex-1 pt-4">
+      {/* Main Content with proper spacing to avoid header overlap */}
+      <main className="flex-1" style={{ paddingTop: '96px' }}>
         {children}
       </main>
 

@@ -177,8 +177,20 @@
 }
 
 .customer-layout-main {
-  padding-top: 1rem;
+  padding-top: 2rem;
+  margin-top: 1rem;
   min-height: calc(100vh - 200px);
+}
+
+/* Ensure no overlapping between sticky header and content */
+.content-with-sticky-header {
+  margin-top: 100px; /* Height of header + some margin */
+}
+
+/* Specific styling for hero sections to avoid header overlap */
+.hero-section-spacing {
+  margin-top: 0;
+  padding-top: 2rem;
 }
 
 /* Smooth transitions for all interactive elements */

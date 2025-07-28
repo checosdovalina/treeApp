@@ -77,9 +77,9 @@ export default function StoreIndex() {
   return (
     <CustomerLayout>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 text-white overflow-hidden" style={{ marginTop: '-96px', paddingTop: '120px' }}>
         <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="relative container mx-auto px-4 py-24 lg:py-32">
+        <div className="relative container mx-auto px-4 py-20 lg:py-28">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-poppins font-bold mb-6 leading-tight text-white">
               TREE UNIFORMES
