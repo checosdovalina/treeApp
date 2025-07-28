@@ -280,15 +280,33 @@ export default function AdminProducts() {
                       >
                         <div className="relative">
                           <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                            {product.images?.length > 0 ? (
-                              <img 
-                                src={product.images[0]} 
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <Package className="h-16 w-16 text-gray-400" />
-                            )}
+                            {(() => {
+                              if (!product.images?.length) {
+                                return <Package className="h-16 w-16 text-gray-400" />;
+                              }
+                              
+                              // Encontrar la primera imagen válida (base64 o URL que funcione)
+                              const validImage = product.images.find((img: string) => {
+                                return img.startsWith('data:image/') || 
+                                       (img.startsWith('http') && !img.includes('example.com'));
+                              }) || product.images[0];
+                              
+                              return (
+                                <img 
+                                  src={validImage} 
+                                  alt={product.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>';
+                                    }
+                                  }}
+                                />
+                              );
+                            })()}
                           </div>
                           <div className="absolute top-3 left-3">
                             {getStatusBadge(product.isActive)}

@@ -172,17 +172,36 @@ export default function StoreIndex() {
               {featuredProducts?.map((product: any) => (
                 <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
                   <div className="aspect-square bg-gray-100 relative overflow-hidden">
-                    {product.images?.[0] ? (
-                      <img
-                        src={product.images[0]}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
-                        <Package className="h-16 w-16 text-blue-400" />
-                      </div>
-                    )}
+                    {(() => {
+                      if (!product.images?.length) {
+                        return (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+                            <Package className="h-16 w-16 text-blue-400" />
+                          </div>
+                        );
+                      }
+                      
+                      // Encontrar la primera imagen válida (base64 o URL que funcione)
+                      const validImage = product.images.find((img: string) => {
+                        return img.startsWith('data:image/') || 
+                               (img.startsWith('http') && !img.includes('example.com'));
+                      }) || product.images[0];
+                      
+                      return (
+                        <img
+                          src={validImage}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            const parent = target.parentElement;
+                            if (parent) {
+                              parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100"><svg class="h-16 w-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>';
+                            }
+                          }}
+                        />
+                      );
+                    })()}
                     <div className="absolute top-3 left-3">
                       <Badge className="bg-green-500 text-white">Stock Disponible</Badge>
                     </div>

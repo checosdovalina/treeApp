@@ -150,19 +150,42 @@ export default function ProductDetail() {
           {/* Product Images */}
           <div className="space-y-4">
             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-              {product.images?.length > 0 ? (
-                <img 
-                  src={product.images[selectedImage]}
-                  alt={product.name}
-                  className="w-full h-full object-cover cursor-zoom-in"
-                  onDoubleClick={() => setIsImageModalOpen(true)}
-                  title="Doble clic para ampliar"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Shirt className="h-24 w-24 text-gray-400" />
-                </div>
-              )}
+              {(() => {
+                if (!product.images?.length) {
+                  return (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Shirt className="h-24 w-24 text-gray-400" />
+                    </div>
+                  );
+                }
+                
+                // Encontrar la imagen válida en el índice seleccionado
+                const currentImage = product.images[selectedImage];
+                const validImage = currentImage?.startsWith('data:image/') || 
+                                 (currentImage?.startsWith('http') && !currentImage.includes('example.com')) 
+                                 ? currentImage 
+                                 : product.images.find((img: string) => 
+                                     img.startsWith('data:image/') || 
+                                     (img.startsWith('http') && !img.includes('example.com'))
+                                   ) || product.images[selectedImage];
+                
+                return (
+                  <img 
+                    src={validImage}
+                    alt={product.name}
+                    className="w-full h-full object-cover cursor-zoom-in"
+                    onDoubleClick={() => setIsImageModalOpen(true)}
+                    title="Doble clic para ampliar"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-24 w-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>';
+                      }
+                    }}
+                  />
+                );
+              })()}
             </div>
             
             {product.images?.length > 1 && (
@@ -176,7 +199,7 @@ export default function ProductDetail() {
                     }`}
                   >
                     <img 
-                      src={image} 
+                      src={image.startsWith('data:image/') || (image.startsWith('http') && !image.includes('example.com')) ? image : product.images.find((img: string) => img.startsWith('data:image/') || (img.startsWith('http') && !img.includes('example.com'))) || image} 
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover cursor-zoom-in"
                       onDoubleClick={() => {
@@ -184,6 +207,13 @@ export default function ProductDetail() {
                         setIsImageModalOpen(true);
                       }}
                       title="Doble clic para ampliar"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>';
+                        }
+                      }}
                     />
                   </button>
                 ))}
