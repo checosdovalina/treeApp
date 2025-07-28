@@ -51,7 +51,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b-2 border-uniform-gold shadow-lg">
+      <header className="fixed top-0 left-0 right-0 z-[100] bg-white border-b-2 border-uniform-gold shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
@@ -246,7 +246,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
       </header>
 
       {/* Main Content with proper spacing to avoid header overlap */}
-      <main className="flex-1" style={{ paddingTop: '96px' }}>
+      <main className="flex-1 pt-20" style={{ marginTop: '80px' }}>
         {children}
       </main>
 

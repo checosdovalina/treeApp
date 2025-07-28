@@ -77,7 +77,7 @@ export default function StoreIndex() {
   return (
     <CustomerLayout>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 text-white overflow-hidden" style={{ marginTop: '-96px', paddingTop: '120px' }}>
+      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 text-white overflow-hidden" style={{ marginTop: '-80px', paddingTop: '100px' }}>
         <div className="absolute inset-0 bg-black opacity-20"></div>
         <div className="relative container mx-auto px-4 py-20 lg:py-28">
           <div className="max-w-4xl mx-auto text-center">
