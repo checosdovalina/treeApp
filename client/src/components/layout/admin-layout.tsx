@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import treeLogo from "@assets/TREE LOGO_1753399074765.png";
+// import treeLogo from "@assets/TREE LOGO_1753399074765.png";
+const treeLogo = "/tree-logo.png";
 import { 
   BarChart3, 
   Package, 
@@ -24,7 +25,7 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [location] = useLocation();
-  const { user } = useAuth();
+  const { user } = useAuth() as { user: any };
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigation = [
@@ -81,12 +82,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 avatar-gradient-1 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-medium">
-                    {user?.firstName?.[0] || 'A'}
+                    {user && user.firstName ? user.firstName[0] : 'A'}
                   </span>
                 </div>
                 <div className="hidden md:block">
                   <p className="text-sm font-medium text-uniform-neutral-900">
-                    {user?.firstName} {user?.lastName}
+                    {user && user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : "Administrador"}
                   </p>
                   <p className="text-xs text-uniform-secondary">Administrador</p>
                 </div>

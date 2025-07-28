@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/useCart";
-import treeLogo from "@assets/TREE LOGO_1753399074765.png";
+// import treeLogo from "@assets/TREE LOGO_1753399074765.png";
+const treeLogo = "/tree-logo.png";
 import { 
   ShoppingCart, 
   User, 
@@ -27,7 +28,7 @@ interface CustomerLayoutProps {
 
 export default function CustomerLayout({ children }: CustomerLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth() as { user: any; isAuthenticated: boolean };
   const { items } = useCart();
   const [location] = useLocation();
 
@@ -107,15 +108,30 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
               </Link>
 
               {/* User Menu */}
-              {isAuthenticated ? (
+              {isAuthenticated && user ? (
                 <div className="hidden md:flex items-center space-x-2">
                   <div className="text-sm">
                     <p className="font-medium text-gray-900">
-                      {user?.firstName || "Cliente"}
+                      {user.firstName || "Cliente"}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {user?.email}
+                      {user.email}
                     </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : isAuthenticated ? (
+                <div className="hidden md:flex items-center space-x-2">
+                  <div className="text-sm">
+                    <p className="font-medium text-gray-900">Cliente</p>
+                    <p className="text-xs text-gray-500">No autenticado</p>
                   </div>
                   <Button
                     variant="ghost"
@@ -161,7 +177,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                     </div>
 
                     {/* User Info */}
-                    {isAuthenticated && (
+                    {isAuthenticated && user && (
                       <div className="bg-gray-50 rounded-lg p-4 mb-4">
                         <div className="flex items-center space-x-3">
                           <div className="bg-uniform-primary text-white rounded-full p-2">
@@ -169,10 +185,10 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                           </div>
                           <div>
                             <p className="font-medium text-gray-900">
-                              {user?.firstName || "Cliente"}
+                              {user.firstName || "Cliente"}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {user?.email}
+                              {user.email}
                             </p>
                           </div>
                         </div>

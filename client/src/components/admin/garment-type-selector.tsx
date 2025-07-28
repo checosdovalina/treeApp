@@ -114,7 +114,7 @@ export function GarmentTypeSelector({ form }: GarmentTypeSelectorProps) {
               </FormControl>
               <SelectContent>
                 {isLoading ? (
-                  <SelectItem value="" disabled>Cargando...</SelectItem>
+                  <SelectItem value="loading" disabled>Cargando...</SelectItem>
                 ) : (
                   garmentTypes.map((type) => (
                     <SelectItem key={type.id} value={type.id.toString()}>
