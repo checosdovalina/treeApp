@@ -213,35 +213,67 @@ export default function StoreIndex() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories && Array.isArray(categories) ? categories.slice(0, 6).map((category: any) => (
               <Link key={category.id} href={`/store/catalog?category=${category.id}`}>
-                <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 overflow-hidden cursor-pointer border-0 bg-white rounded-2xl">
+                <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 overflow-hidden cursor-pointer border-0 bg-white rounded-2xl min-h-[320px]">
                   <div className="aspect-[4/3] relative overflow-hidden">
                     <img
                       src={categoryImages[category.id as keyof typeof categoryImages] || "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=300&fit=crop"}
                       alt={category.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-uniform-blue/80 via-uniform-blue/40 to-transparent"></div>
-                    <div className="absolute top-4 right-4">
-                      <div className="bg-uniform-gold text-uniform-blue px-3 py-1 rounded-full text-xs font-poppins font-bold">
+                    <div className="absolute inset-0 bg-gradient-to-t from-uniform-blue/90 via-uniform-blue/50 to-transparent"></div>
+                    
+                    {/* Icon based on category */}
+                    <div className="absolute top-6 left-6">
+                      <div className="bg-uniform-gold/20 backdrop-blur-sm rounded-full p-3 border border-uniform-gold/50">
+                        {category.name.toLowerCase().includes('corporativo') && <Users className="h-6 w-6 text-uniform-gold" />}
+                        {category.name.toLowerCase().includes('industrial') && <Shield className="h-6 w-6 text-uniform-gold" />}
+                        {category.name.toLowerCase().includes('médico') && <Package className="h-6 w-6 text-uniform-gold" />}
+                        {category.name.toLowerCase().includes('gastronomía') && <TrendingUp className="h-6 w-6 text-uniform-gold" />}
+                        {category.name.toLowerCase().includes('seguridad') && <Shield className="h-6 w-6 text-uniform-gold" />}
+                        {!category.name.toLowerCase().match(/(corporativo|industrial|médico|gastronomía|seguridad)/) && <Package className="h-6 w-6 text-uniform-gold" />}
+                      </div>
+                    </div>
+                    
+                    <div className="absolute top-6 right-6">
+                      <div className="bg-uniform-gold text-uniform-blue px-3 py-1 rounded-full text-xs font-poppins font-bold shadow-lg">
                         ESPECIALIDAD
                       </div>
                     </div>
+                    
                     <div className="absolute bottom-6 left-6 right-6">
-                      <h3 className="text-2xl font-poppins font-bold text-white mb-3 leading-tight">
+                      <h3 className="text-2xl font-poppins font-bold text-white mb-3 leading-tight drop-shadow-lg">
                         {category.name.toUpperCase()}
                       </h3>
-                      <p className="text-white/90 text-sm font-roboto leading-relaxed mb-4">
+                      <p className="text-white/90 text-sm font-roboto leading-relaxed mb-4 drop-shadow-sm">
                         {category.description}
                       </p>
-                      <div className="flex items-center text-uniform-gold group-hover:translate-x-2 transition-transform duration-300">
-                        <span className="text-sm font-poppins font-semibold">Explorar productos</span>
-                        <ChevronRight className="h-4 w-4 ml-2" />
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center text-uniform-gold group-hover:translate-x-2 transition-transform duration-300">
+                          <span className="text-sm font-poppins font-semibold">Explorar productos</span>
+                          <ChevronRight className="h-4 w-4 ml-2" />
+                        </div>
+                        <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                          <span className="text-xs text-white font-poppins font-medium">Ver más</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </Card>
               </Link>
-            )) : null}
+            )) : (
+              // Loading skeleton for categories
+              [...Array(6)].map((_, i) => (
+                <Card key={i} className="overflow-hidden min-h-[320px]">
+                  <div className="aspect-[4/3] bg-gray-200 animate-pulse relative">
+                    <div className="absolute bottom-6 left-6 right-6">
+                      <div className="h-6 bg-gray-300 animate-pulse mb-3 rounded"></div>
+                      <div className="h-4 bg-gray-300 animate-pulse mb-2 rounded"></div>
+                      <div className="h-4 bg-gray-300 animate-pulse w-3/4 rounded"></div>
+                    </div>
+                  </div>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       </section>
