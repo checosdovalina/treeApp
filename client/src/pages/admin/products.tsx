@@ -276,8 +276,7 @@ export default function AdminProducts() {
                     products && Array.isArray(products) ? products.map((product: any) => (
                       <Card 
                         key={product.id} 
-                        className="overflow-hidden hover:shadow-md transition-shadow product-card-hover cursor-pointer"
-                        onClick={() => window.open(`/store/product/${product.id}`, '_blank')}
+                        className="overflow-hidden hover:shadow-md transition-shadow product-card-hover"
                       >
                         <div className="relative">
                           <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
@@ -304,6 +303,7 @@ export default function AdminProducts() {
                                     size="sm"
                                     variant="secondary"
                                     className="p-2 bg-white/90 hover:bg-white"
+                                    onClick={(e) => e.stopPropagation()}
                                   >
                                     <Edit className="h-4 w-4" />
                                   </Button>
@@ -313,7 +313,10 @@ export default function AdminProducts() {
                                 size="sm"
                                 variant="secondary"
                                 className="p-2 bg-white/90 hover:bg-white"
-                                onClick={() => handleManageInventory(product)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleManageInventory(product);
+                                }}
                               >
                                 <BarChart3 className="h-4 w-4" />
                               </Button>
@@ -321,7 +324,10 @@ export default function AdminProducts() {
                                 size="sm"
                                 variant="destructive"
                                 className="p-2 bg-white/90 hover:bg-red-50"
-                                onClick={() => handleDelete(product.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(product.id);
+                                }}
                               >
                                 <Trash2 className="h-4 w-4 text-red-500" />
                               </Button>
@@ -329,7 +335,11 @@ export default function AdminProducts() {
                           </div>
                         </div>
                         <CardContent className="p-4">
-                          <h3 className="font-semibold text-uniform-neutral-900 mb-2 line-clamp-1">
+                          <h3 
+                            className="font-semibold text-uniform-neutral-900 mb-2 line-clamp-1 cursor-pointer hover:text-blue-600 transition-colors"
+                            onClick={() => window.open(`/store/product/${product.id}`, '_blank')}
+                            title="Clic para ver en la tienda"
+                          >
                             {product.name}
                           </h3>
                           {product.sku && (
