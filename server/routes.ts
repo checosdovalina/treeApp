@@ -8,6 +8,7 @@ import {
   insertBrandSchema,
   insertSizeSchema,
   insertColorSchema,
+  insertGarmentTypeSchema,
   insertOrderSchema,
   insertOrderItemSchema,
   insertQuoteSchema,
@@ -291,14 +292,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Garment Types
+  app.get('/api/garment-types', async (req, res) => {
+    try {
+      const garmentTypes = await storage.getGarmentTypes();
+      res.json(garmentTypes);
+    } catch (error) {
+      console.error("Error fetching garment types:", error);
+      res.status(500).json({ message: "Failed to fetch garment types" });
+    }
+  });
+
+  app.post('/api/garment-types', isAdmin, async (req, res) => {
+    try {
+      const data = insertGarmentTypeSchema.parse(req.body);
+      const garmentType = await storage.createGarmentType(data);
+      res.json(garmentType);
+    } catch (error) {
+      console.error("Error creating garment type:", error);
+      res.status(400).json({ message: "Failed to create garment type" });
+    }
+  });
+
   // Products
   app.get('/api/products', async (req, res) => {
     try {
-      const { categoryId, brandId, gender, isActive, search, limit, offset } = req.query;
+      const { categoryId, brandId, gender, garmentTypeId, isActive, search, limit, offset } = req.query;
       const filters = {
         categoryId: categoryId ? parseInt(categoryId as string) : undefined,
         brandId: brandId ? parseInt(brandId as string) : undefined,
         gender: gender as string,
+        garmentTypeId: garmentTypeId ? parseInt(garmentTypeId as string) : undefined,
         isActive: isActive !== undefined ? isActive === 'true' : undefined,
         search: search as string,
         limit: limit ? parseInt(limit as string) : undefined,

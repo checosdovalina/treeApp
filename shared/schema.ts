@@ -79,6 +79,15 @@ export const colors = pgTable("colors", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Garment types table
+export const garmentTypes = pgTable("garment_types", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 50 }).notNull().unique(),
+  displayName: varchar("display_name", { length: 100 }).notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Gender enum
 export const genderEnum = pgEnum("gender", ["masculino", "femenino", "unisex"]);
 
@@ -91,6 +100,7 @@ export const products = pgTable("products", {
   categoryId: integer("category_id").references(() => categories.id),
   brand: varchar("brand", { length: 100 }),
   gender: genderEnum("gender").default("unisex"),
+  garmentTypeId: integer("garment_type_id").references(() => garmentTypes.id),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   images: text("images").array().default([]),
   sizes: text("sizes").array().default([]),
@@ -177,6 +187,10 @@ export const productsRelations = relations(products, ({ one, many }) => ({
     fields: [products.categoryId],
     references: [categories.id],
   }),
+  garmentType: one(garmentTypes, {
+    fields: [products.garmentTypeId],
+    references: [garmentTypes.id],
+  }),
   inventory: many(inventory),
   orderItems: many(orderItems),
 }));
@@ -195,6 +209,10 @@ export const sizesRelations = relations(sizes, ({ many }) => ({
 
 export const colorsRelations = relations(colors, ({ many }) => ({
   inventory: many(inventory),
+}));
+
+export const garmentTypesRelations = relations(garmentTypes, ({ many }) => ({
+  products: many(products),
 }));
 
 export const inventoryRelations = relations(inventory, ({ one }) => ({
@@ -247,6 +265,11 @@ export const insertSizeSchema = createInsertSchema(sizes).omit({
 });
 
 export const insertColorSchema = createInsertSchema(colors).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertGarmentTypeSchema = createInsertSchema(garmentTypes).omit({
   id: true,
   createdAt: true,
 });
@@ -322,6 +345,9 @@ export type Size = typeof sizes.$inferSelect;
 
 export type InsertColor = z.infer<typeof insertColorSchema>;
 export type Color = typeof colors.$inferSelect;
+
+export type InsertGarmentType = z.infer<typeof insertGarmentTypeSchema>;
+export type GarmentType = typeof garmentTypes.$inferSelect;
 
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;

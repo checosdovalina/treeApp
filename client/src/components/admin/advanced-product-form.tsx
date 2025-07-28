@@ -31,6 +31,7 @@ import {
   Ruler
 } from "lucide-react";
 import type { Product, Category, Brand, Size, Color } from "@shared/schema";
+import { GarmentTypeSelector } from "./garment-type-selector";
 
 // Schema de validación para el formulario de producto
 const productFormSchema = z.object({
@@ -43,6 +44,7 @@ const productFormSchema = z.object({
   categoryId: z.number().min(1, "Selecciona una categoría"),
   brand: z.string().optional(),
   gender: z.enum(["masculino", "femenino", "unisex"]).default("unisex"),
+  garmentTypeId: z.number().min(1, "El tipo de prenda es requerido"),
   price: z.string().min(1, "El precio es requerido").regex(/^\d+(\.\d{1,2})?$/, "Precio inválido"),
   images: z.array(z.string()).default([]),
   sizes: z.array(z.string()).default([]),
@@ -96,6 +98,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
       categoryId: product?.categoryId || 0,
       brand: product?.brand || "",
       gender: (product?.gender as "masculino" | "femenino" | "unisex") || "unisex",
+      garmentTypeId: product?.garmentTypeId || 1,
       price: product?.price || "",
       images: product?.images || [],
       sizes: product?.sizes || [],
@@ -483,37 +486,41 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                 </CardContent>
               </Card>
 
-              {/* Género */}
+              {/* Género y Tipo de Prenda */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg font-poppins">Género</CardTitle>
+                  <CardTitle className="text-lg font-poppins">Género y Tipo</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-roboto">Seleccionar Género</FormLabel>
-                        <Select 
-                          value={field.value} 
-                          onValueChange={field.onChange}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecciona el género del producto" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="masculino">Masculino</SelectItem>
-                            <SelectItem value="femenino">Femenino</SelectItem>
-                            <SelectItem value="unisex">Unisex</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-roboto">Género</FormLabel>
+                          <Select 
+                            value={field.value} 
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecciona el género" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="masculino">Masculino</SelectItem>
+                              <SelectItem value="femenino">Femenino</SelectItem>
+                              <SelectItem value="unisex">Unisex</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <GarmentTypeSelector form={form} />
+                  </div>
                 </CardContent>
               </Card>
 

@@ -35,6 +35,7 @@ export default function CatalogPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
+  const [selectedGarmentType, setSelectedGarmentType] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
@@ -77,14 +78,21 @@ export default function CatalogPage() {
     retry: false,
   });
 
+  const { data: garmentTypes } = useQuery({
+    queryKey: ['/api/garment-types'],
+    enabled: isAuthenticated,
+    retry: false,
+  });
+
   const { data: products, isLoading: productsLoading } = useQuery({
-    queryKey: ['/api/products', searchTerm, selectedCategory, selectedBrand, selectedGender, sortBy],
+    queryKey: ['/api/products', searchTerm, selectedCategory, selectedBrand, selectedGender, selectedGarmentType, sortBy],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (selectedCategory) params.append('categoryId', selectedCategory);
       if (selectedBrand) params.append('brandId', selectedBrand);
       if (selectedGender) params.append('gender', selectedGender);
+      if (selectedGarmentType) params.append('garmentTypeId', selectedGarmentType);
       params.append('isActive', 'true');
       if (sortBy) params.append('sortBy', sortBy);
       
@@ -249,6 +257,23 @@ export default function CatalogPage() {
                 </Select>
               </div>
 
+              {/* Garment Type Filter */}
+              <div>
+                <Select value={selectedGarmentType || "all"} onValueChange={(value) => setSelectedGarmentType(value === "all" ? "" : value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tipo de Prenda" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    {garmentTypes && Array.isArray(garmentTypes) ? garmentTypes.map((type: any) => (
+                      <SelectItem key={type.id} value={type.id.toString()}>
+                        {type.displayName}
+                      </SelectItem>
+                    )) : null}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Sort By */}
               <div>
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -288,7 +313,7 @@ export default function CatalogPage() {
           </div>
 
           {/* Active Filters */}
-          {(selectedCategory || selectedBrand || selectedGender || searchTerm) && (
+          {(selectedCategory || selectedBrand || selectedGender || selectedGarmentType || searchTerm) && (
             <div className="mb-6">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-gray-600">Filtros activos:</span>
@@ -320,6 +345,15 @@ export default function CatalogPage() {
                     />
                   </Badge>
                 )}
+                {selectedGarmentType && (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    {garmentTypes?.find((type: any) => type.id.toString() === selectedGarmentType)?.displayName}
+                    <X 
+                      className="h-3 w-3 cursor-pointer" 
+                      onClick={() => setSelectedGarmentType("")}
+                    />
+                  </Badge>
+                )}
                 {searchTerm && (
                   <Badge variant="secondary" className="flex items-center gap-1">
                     "{searchTerm}"
@@ -336,6 +370,7 @@ export default function CatalogPage() {
                     setSelectedCategory("");
                     setSelectedBrand("");
                     setSelectedGender("");
+                    setSelectedGarmentType("");
                     setSearchTerm("");
                   }}
                   className="text-gray-500 hover:text-gray-700"

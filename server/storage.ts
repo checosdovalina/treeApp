@@ -5,6 +5,7 @@ import {
   brands,
   sizes,
   colors,
+  garmentTypes,
   inventory,
   orders,
   orderItems,
@@ -21,6 +22,8 @@ import {
   type InsertSize,
   type Color,
   type InsertColor,
+  type GarmentType,
+  type InsertGarmentType,
   type Inventory,
   type InsertInventory,
   type Order,
@@ -55,6 +58,10 @@ export interface IStorage {
   // Color operations
   getColors(): Promise<Color[]>;
   createColor(color: InsertColor): Promise<Color>;
+  
+  // Garment type operations  
+  getGarmentTypes(): Promise<GarmentType[]>;
+  createGarmentType(garmentType: InsertGarmentType): Promise<GarmentType>;
   
   // Product operations
   getProducts(filters?: {
@@ -185,11 +192,22 @@ export class DatabaseStorage implements IStorage {
     return newColor;
   }
 
+  // Garment type operations
+  async getGarmentTypes(): Promise<GarmentType[]> {
+    return db.select().from(garmentTypes).where(eq(garmentTypes.isActive, true));
+  }
+
+  async createGarmentType(garmentType: InsertGarmentType): Promise<GarmentType> {
+    const [newGarmentType] = await db.insert(garmentTypes).values(garmentType).returning();
+    return newGarmentType;
+  }
+
   // Product operations
   async getProducts(filters?: {
     categoryId?: number;
     brandId?: number;
     gender?: string;
+    garmentTypeId?: number;
     isActive?: boolean;
     search?: string;
     limit?: number;
@@ -213,6 +231,10 @@ export class DatabaseStorage implements IStorage {
     
     if (filters?.gender) {
       conditions.push(eq(products.gender, filters.gender as any));
+    }
+    
+    if (filters?.garmentTypeId) {
+      conditions.push(eq(products.garmentTypeId, filters.garmentTypeId));
     }
     
     if (filters?.isActive !== undefined) {
