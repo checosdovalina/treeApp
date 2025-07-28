@@ -67,11 +67,14 @@ export default function StoreIndex() {
   };
 
   const categoryImages = {
-    1: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop", // Médico
-    2: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop", // Industrial
-    3: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop", // Corporativo
-    4: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop", // Gastronomía
-    5: "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=400&h=300&fit=crop", // Seguridad
+    1: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=300&fit=crop&crop=center", // Médico - Enfermera con scrubs
+    2: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop&crop=center", // Industrial - Trabajador construcción
+    3: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=center", // Corporativo - Ejecutivo profesional
+    4: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&crop=center", // Gastronomía - Chef en cocina
+    5: "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=400&h=300&fit=crop&crop=center", // Seguridad - Personal seguridad
+    6: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop&crop=center", // Servicios - Personal servicio
+    7: "https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=400&h=300&fit=crop&crop=center", // Hospitalario - Equipo médico
+    8: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop&crop=center", // Manufactura - Operario industrial
   };
 
   return (
