@@ -189,6 +189,15 @@ The architecture is designed to handle both B2B (quote-based) and B2C (direct pu
 - **Visual Interface**: Professional brand cards with logo previews and management controls
 - **Integration Examples**: Successfully added PREZENZA brand logo as working example
 
+#### Gender-Based Product Filtering System (July 2025)
+- **Database Schema Enhancement**: Added gender enum field to products table with values: masculino, femenino, unisex
+- **Admin Product Form**: Integrated gender selector in advanced product form for product creation/editing
+- **Customer Filtering**: Implemented gender filter in customer catalog with visual selector
+- **API Integration**: Updated product endpoints to support gender-based filtering and queries
+- **UI Components**: Added gender badges to product cards and active filter displays
+- **Data Migration**: Populated existing products with appropriate gender classifications
+- **Comprehensive Filtering**: Gender filter works alongside category, brand, and search filters
+
 ### Recent Changes and Improvements (January 2025)
 
 #### Authentication System Enhancements

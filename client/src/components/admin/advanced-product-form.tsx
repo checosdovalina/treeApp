@@ -42,6 +42,7 @@ const productFormSchema = z.object({
   description: z.string().optional(),
   categoryId: z.number().min(1, "Selecciona una categoría"),
   brand: z.string().optional(),
+  gender: z.enum(["masculino", "femenino", "unisex"]).default("unisex"),
   price: z.string().min(1, "El precio es requerido").regex(/^\d+(\.\d{1,2})?$/, "Precio inválido"),
   images: z.array(z.string()).default([]),
   sizes: z.array(z.string()).default([]),
@@ -94,6 +95,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
       description: product?.description || "",
       categoryId: product?.categoryId || 0,
       brand: product?.brand || "",
+      gender: (product?.gender as "masculino" | "femenino" | "unisex") || "unisex",
       price: product?.price || "",
       images: product?.images || [],
       sizes: product?.sizes || [],
@@ -478,6 +480,40 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                       </div>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Género */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg font-poppins">Género</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-roboto">Seleccionar Género</FormLabel>
+                        <Select 
+                          value={field.value} 
+                          onValueChange={field.onChange}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecciona el género del producto" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="masculino">Masculino</SelectItem>
+                            <SelectItem value="femenino">Femenino</SelectItem>
+                            <SelectItem value="unisex">Unisex</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
               </Card>
 
