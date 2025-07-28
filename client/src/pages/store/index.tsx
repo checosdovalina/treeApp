@@ -90,12 +90,21 @@ export default function StoreIndex() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/store/catalog">
-                <Button size="lg" className="bg-yellow-400 text-blue-900 hover:bg-yellow-300 font-semibold px-8 py-4 text-lg">
+                <Button size="lg" className="bg-uniform-gold text-uniform-blue hover:bg-yellow-300 font-poppins font-semibold px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:shadow-xl">
                   VER CATÁLOGO
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900 font-semibold px-8 py-4 text-lg">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-2 border-white text-white hover:bg-white hover:text-uniform-blue font-poppins font-semibold px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:shadow-xl"
+                onClick={() => {
+                  const message = "Hola! Me interesa solicitar información sobre uniformes profesionales";
+                  const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent(message)}`;
+                  window.open(whatsappUrl, '_blank');
+                }}
+              >
                 📲 CONSULTAR
               </Button>
             </div>
@@ -107,10 +116,10 @@ export default function StoreIndex() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-darker mb-4">
+            <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-blue mb-4">
               CATEGORÍAS
             </h2>
-            <p className="text-uniform-dark text-lg max-w-2xl mx-auto font-roboto">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto font-roboto">
               Encuentra el uniforme perfecto para tu profesión
             </p>
           </div>
@@ -146,10 +155,10 @@ export default function StoreIndex() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-darker mb-4">
+            <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-blue mb-4">
               PRODUCTOS DESTACADOS
             </h2>
-            <p className="text-uniform-dark text-lg max-w-2xl mx-auto font-roboto">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto font-roboto">
               Los uniformes más populares y de mejor calidad
             </p>
           </div>
@@ -249,14 +258,14 @@ export default function StoreIndex() {
                     </div>
 
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-2xl font-bold text-blue-600">
+                      <span className="text-2xl font-poppins font-bold text-uniform-blue">
                         ${product.price}
                       </span>
                     </div>
 
                     <div className="flex gap-2">
                       <Link href={`/store/product/${product.id}`} className="flex-1">
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                        <Button className="w-full bg-uniform-blue hover:bg-blue-700 text-white font-poppins font-medium transition-all duration-300">
                           Seleccionar opciones
                         </Button>
                       </Link>
@@ -264,7 +273,7 @@ export default function StoreIndex() {
                     
                     <button
                       onClick={() => handleWhatsAppContact(product)}
-                      className="w-full mt-2 flex items-center justify-center gap-2 py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors"
+                      className="w-full mt-2 flex items-center justify-center gap-2 py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-md transition-all duration-300 font-poppins font-medium"
                     >
                       <MessageCircle className="h-4 w-4" />
                       📲 Consultar por WhatsApp
@@ -277,7 +286,7 @@ export default function StoreIndex() {
 
           <div className="text-center mt-12">
             <Link href="/store/catalog">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+              <Button size="lg" className="bg-uniform-blue hover:bg-blue-700 text-white px-8 py-4 text-lg font-poppins font-semibold shadow-lg transition-all duration-300 hover:shadow-xl">
                 VER TODOS LOS PRODUCTOS
                 <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
