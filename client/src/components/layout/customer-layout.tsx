@@ -56,18 +56,12 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center">
-              <Link href="/store" className="flex items-center space-x-3">
+              <Link href="/store" className="flex items-center">
                 <img 
                   src={treeLogo} 
                   alt="TREE Uniformes & Kodiak Industrial"
                   className="h-12 w-auto"
                 />
-                <div className="hidden sm:block">
-                  <h1 className="text-xl font-poppins font-bold text-uniform-blue">
-                    TREE UNIFORMES
-                  </h1>
-                  <p className="text-sm text-uniform-gold font-poppins font-semibold">& KODIAK INDUSTRIAL</p>
-                </div>
               </Link>
             </div>
 
