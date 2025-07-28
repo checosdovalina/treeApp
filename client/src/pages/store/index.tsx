@@ -111,23 +111,23 @@ export default function StoreIndex() {
                 Especialistas en uniformes profesionales para hospitales, industrias, restaurantes y empresas corporativas.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-6 mb-12">
+              <div className="flex flex-col sm:flex-row gap-4 mb-12">
                 <Link href="/store/catalog">
-                  <Button size="lg" className="bg-uniform-gold text-slate-900 hover:bg-yellow-400 font-poppins font-black px-12 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl border-2 border-uniform-gold">
-                    <Package className="mr-3 h-6 w-6" />
+                  <Button size="lg" className="bg-uniform-gold text-slate-900 hover:bg-yellow-400 font-poppins font-black px-8 py-4 text-base shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl border-2 border-uniform-gold w-full sm:w-auto">
+                    <Package className="mr-2 h-5 w-5" />
                     EXPLORAR CATÁLOGO
                   </Button>
                 </Link>
                 <Button 
                   size="lg" 
-                  className="bg-white/90 border-2 border-white text-slate-900 hover:bg-white hover:text-slate-800 font-poppins font-black px-12 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl backdrop-blur-sm"
+                  className="bg-white/90 border-2 border-white text-slate-900 hover:bg-white hover:text-slate-800 font-poppins font-black px-8 py-4 text-base shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl backdrop-blur-sm w-full sm:w-auto"
                   onClick={() => {
                     const message = "¡Hola! Me interesa obtener información sobre uniformes profesionales y solicitar una cotización personalizada.";
                     const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent(message)}`;
                     window.open(whatsappUrl, '_blank');
                   }}
                 >
-                  <MessageCircle className="mr-3 h-6 w-6" />
+                  <MessageCircle className="mr-2 h-5 w-5" />
                   SOLICITAR COTIZACIÓN
                 </Button>
               </div>
