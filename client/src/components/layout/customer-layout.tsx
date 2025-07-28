@@ -51,28 +51,28 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white border-b-2 border-uniform-gold shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center">
               <Link href="/store" className="flex items-center space-x-3">
                 <img 
                   src={treeLogo} 
                   alt="TREE Uniformes & Kodiak Industrial"
-                  className="h-10 w-auto"
+                  className="h-12 w-auto"
                 />
                 <div className="hidden sm:block">
-                  <h1 className="text-lg font-poppins font-bold text-gray-900">
-                    TREE Uniformes
+                  <h1 className="text-xl font-poppins font-bold text-uniform-blue">
+                    TREE UNIFORMES
                   </h1>
-                  <p className="text-xs text-gray-600 font-roboto">& Kodiak Industrial</p>
+                  <p className="text-sm text-uniform-gold font-poppins font-semibold">& KODIAK INDUSTRIAL</p>
                 </div>
               </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden lg:flex items-center space-x-6">
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = location === item.href;
@@ -80,10 +80,10 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-poppins font-medium transition-all duration-200 ${
                       isActive
-                        ? "bg-uniform-primary text-white"
-                        : "text-gray-700 hover:text-uniform-primary hover:bg-gray-100"
+                        ? "bg-uniform-blue text-white shadow-md"
+                        : "text-uniform-dark hover:text-uniform-blue hover:bg-uniform-gold/10 hover:shadow-sm"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -97,10 +97,10 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
             <div className="flex items-center space-x-4">
               {/* Cart */}
               <Link href="/store/cart" className="relative">
-                <Button variant="ghost" size="sm" className="relative">
+                <Button variant="ghost" size="sm" className="relative hover:bg-uniform-gold/10 text-uniform-blue">
                   <ShoppingCart className="h-5 w-5" />
                   {totalItems > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full">
+                    <Badge className="absolute -top-2 -right-2 bg-uniform-gold text-uniform-blue text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full font-bold">
                       {totalItems}
                     </Badge>
                   )}
@@ -109,12 +109,12 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
 
               {/* User Menu */}
               {isAuthenticated && user ? (
-                <div className="hidden md:flex items-center space-x-2">
+                <div className="hidden lg:flex items-center space-x-3">
                   <div className="text-sm">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-poppins font-medium text-uniform-blue">
                       {user.firstName || "Cliente"}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-uniform-dark font-roboto">
                       {user.email}
                     </p>
                   </div>
@@ -122,7 +122,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                     variant="ghost"
                     size="sm"
                     onClick={handleLogout}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <LogOut className="h-4 w-4" />
                   </Button>
@@ -153,41 +153,41 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
               {/* Mobile Menu */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="md:hidden">
-                    <Menu className="h-5 w-5" />
+                  <Button variant="ghost" size="sm" className="lg:hidden text-uniform-blue hover:bg-uniform-gold/10">
+                    <Menu className="h-6 w-6" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-80">
+                <SheetContent side="right" className="w-80 bg-white border-l-4 border-uniform-gold">
                   <div className="flex flex-col h-full">
                     {/* Header */}
-                    <div className="border-b border-gray-200 pb-4 mb-4">
+                    <div className="border-b-2 border-uniform-gold pb-4 mb-6">
                       <div className="flex items-center space-x-3">
                         <img 
                           src={treeLogo} 
                           alt="TREE Uniformes & Kodiak Industrial"
-                          className="h-10 w-auto"
+                          className="h-12 w-auto"
                         />
                         <div>
-                          <h1 className="text-lg font-bold text-gray-900">
-                            TREE Uniformes
+                          <h1 className="text-lg font-poppins font-bold text-uniform-blue">
+                            TREE UNIFORMES
                           </h1>
-                          <p className="text-xs text-gray-600">& Kodiak Industrial</p>
+                          <p className="text-sm text-uniform-gold font-poppins font-semibold">& KODIAK INDUSTRIAL</p>
                         </div>
                       </div>
                     </div>
 
                     {/* User Info */}
                     {isAuthenticated && user && (
-                      <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                      <div className="bg-uniform-gold/10 border border-uniform-gold/20 rounded-lg p-4 mb-6">
                         <div className="flex items-center space-x-3">
-                          <div className="bg-uniform-primary text-white rounded-full p-2">
+                          <div className="bg-uniform-blue text-white rounded-full p-2">
                             <User className="h-5 w-5" />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">
+                            <p className="font-poppins font-medium text-uniform-blue">
                               {user.firstName || "Cliente"}
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-uniform-dark font-roboto">
                               {user.email}
                             </p>
                           </div>
@@ -196,7 +196,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                     )}
 
                     {/* Navigation */}
-                    <nav className="flex-1 space-y-2">
+                    <nav className="flex-1 space-y-3">
                       {navigation.map((item) => {
                         const Icon = item.icon;
                         const isActive = location === item.href;
@@ -205,10 +205,10 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                             key={item.name}
                             href={item.href}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className={`flex items-center space-x-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${
+                            className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-poppins font-medium transition-all duration-200 ${
                               isActive
-                                ? "bg-uniform-primary text-white"
-                                : "text-gray-700 hover:text-uniform-primary hover:bg-gray-100"
+                                ? "bg-uniform-blue text-white shadow-md"
+                                : "text-uniform-dark hover:text-uniform-blue hover:bg-uniform-gold/10"
                             }`}
                           >
                             <Icon className="h-5 w-5" />
@@ -219,19 +219,19 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                     </nav>
 
                     {/* Footer Actions */}
-                    <div className="border-t border-gray-200 pt-4 space-y-2">
+                    <div className="border-t-2 border-uniform-gold/20 pt-4 space-y-3">
                       {isAuthenticated ? (
                         <Button
                           variant="ghost"
                           onClick={handleLogout}
-                          className="w-full justify-start text-red-600 hover:text-red-700"
+                          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 font-poppins"
                         >
                           <LogOut className="h-4 w-4 mr-2" />
                           Cerrar Sesión
                         </Button>
                       ) : (
                         <Link href="/login">
-                          <Button className="w-full bg-uniform-primary hover:bg-blue-700">
+                          <Button className="w-full bg-uniform-blue hover:bg-uniform-blue-light text-white font-poppins">
                             Iniciar Sesión
                           </Button>
                         </Link>
@@ -245,13 +245,13 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1">
+      {/* Main Content with proper spacing */}
+      <main className="flex-1 pt-4">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="bg-uniform-neutral-900 text-white">
+      <footer className="bg-uniform-blue text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Company Info */}
@@ -263,51 +263,50 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   className="h-12 w-auto"
                 />
                 <div>
-                  <h3 className="text-xl font-bold">TREE Uniformes</h3>
-                  <p className="text-sm text-gray-400">& Kodiak Industrial</p>
+                  <h3 className="text-xl font-poppins font-bold text-white">TREE UNIFORMES</h3>
+                  <p className="text-sm text-uniform-gold font-poppins font-semibold">& KODIAK INDUSTRIAL</p>
                 </div>
               </div>
-              <p className="text-gray-300 mb-4">
-                TREE Uniformes & Kodiak Industrial - Especializados en uniformes corporativos, 
-                escolares e industriales. Ofrecemos productos de la más alta calidad con diseños 
-                modernos y funcionales para todas tus necesidades profesionales.
+              <p className="text-blue-100 mb-4 font-roboto">
+                Especialistas en uniformes industriales y corporativos de la más alta calidad. 
+                Ofrecemos soluciones integrales para todas las industrias con más de 10 años de experiencia.
               </p>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
-                  <Phone className="h-4 w-4 text-uniform-primary" />
-                  <span className="text-sm">+52 (871) 123-4567</span>
+                  <Phone className="h-4 w-4 text-uniform-gold" />
+                  <span className="text-sm text-blue-100 font-roboto">+52 55 1234 5678</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Mail className="h-4 w-4 text-uniform-primary" />
-                  <span className="text-sm">contacto@treeuniforms.com</span>
+                  <Mail className="h-4 w-4 text-uniform-gold" />
+                  <span className="text-sm text-blue-100 font-roboto">admin@uniformeslaguna.com</span>
                 </div>
               </div>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-semibold mb-4">Enlaces Rápidos</h4>
+              <h4 className="font-poppins font-semibold mb-4 text-uniform-gold">Enlaces Rápidos</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/store" className="text-gray-300 hover:text-white">Inicio</Link></li>
-                <li><Link href="/store/catalog" className="text-gray-300 hover:text-white">Catálogo</Link></li>
-                <li><Link href="/customer/quotes" className="text-gray-300 hover:text-white">Cotizaciones</Link></li>
-                <li><Link href="/about" className="text-gray-300 hover:text-white">Nosotros</Link></li>
+                <li><Link href="/store" className="text-blue-100 hover:text-uniform-gold transition-colors font-roboto">Inicio</Link></li>
+                <li><Link href="/store/catalog" className="text-blue-100 hover:text-uniform-gold transition-colors font-roboto">Catálogo</Link></li>
+                <li><Link href="/customer/quotes" className="text-blue-100 hover:text-uniform-gold transition-colors font-roboto">Cotizaciones</Link></li>
+                <li><Link href="/about" className="text-blue-100 hover:text-uniform-gold transition-colors font-roboto">Nosotros</Link></li>
               </ul>
             </div>
 
             {/* Customer Service */}
             <div>
-              <h4 className="font-semibold mb-4">Atención al Cliente</h4>
+              <h4 className="font-poppins font-semibold mb-4 text-uniform-gold">Atención al Cliente</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/customer/support" className="text-gray-300 hover:text-white">Soporte</Link></li>
-                <li><Link href="/shipping" className="text-gray-300 hover:text-white">Envíos</Link></li>
-                <li><Link href="/returns" className="text-gray-300 hover:text-white">Devoluciones</Link></li>
-                <li><Link href="/faq" className="text-gray-300 hover:text-white">FAQ</Link></li>
+                <li><Link href="/customer/support" className="text-blue-100 hover:text-uniform-gold transition-colors font-roboto">Soporte</Link></li>
+                <li><Link href="/shipping" className="text-blue-100 hover:text-uniform-gold transition-colors font-roboto">Envíos</Link></li>
+                <li><Link href="/returns" className="text-blue-100 hover:text-uniform-gold transition-colors font-roboto">Devoluciones</Link></li>
+                <li><Link href="/faq" className="text-blue-100 hover:text-uniform-gold transition-colors font-roboto">FAQ</Link></li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+          <div className="border-t border-uniform-gold/30 mt-8 pt-8 text-center text-sm text-blue-200 font-roboto">
             <p>&copy; 2025 TREE Uniformes & Kodiak Industrial. Todos los derechos reservados.</p>
           </div>
         </div>

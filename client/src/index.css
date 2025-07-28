@@ -57,13 +57,18 @@
   --ring: hsl(222, 84%, 4.9%);
   --radius: 0.5rem;
   
-  /* Custom colors for uniform business */
-  --uniform-primary: hsl(221, 83%, 53%);
-  --uniform-secondary: hsl(215, 16%, 47%);
-  --uniform-accent: hsl(158, 64%, 52%);
+  /* Custom colors for TREE Uniformes & Kodiak Industrial brand */
+  --uniform-primary: hsl(217, 91%, 30%); /* Azul profundo del logo */
+  --uniform-secondary: hsl(216, 20%, 45%); /* Azul gris */
+  --uniform-accent: hsl(44, 100%, 50%); /* Amarillo dorado del logo */
+  --uniform-gold: hsl(44, 100%, 50%); /* Amarillo dorado */
+  --uniform-blue: hsl(217, 91%, 30%); /* Azul corporativo */
+  --uniform-blue-light: hsl(217, 91%, 40%); /* Azul claro */
   --uniform-neutral-50: hsl(210, 40%, 98%);
   --uniform-neutral-100: hsl(210, 40%, 96%);
   --uniform-neutral-900: hsl(222, 84%, 4.9%);
+  --uniform-darker: hsl(217, 91%, 25%);
+  --uniform-dark: hsl(216, 20%, 35%);
 }
 
 .dark {
@@ -104,7 +109,7 @@
   }
 }
 
-/* Custom styles for uniform business branding */
+/* Custom styles for TREE Uniformes & Kodiak Industrial branding */
 .bg-uniform-primary {
   background-color: var(--uniform-primary);
 }
@@ -123,6 +128,93 @@
 
 .bg-uniform-accent {
   background-color: var(--uniform-accent);
+}
+
+.text-uniform-accent {
+  color: var(--uniform-accent);
+}
+
+.bg-uniform-gold {
+  background-color: var(--uniform-gold);
+}
+
+.text-uniform-gold {
+  color: var(--uniform-gold);
+}
+
+.bg-uniform-blue {
+  background-color: var(--uniform-blue);
+}
+
+.text-uniform-blue {
+  color: var(--uniform-blue);
+}
+
+.bg-uniform-blue-light {
+  background-color: var(--uniform-blue-light);
+}
+
+.text-uniform-blue-light {
+  color: var(--uniform-blue-light);
+}
+
+.text-uniform-darker {
+  color: var(--uniform-darker);
+}
+
+.text-uniform-dark {
+  color: var(--uniform-dark);
+}
+
+.bg-uniform-accent {
+  background-color: var(--uniform-accent);
+}
+
+/* Additional styles for improved spacing and brand consistency */
+.customer-layout-header {
+  min-height: 80px;
+  z-index: 1000;
+}
+
+.customer-layout-main {
+  padding-top: 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+/* Smooth transitions for all interactive elements */
+.transition-all-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Brand-specific button styles */
+.btn-tree-primary {
+  background: linear-gradient(135deg, var(--uniform-blue), var(--uniform-blue-light));
+  color: white;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-tree-primary:hover {
+  background: linear-gradient(135deg, var(--uniform-blue-light), var(--uniform-blue));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(31, 66, 135, 0.3);
+}
+
+.btn-tree-secondary {
+  background: linear-gradient(135deg, var(--uniform-gold), var(--uniform-accent));
+  color: var(--uniform-blue);
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-tree-secondary:hover {
+  background: linear-gradient(135deg, var(--uniform-accent), var(--uniform-gold));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 204, 0, 0.3);
 }
 
 .text-uniform-accent {
