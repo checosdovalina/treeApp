@@ -76,72 +76,165 @@ export default function StoreIndex() {
 
   return (
     <CustomerLayout>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 text-white overflow-hidden" style={{ marginTop: '-80px', paddingTop: '100px' }}>
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="relative container mx-auto px-4 py-20 lg:py-28">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-poppins font-bold mb-6 leading-tight text-white">
-              TREE UNIFORMES
-              <span className="block text-yellow-400">& KODIAK INDUSTRIAL</span>
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-2xl mx-auto font-roboto">
-              Calidad premium en uniformes profesionales para todas las industrias
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/store/catalog">
-                <Button size="lg" className="bg-uniform-gold text-uniform-blue hover:bg-yellow-300 font-poppins font-semibold px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:shadow-xl">
-                  VER CATÁLOGO
-                  <ChevronRight className="ml-2 h-5 w-5" />
+      {/* Hero Section - Completely Redesigned */}
+      <section className="relative min-h-screen bg-gradient-to-br from-uniform-blue via-blue-700 to-blue-900 text-white overflow-hidden flex items-center" style={{ marginTop: '-80px', paddingTop: '80px' }}>
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-32 h-32 border border-uniform-gold rounded-full"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 border border-uniform-gold rounded-full"></div>
+          <div className="absolute bottom-40 left-20 w-20 h-20 border border-uniform-gold rounded-full"></div>
+          <div className="absolute bottom-20 right-40 w-28 h-28 border border-uniform-gold rounded-full"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 py-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="text-center lg:text-left">
+              <div className="mb-6">
+                <span className="inline-block bg-uniform-gold text-uniform-blue px-6 py-2 rounded-full text-sm font-poppins font-semibold mb-4">
+                  ✨ Calidad Premium Garantizada
+                </span>
+              </div>
+              
+              <h1 className="text-5xl md:text-7xl font-poppins font-bold mb-8 leading-tight">
+                <span className="text-white">TREE</span>
+                <span className="block text-uniform-gold">UNIFORMES</span>
+                <span className="block text-2xl md:text-3xl text-blue-200 font-medium mt-2">
+                  & Kodiak Industrial
+                </span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl mb-10 text-blue-100 max-w-xl font-roboto leading-relaxed">
+                Especialistas en uniformes profesionales para hospitales, industrias, restaurantes y empresas corporativas.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <Link href="/store/catalog">
+                  <Button size="lg" className="bg-uniform-gold text-uniform-blue hover:bg-yellow-400 font-poppins font-bold px-10 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl">
+                    <Package className="mr-3 h-6 w-6" />
+                    EXPLORAR CATÁLOGO
+                  </Button>
+                </Link>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-2 border-uniform-gold text-uniform-gold hover:bg-uniform-gold hover:text-uniform-blue font-poppins font-bold px-10 py-6 text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-105 rounded-xl"
+                  onClick={() => {
+                    const message = "¡Hola! Me interesa obtener información sobre uniformes profesionales y solicitar una cotización personalizada.";
+                    const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent(message)}`;
+                    window.open(whatsappUrl, '_blank');
+                  }}
+                >
+                  <MessageCircle className="mr-3 h-6 w-6" />
+                  SOLICITAR COTIZACIÓN
                 </Button>
-              </Link>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-2 border-white text-white hover:bg-white hover:text-uniform-blue font-poppins font-semibold px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:shadow-xl"
-                onClick={() => {
-                  const message = "Hola! Me interesa solicitar información sobre uniformes profesionales";
-                  const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent(message)}`;
-                  window.open(whatsappUrl, '_blank');
-                }}
-              >
-                📲 CONSULTAR
-              </Button>
+              </div>
+              
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-blue-400/30">
+                <div className="text-center">
+                  <div className="text-3xl font-poppins font-bold text-uniform-gold">500+</div>
+                  <div className="text-sm text-blue-200 font-roboto">Empresas Satisfechas</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-poppins font-bold text-uniform-gold">15+</div>
+                  <div className="text-sm text-blue-200 font-roboto">Años de Experiencia</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-poppins font-bold text-uniform-gold">24h</div>
+                  <div className="text-sm text-blue-200 font-roboto">Respuesta Garantizada</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right Content - Visual */}
+            <div className="relative">
+              <div className="relative z-10">
+                <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-2xl">
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-uniform-gold/20 rounded-xl p-4 text-center">
+                      <Users className="h-8 w-8 mx-auto mb-2 text-uniform-gold" />
+                      <div className="text-sm text-white font-poppins">Corporativo</div>
+                    </div>
+                    <div className="bg-uniform-gold/20 rounded-xl p-4 text-center">
+                      <Shield className="h-8 w-8 mx-auto mb-2 text-uniform-gold" />
+                      <div className="text-sm text-white font-poppins">Industrial</div>
+                    </div>
+                    <div className="bg-uniform-gold/20 rounded-xl p-4 text-center">
+                      <Package className="h-8 w-8 mx-auto mb-2 text-uniform-gold" />
+                      <div className="text-sm text-white font-poppins">Médico</div>
+                    </div>
+                    <div className="bg-uniform-gold/20 rounded-xl p-4 text-center">
+                      <TrendingUp className="h-8 w-8 mx-auto mb-2 text-uniform-gold" />
+                      <div className="text-sm text-white font-poppins">Gastronomía</div>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-uniform-gold font-poppins font-semibold mb-2">
+                      Soluciones Completas
+                    </div>
+                    <div className="text-white/80 text-sm font-roboto">
+                      Desde el diseño hasta la entrega
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating Elements */}
+              <div className="absolute -top-6 -right-6 w-24 h-24 bg-uniform-gold/20 rounded-full blur-xl"></div>
+              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-blue-400/20 rounded-full blur-xl"></div>
             </div>
           </div>
         </div>
+        
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <ChevronRight className="h-6 w-6 text-uniform-gold rotate-90" />
+        </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-gray-50">
+      {/* Categories Section - Redesigned */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-blue mb-4">
-              CATEGORÍAS
+          <div className="text-center mb-16">
+            <span className="inline-block bg-uniform-blue text-white px-6 py-2 rounded-full text-sm font-poppins font-semibold mb-6">
+              NUESTRAS ESPECIALIDADES
+            </span>
+            <h2 className="text-4xl md:text-5xl font-poppins font-bold text-uniform-blue mb-6">
+              Uniformes por Industria
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto font-roboto">
-              Encuentra el uniforme perfecto para tu profesión
+            <p className="text-gray-600 text-xl max-w-3xl mx-auto font-roboto leading-relaxed">
+              Cada sector tiene necesidades únicas. Descubre nuestras soluciones especializadas diseñadas específicamente para tu industria.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories && Array.isArray(categories) ? categories.slice(0, 6).map((category: any) => (
               <Link key={category.id} href={`/store/catalog?category=${category.id}`}>
-                <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden cursor-pointer">
+                <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 overflow-hidden cursor-pointer border-0 bg-white rounded-2xl">
                   <div className="aspect-[4/3] relative overflow-hidden">
                     <img
                       src={categoryImages[category.id as keyof typeof categoryImages] || "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=300&fit=crop"}
                       alt={category.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <h3 className="text-xl font-bold text-white mb-2">
+                    <div className="absolute inset-0 bg-gradient-to-t from-uniform-blue/80 via-uniform-blue/40 to-transparent"></div>
+                    <div className="absolute top-4 right-4">
+                      <div className="bg-uniform-gold text-uniform-blue px-3 py-1 rounded-full text-xs font-poppins font-bold">
+                        ESPECIALIDAD
+                      </div>
+                    </div>
+                    <div className="absolute bottom-6 left-6 right-6">
+                      <h3 className="text-2xl font-poppins font-bold text-white mb-3 leading-tight">
                         {category.name.toUpperCase()}
                       </h3>
-                      <p className="text-white/90 text-sm">
+                      <p className="text-white/90 text-sm font-roboto leading-relaxed mb-4">
                         {category.description}
                       </p>
+                      <div className="flex items-center text-uniform-gold group-hover:translate-x-2 transition-transform duration-300">
+                        <span className="text-sm font-poppins font-semibold">Explorar productos</span>
+                        <ChevronRight className="h-4 w-4 ml-2" />
+                      </div>
                     </div>
                   </div>
                 </Card>
