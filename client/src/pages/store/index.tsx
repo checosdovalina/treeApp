@@ -66,15 +66,20 @@ export default function StoreIndex() {
     window.open(whatsappUrl, '_blank');
   };
 
-  const categoryImages = {
-    1: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=300&fit=crop&crop=center", // Médico - Enfermera con scrubs
-    2: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop&crop=center", // Industrial - Trabajador construcción
-    3: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=center", // Corporativo - Ejecutivo profesional
-    4: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&crop=center", // Gastronomía - Chef en cocina
-    5: "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=400&h=300&fit=crop&crop=center", // Seguridad - Personal seguridad
-    6: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop&crop=center", // Servicios - Personal servicio
-    7: "https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=400&h=300&fit=crop&crop=center", // Hospitalario - Equipo médico
-    8: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop&crop=center", // Manufactura - Operario industrial
+  // Gradientes temáticos por categoría
+  const categoryGradients = {
+    1: "from-emerald-500 via-green-600 to-teal-700", // Médico - Verde salud
+    2: "from-orange-500 via-red-600 to-amber-700", // Industrial - Naranja seguridad
+    3: "from-blue-500 via-indigo-600 to-purple-700", // Corporativo - Azul profesional
+    4: "from-yellow-500 via-orange-600 to-red-700", // Gastronomía - Colores cálidos
+    5: "from-gray-500 via-slate-600 to-blue-700", // Seguridad - Gris/azul autoridad
+    6: "from-pink-500 via-purple-600 to-blue-700", // Servicios - Colores de servicio
+    7: "from-cyan-500 via-blue-600 to-indigo-700", // Hospitalario - Azul médico
+    8: "from-stone-500 via-gray-600 to-slate-700", // Manufactura - Grises industriales
+  };
+
+  const getCategoryGradient = (categoryId: number) => {
+    return categoryGradients[categoryId as keyof typeof categoryGradients] || "from-uniform-blue via-blue-600 to-slate-700";
   };
 
   return (
@@ -217,13 +222,15 @@ export default function StoreIndex() {
             {categories && Array.isArray(categories) ? categories.slice(0, 6).map((category: any) => (
               <Link key={category.id} href={`/store/catalog?category=${category.id}`}>
                 <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 overflow-hidden cursor-pointer border-0 bg-white rounded-2xl min-h-[320px]">
-                  <div className="aspect-[4/3] relative overflow-hidden">
-                    <img
-                      src={categoryImages[category.id as keyof typeof categoryImages] || "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=300&fit=crop"}
-                      alt={category.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-uniform-blue/90 via-uniform-blue/50 to-transparent"></div>
+                  <div className={`aspect-[4/3] relative overflow-hidden bg-gradient-to-br ${getCategoryGradient(category.id)}`}>
+                    {/* Patrón decorativo */}
+                    <div className="absolute inset-0 opacity-20">
+                      <div className="absolute top-4 right-4 w-16 h-16 border-2 border-white rounded-full"></div>
+                      <div className="absolute bottom-8 left-8 w-12 h-12 border border-white rounded-full"></div>
+                      <div className="absolute top-12 left-12 w-8 h-8 border border-white rounded-full"></div>
+                      <div className="absolute bottom-12 right-12 w-10 h-10 border border-white rounded-full"></div>
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                     
                     {/* Icon based on category */}
                     <div className="absolute top-6 left-6">
