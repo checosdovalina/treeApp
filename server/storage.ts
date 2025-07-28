@@ -60,6 +60,7 @@ export interface IStorage {
   getProducts(filters?: {
     categoryId?: number;
     brandId?: number;
+    gender?: string;
     isActive?: boolean;
     search?: string;
     limit?: number;
@@ -188,6 +189,7 @@ export class DatabaseStorage implements IStorage {
   async getProducts(filters?: {
     categoryId?: number;
     brandId?: number;
+    gender?: string;
     isActive?: boolean;
     search?: string;
     limit?: number;
@@ -207,6 +209,10 @@ export class DatabaseStorage implements IStorage {
       if (brandName) {
         conditions.push(eq(products.brand, brandName));
       }
+    }
+    
+    if (filters?.gender) {
+      conditions.push(eq(products.gender, filters.gender as any));
     }
     
     if (filters?.isActive !== undefined) {

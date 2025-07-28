@@ -79,6 +79,9 @@ export const colors = pgTable("colors", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Gender enum
+export const genderEnum = pgEnum("gender", ["masculino", "femenino", "unisex"]);
+
 // Products table
 export const products = pgTable("products", {
   id: serial("id").primaryKey(),
@@ -87,6 +90,7 @@ export const products = pgTable("products", {
   description: text("description"),
   categoryId: integer("category_id").references(() => categories.id),
   brand: varchar("brand", { length: 100 }),
+  gender: genderEnum("gender").default("unisex"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   images: text("images").array().default([]),
   sizes: text("sizes").array().default([]),

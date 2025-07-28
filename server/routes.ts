@@ -299,10 +299,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Products
   app.get('/api/products', async (req, res) => {
     try {
-      const { categoryId, brandId, isActive, search, limit, offset } = req.query;
+      const { categoryId, brandId, gender, isActive, search, limit, offset } = req.query;
       const filters = {
         categoryId: categoryId ? parseInt(categoryId as string) : undefined,
         brandId: brandId ? parseInt(brandId as string) : undefined,
+        gender: gender as string,
         isActive: isActive !== undefined ? isActive === 'true' : undefined,
         search: search as string,
         limit: limit ? parseInt(limit as string) : undefined,

@@ -34,6 +34,7 @@ export default function CatalogPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
@@ -77,12 +78,13 @@ export default function CatalogPage() {
   });
 
   const { data: products, isLoading: productsLoading } = useQuery({
-    queryKey: ['/api/products', searchTerm, selectedCategory, selectedBrand, sortBy],
+    queryKey: ['/api/products', searchTerm, selectedCategory, selectedBrand, selectedGender, sortBy],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (selectedCategory) params.append('categoryId', selectedCategory);
       if (selectedBrand) params.append('brandId', selectedBrand);
+      if (selectedGender) params.append('gender', selectedGender);
       params.append('isActive', 'true');
       if (sortBy) params.append('sortBy', sortBy);
       
@@ -232,6 +234,21 @@ export default function CatalogPage() {
                 </Select>
               </div>
 
+              {/* Gender Filter */}
+              <div>
+                <Select value={selectedGender || "all"} onValueChange={(value) => setSelectedGender(value === "all" ? "" : value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Género" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="masculino">Masculino</SelectItem>
+                    <SelectItem value="femenino">Femenino</SelectItem>
+                    <SelectItem value="unisex">Unisex</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Sort By */}
               <div>
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -271,7 +288,7 @@ export default function CatalogPage() {
           </div>
 
           {/* Active Filters */}
-          {(selectedCategory || selectedBrand || searchTerm) && (
+          {(selectedCategory || selectedBrand || selectedGender || searchTerm) && (
             <div className="mb-6">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-gray-600">Filtros activos:</span>
@@ -293,6 +310,16 @@ export default function CatalogPage() {
                     />
                   </Badge>
                 )}
+                {selectedGender && (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    {selectedGender === "masculino" ? "Masculino" : 
+                     selectedGender === "femenino" ? "Femenino" : "Unisex"}
+                    <X 
+                      className="h-3 w-3 cursor-pointer" 
+                      onClick={() => setSelectedGender("")}
+                    />
+                  </Badge>
+                )}
                 {searchTerm && (
                   <Badge variant="secondary" className="flex items-center gap-1">
                     "{searchTerm}"
@@ -308,6 +335,7 @@ export default function CatalogPage() {
                   onClick={() => {
                     setSelectedCategory("");
                     setSelectedBrand("");
+                    setSelectedGender("");
                     setSearchTerm("");
                   }}
                   className="text-gray-500 hover:text-gray-700"
@@ -361,17 +389,19 @@ export default function CatalogPage() {
                 No hay productos disponibles
               </h3>
               <p className="text-gray-600 mb-6">
-                {searchTerm || selectedCategory 
+                {searchTerm || selectedCategory || selectedBrand || selectedGender
                   ? "Intenta ajustar tus filtros de búsqueda"
                   : "Pronto tendremos productos disponibles para ti"
                 }
               </p>
-              {(searchTerm || selectedCategory) && (
+              {(searchTerm || selectedCategory || selectedBrand || selectedGender) && (
                 <Button 
                   variant="outline"
                   onClick={() => {
                     setSearchTerm("");
                     setSelectedCategory("");
+                    setSelectedBrand("");
+                    setSelectedGender("");
                   }}
                 >
                   Limpiar filtros
@@ -434,6 +464,19 @@ export default function CatalogPage() {
                           SKU: {product.sku}
                         </p>
                       )}
+                      <div className="flex items-center gap-2 mb-2">
+                        {product.brand && (
+                          <Badge variant="outline" className="text-xs">
+                            {product.brand}
+                          </Badge>
+                        )}
+                        {product.gender && (
+                          <Badge variant="outline" className="text-xs">
+                            {product.gender === "masculino" ? "Masculino" : 
+                             product.gender === "femenino" ? "Femenino" : "Unisex"}
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                         {product.description || 'Producto de calidad premium'}
                       </p>
