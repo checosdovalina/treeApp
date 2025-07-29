@@ -202,18 +202,52 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
     const files = event.target.files;
     if (!files) return;
 
+    const maxFileSize = 5 * 1024 * 1024; // 5MB límite
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+
     Array.from(files).forEach((file) => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const result = e.target?.result as string;
-          if (result) {
-            const currentImages = form.getValues("images");
-            form.setValue("images", [...currentImages, result]);
-          }
-        };
-        reader.readAsDataURL(file);
+      // Validar tipo de archivo
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Tipo de archivo no válido",
+          description: `El archivo "${file.name}" no es un tipo de imagen válido. Use PNG, JPG, JPEG o WEBP.`,
+          variant: "destructive",
+        });
+        return;
       }
+
+      // Validar tamaño de archivo
+      if (file.size > maxFileSize) {
+        toast({
+          title: "Archivo muy grande",
+          description: `El archivo "${file.name}" es muy grande. El tamaño máximo es 5MB.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        if (result) {
+          const currentImages = form.getValues("images");
+          form.setValue("images", [...currentImages, result]);
+          toast({
+            title: "Imagen agregada",
+            description: `Se agregó exitosamente "${file.name}".`,
+          });
+        }
+      };
+      
+      reader.onerror = () => {
+        toast({
+          title: "Error al cargar imagen",
+          description: `No se pudo cargar el archivo "${file.name}".`,
+          variant: "destructive",
+        });
+      };
+      
+      reader.readAsDataURL(file);
     });
     
     // Reset input
@@ -725,7 +759,18 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                           type="button" 
                           variant="outline" 
                           className="w-full"
-                          onClick={() => document.getElementById('image-upload')?.click()}
+                          onClick={() => {
+                            const input = document.getElementById('image-upload') as HTMLInputElement;
+                            if (input) {
+                              input.click();
+                            } else {
+                              toast({
+                                title: "Error",
+                                description: "No se pudo abrir el selector de archivos.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
                         >
                           <Upload className="h-4 w-4 mr-2" />
                           Subir Archivos
@@ -738,6 +783,9 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                           onChange={handleImageFileUpload}
                           className="hidden"
                         />
+                        <p className="text-xs text-gray-500">
+                          Formatos soportados: PNG, JPG, JPEG, WEBP. Máximo 5MB por archivo.
+                        </p>
                       </div>
                     </div>
                   </div>
