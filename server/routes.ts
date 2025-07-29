@@ -358,9 +358,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = insertProductSchema.parse(req.body);
       const product = await storage.createProduct(data);
       res.json(product);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating product:", error);
-      res.status(400).json({ message: "Failed to create product" });
+      
+      // Handle specific database constraint errors
+      if (error?.code === '23505' && error?.constraint === 'products_sku_unique') {
+        return res.status(400).json({ 
+          message: "El SKU ya existe en el sistema",
+          error: "duplicate_sku",
+          detail: `El SKU "${error?.detail?.match(/Key \(sku\)=\(([^)]+)\)/)?.[1] || 'desconocido'}" ya está siendo usado por otro producto.`
+        });
+      }
+      
+      res.status(400).json({ message: "Error al crear el producto" });
     }
   });
 
