@@ -6,6 +6,8 @@ export type Product = {
   description?: string | null;
   categoryId?: number | null;
   brand?: string | null;
+  genders: string[]; // Array de géneros: masculino, femenino, unisex
+  garmentTypeId?: number | null;
   price: string;
   images: string[];
   sizes: string[];

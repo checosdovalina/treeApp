@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, Plus, Minus, Trash2, ShoppingBag, Shirt } from "lucide-react";
-import { useCart, updateCartItemQuantity, removeFromCart } from "@/lib/cart";
+import { useCart } from "@/hooks/useCart";
+import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { Link } from "wouter";
 
 interface CartModalProps {
@@ -13,17 +14,19 @@ interface CartModalProps {
 }
 
 export default function CartModal({ isOpen, onClose }: CartModalProps) {
-  const { items, total, itemCount } = useCart();
+  const { items, getTotalItems, getTotalPrice, updateQuantity, removeItem } = useCart();
 
+  const total = getTotalPrice();
+  const itemCount = getTotalItems();
   const shipping = total > 500 ? 0 : 50;
   const finalTotal = total + shipping;
 
-  const handleQuantityChange = (id: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeFromCart(id);
-    } else {
-      updateCartItemQuantity(id, newQuantity);
-    }
+  const handleQuantityChange = (productId: number, size: string, color: string, gender: string | undefined, newQuantity: number) => {
+    updateQuantity(productId, size, color, newQuantity, gender);
+  };
+
+  const handleRemoveItem = (productId: number, size: string, color: string, gender?: string) => {
+    removeItem(productId, size, color, gender);
   };
 
   const handleCheckout = () => {
@@ -82,14 +85,14 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
             {/* Cart Items */}
             <ScrollArea className="flex-1 p-6">
               <div className="space-y-4">
-                {items.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-4 p-4 border border-neutral-200 rounded-lg">
+                {items.map((item, index) => (
+                  <div key={`${item.productId}-${item.size}-${item.color}-${item.gender || 'unisex'}-${index}`} className="flex items-center space-x-4 p-4 border border-neutral-200 rounded-lg">
                     {/* Product Image */}
                     <div className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                       {item.image ? (
                         <img 
                           src={item.image} 
-                          alt={item.name}
+                          alt={item.productName}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -101,7 +104,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
                     
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-uniform-neutral-900 text-sm line-clamp-1">
-                        {item.name}
+                        {item.productName}
                       </h4>
                       <div className="flex items-center space-x-2 mt-1">
                         {item.size && (
@@ -114,30 +117,21 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
                             {item.color}
                           </Badge>
                         )}
+                        {item.gender && (
+                          <Badge variant="outline" className="text-xs">
+                            {item.gender === 'masculino' ? 'Hombre' : item.gender === 'femenino' ? 'Mujer' : 'Unisex'}
+                          </Badge>
+                        )}
                       </div>
                       
                       <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-6 w-6 p-0"
-                            onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                          >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <span className="text-sm font-medium w-8 text-center">
-                            {item.quantity}
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-6 w-6 p-0"
-                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
+                        <QuantitySelector
+                          value={item.quantity}
+                          onChange={(newQuantity) => handleQuantityChange(item.productId, item.size, item.color, item.gender, newQuantity)}
+                          min={1}
+                          max={99}
+                          className="scale-75"
+                        />
                         <span className="text-sm font-semibold text-uniform-neutral-900">
                           ${(item.price * item.quantity).toFixed(2)}
                         </span>
@@ -148,7 +142,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
                       variant="ghost"
                       size="sm"
                       className="p-2 text-red-500 hover:text-red-700 flex-shrink-0"
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => handleRemoveItem(item.productId, item.size, item.color, item.gender)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

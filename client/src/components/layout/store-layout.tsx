@@ -17,7 +17,7 @@ import {
   MapPin
 } from "lucide-react";
 import treeLogo from "@assets/TREE LOGO_1753399074765.png";
-import { useCart } from "@/lib/cart";
+import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 
 interface StoreLayoutProps {
@@ -27,7 +27,8 @@ interface StoreLayoutProps {
 export default function StoreLayout({ children }: StoreLayoutProps) {
   const [location] = useLocation();
   const { isAuthenticated, user } = useAuth();
-  const { itemCount } = useCart();
+  const { getTotalItems } = useCart();
+  const itemCount = getTotalItems();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);

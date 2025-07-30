@@ -7,6 +7,7 @@ export interface CartItem {
   quantity: number;
   size: string;
   color: string;
+  gender?: string; // Para productos mixtos
   image?: string;
   sku?: string;
 }
@@ -39,7 +40,8 @@ export function useCart() {
         item => 
           item.productId === newItem.productId && 
           item.size === newItem.size && 
-          item.color === newItem.color
+          item.color === newItem.color &&
+          item.gender === newItem.gender
       );
 
       if (existingItemIndex >= 0) {
@@ -54,23 +56,23 @@ export function useCart() {
     });
   };
 
-  const removeItem = (productId: number, size: string, color: string) => {
+  const removeItem = (productId: number, size: string, color: string, gender?: string) => {
     setItems(currentItems => 
       currentItems.filter(
-        item => !(item.productId === productId && item.size === size && item.color === color)
+        item => !(item.productId === productId && item.size === size && item.color === color && item.gender === gender)
       )
     );
   };
 
-  const updateQuantity = (productId: number, size: string, color: string, quantity: number) => {
+  const updateQuantity = (productId: number, size: string, color: string, quantity: number, gender?: string) => {
     if (quantity <= 0) {
-      removeItem(productId, size, color);
+      removeItem(productId, size, color, gender);
       return;
     }
 
     setItems(currentItems => 
       currentItems.map(item => 
-        item.productId === productId && item.size === size && item.color === color
+        item.productId === productId && item.size === size && item.color === color && item.gender === gender
           ? { ...item, quantity }
           : item
       )
@@ -89,9 +91,9 @@ export function useCart() {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const getItemCount = (productId: number, size: string, color: string) => {
+  const getItemCount = (productId: number, size: string, color: string, gender?: string) => {
     const item = items.find(
-      item => item.productId === productId && item.size === size && item.color === color
+      item => item.productId === productId && item.size === size && item.color === color && item.gender === gender
     );
     return item?.quantity || 0;
   };

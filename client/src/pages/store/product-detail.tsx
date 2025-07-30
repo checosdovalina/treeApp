@@ -9,15 +9,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw, Shirt } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { addToCart } from "@/lib/cart";
+import { useCart } from "@/hooks/useCart";
 import ImageModal from "@/components/ui/image-modal";
+import { QuantitySelector } from "@/components/ui/quantity-selector";
+import { GenderSelector } from "@/components/ui/gender-selector";
 import type { Product, InventoryItem } from "../../lib/types";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
+  const { addItem } = useCart();
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -35,20 +39,37 @@ export default function ProductDetail() {
   const addToCartMutation = useMutation({
     mutationFn: async () => {
       if (!product) throw new Error('Product not found');
-      return addToCart({
-        id: product.id.toString(),
-        name: product.name,
+      
+      // Validaciones
+      if (!selectedSize) throw new Error('Debe seleccionar una talla');
+      if (!selectedColor) throw new Error('Debe seleccionar un color');
+      if (product.genders?.length > 1 && !selectedGender) {
+        throw new Error('Debe seleccionar un género');
+      }
+
+      addItem({
+        productId: product.id,
+        productName: product.name,
         price: parseFloat(product.price),
-        image: product.images?.[0] || '',
         size: selectedSize,
         color: selectedColor,
-        quantity
+        gender: selectedGender || product.genders?.[0],
+        quantity: quantity,
+        image: product.images?.[0] || '',
+        sku: product.sku || '',
       });
     },
     onSuccess: () => {
       toast({
         title: "Producto agregado",
-        description: "El producto ha sido agregado al carrito.",
+        description: `${quantity} ${quantity === 1 ? 'producto agregado' : 'productos agregados'} al carrito.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
       });
     },
   });
@@ -308,28 +329,34 @@ export default function ProductDetail() {
               </div>
             )}
 
+            {/* Gender Selection - Solo para productos mixtos */}
+            {product.genders?.length > 1 && (
+              <GenderSelector
+                availableGenders={product.genders}
+                selectedGender={selectedGender}
+                onGenderChange={setSelectedGender}
+                variant="buttons"
+              />
+            )}
+
             {/* Quantity */}
             <div>
               <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
                 Cantidad
               </label>
-              <Select value={quantity.toString()} onValueChange={(value) => setQuantity(parseInt(value))}>
-                <SelectTrigger className="w-24">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[...Array(Math.min(10, stock || 10))].map((_, i) => (
-                    <SelectItem key={i + 1} value={(i + 1).toString()}>
-                      {i + 1}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedSize && selectedColor && (
-                <p className="text-sm text-uniform-secondary mt-1">
-                  {stock} unidades disponibles
-                </p>
-              )}
+              <div className="flex items-center space-x-4">
+                <QuantitySelector
+                  value={quantity}
+                  onChange={setQuantity}
+                  min={1}
+                  max={99}
+                />
+                {selectedSize && selectedColor && (
+                  <p className="text-sm text-uniform-secondary">
+                    En stock disponible
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Action Buttons */}
