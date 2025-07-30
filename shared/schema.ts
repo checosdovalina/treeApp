@@ -99,7 +99,7 @@ export const products = pgTable("products", {
   description: text("description"),
   categoryId: integer("category_id").references(() => categories.id),
   brand: varchar("brand", { length: 100 }),
-  gender: genderEnum("gender").default("unisex"),
+  genders: text("genders").array().default([]).notNull(), // Array of genders instead of single gender
   garmentTypeId: integer("garment_type_id").references(() => garmentTypes.id),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   images: text("images").array().default([]),
@@ -157,6 +157,7 @@ export const orderItems = pgTable("order_items", {
   productName: varchar("product_name", { length: 200 }),
   size: varchar("size", { length: 20 }),
   color: varchar("color", { length: 50 }),
+  gender: varchar("gender", { length: 20 }), // Add gender selection for orders
   quantity: integer("quantity").notNull(),
   unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
   totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
