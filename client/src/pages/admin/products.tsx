@@ -252,7 +252,7 @@ export default function AdminProducts() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {products && Array.isArray(products) && products.length === 0 ? (
                     <div className="col-span-full text-center py-16">
                       <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -276,10 +276,10 @@ export default function AdminProducts() {
                     products && Array.isArray(products) ? products.map((product: any) => (
                       <Card 
                         key={product.id} 
-                        className="overflow-hidden hover:shadow-md transition-shadow product-card-hover"
+                        className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 product-card-hover"
                       >
                         <div className="relative">
-                          <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                          <div className="w-full h-64 bg-gray-100 flex items-center justify-center relative overflow-hidden">
                             {(() => {
                               if (!product.images?.length) {
                                 return <Package className="h-16 w-16 text-gray-400" />;
@@ -295,13 +295,13 @@ export default function AdminProducts() {
                                 <img 
                                   src={validImage} 
                                   alt={product.name}
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                   onError={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.style.display = 'none';
                                     const parent = target.parentElement;
                                     if (parent) {
-                                      parent.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>';
+                                      parent.innerHTML = '<div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-50 to-blue-100"><svg class="h-20 w-20 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>';
                                     }
                                   }}
                                 />
@@ -352,40 +352,47 @@ export default function AdminProducts() {
                             </div>
                           </div>
                         </div>
-                        <CardContent className="p-4">
-                          <h3 
-                            className="font-semibold text-uniform-neutral-900 mb-2 line-clamp-1 cursor-pointer hover:text-blue-600 transition-colors"
-                            onClick={() => window.open(`/store/product/${product.id}`, '_blank')}
-                            title="Clic para ver en la tienda"
-                          >
-                            {product.name}
-                          </h3>
-                          {product.sku && (
-                            <p className="text-xs text-blue-600 font-mono mb-1">
-                              SKU: {product.sku}
+                        <CardContent className="p-6">
+                          <div className="space-y-4">
+                            <div>
+                              <h3 
+                                className="font-bold text-lg text-uniform-neutral-900 mb-1 line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors leading-tight"
+                                onClick={() => window.open(`/store/product/${product.id}`, '_blank')}
+                                title="Clic para ver en la tienda"
+                              >
+                                {product.name}
+                              </h3>
+                              {product.sku && (
+                                <p className="text-xs text-blue-600 font-mono">
+                                  SKU: {product.sku}
+                                </p>
+                              )}
+                            </div>
+                            
+                            <p className="text-sm text-uniform-secondary line-clamp-2 leading-relaxed">
+                              {product.description || 'Sin descripción'}
                             </p>
-                          )}
-                          <p className="text-sm text-uniform-secondary mb-3 line-clamp-2">
-                            {product.description || 'Sin descripción'}
-                          </p>
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-xl font-bold text-uniform-neutral-900">
-                              ${product.price}
-                            </span>
-                            <span className="text-sm text-uniform-secondary">
-                              ID: {product.id}
-                            </span>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-uniform-secondary">Tallas:</span>
-                              <span className="text-uniform-neutral-900">
-                                {product.sizes?.join(', ') || 'No definidas'}
+                            
+                            <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                              <span className="text-2xl font-bold text-uniform-primary">
+                                ${product.price}
+                              </span>
+                              <span className="text-xs text-uniform-secondary bg-gray-100 px-2 py-1 rounded">
+                                ID: {product.id}
                               </span>
                             </div>
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-uniform-secondary">Colores:</span>
-                              <div className="flex space-x-1">
+                            
+                            <div className="space-y-3 pt-2">
+                              <div className="flex items-start justify-between text-sm">
+                                <span className="text-uniform-secondary font-medium">Tallas:</span>
+                                <span className="text-uniform-neutral-900 text-right max-w-32 leading-tight">
+                                  {product.sizes?.slice(0, 6).join(', ') || 'No definidas'}
+                                  {product.sizes?.length > 6 && ` +${product.sizes.length - 6}`}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-uniform-secondary font-medium">Colores:</span>
+                                <div className="flex space-x-1">
                                 {product.colors?.slice(0, 3).map((color: string, index: number) => {
                                   const colors = {
                                     'Blanco': '#FFFFFF', 'Negro': '#000000', 'Azul': '#0066CC',
@@ -411,6 +418,7 @@ export default function AdminProducts() {
                                     +{product.colors.length - 3}
                                   </span>
                                 )}
+                                </div>
                               </div>
                             </div>
                           </div>
