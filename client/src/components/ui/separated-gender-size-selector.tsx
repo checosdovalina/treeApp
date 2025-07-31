@@ -33,21 +33,21 @@ export function SeparatedGenderSizeSelector({
 
   // Fetch sizes for masculine gender
   const { data: masculineData } = useQuery<SizeRangeData>({
-    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'masculino'],
+    queryKey: [`/api/size-ranges/available-sizes?garmentTypeId=${garmentTypeId}&gender=masculino`],
     enabled: !!garmentTypeId && genders.includes('masculino'),
     retry: false,
   });
 
   // Fetch sizes for feminine gender
   const { data: feminineData } = useQuery<SizeRangeData>({
-    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'femenino'],
+    queryKey: [`/api/size-ranges/available-sizes?garmentTypeId=${garmentTypeId}&gender=femenino`],
     enabled: !!garmentTypeId && genders.includes('femenino'),
     retry: false,
   });
 
   // Fetch sizes for unisex gender
   const { data: unisexData, isLoading } = useQuery<SizeRangeData>({
-    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'unisex'],
+    queryKey: [`/api/size-ranges/available-sizes?garmentTypeId=${garmentTypeId}&gender=unisex`],
     enabled: !!garmentTypeId && genders.includes('unisex'),
     retry: false,
   });
@@ -142,6 +142,12 @@ export function SeparatedGenderSizeSelector({
       </Card>
     );
   }
+
+  // Solo mostrar géneros que están realmente seleccionados
+  const activeGenders = genders.filter(gender => {
+    const sizes = getSizesForGender(gender);
+    return sizes.length > 0 || gender === 'unisex'; // Siempre mostrar unisex aunque no tenga tallas configuradas aún
+  });
 
   return (
     <div className={`space-y-4 ${className}`}>
