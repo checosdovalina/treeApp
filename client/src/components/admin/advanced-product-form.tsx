@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import type { Product, Category, Brand, Size, Color } from "@shared/schema";
 import { GarmentTypeSelector } from "./garment-type-selector";
+import { DynamicSizeSelector } from "@/components/ui/dynamic-size-selector";
 
 // Schema de validación para el formulario de producto
 const productFormSchema = z.object({
@@ -43,7 +44,7 @@ const productFormSchema = z.object({
   description: z.string().optional(),
   categoryId: z.number().min(1, "Selecciona una categoría"),
   brand: z.string().optional(),
-  gender: z.enum(["masculino", "femenino", "unisex"]).default("unisex"),
+  genders: z.array(z.enum(["masculino", "femenino", "unisex"])).default(["unisex"]),
   garmentTypeId: z.number().min(1, "El tipo de prenda es requerido"),
   price: z.string().min(1, "El precio es requerido").regex(/^\d+(\.\d{1,2})?$/, "Precio inválido"),
   images: z.array(z.string()).default([]),
@@ -97,7 +98,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
       description: product?.description || "",
       categoryId: product?.categoryId || 0,
       brand: product?.brand || "",
-      gender: (product?.gender as "masculino" | "femenino" | "unisex") || "unisex",
+      genders: product?.genders || ["unisex"],
       garmentTypeId: product?.garmentTypeId || 1,
       price: product?.price || "",
       images: product?.images || [],
@@ -527,107 +528,57 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="gender"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-roboto">Género</FormLabel>
-                          <Select 
-                            value={field.value} 
-                            onValueChange={field.onChange}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecciona el género" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="masculino">Masculino</SelectItem>
-                              <SelectItem value="femenino">Femenino</SelectItem>
-                              <SelectItem value="unisex">Unisex</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
+                    <div className="space-y-3">
+                      <Label className="text-sm font-roboto">Géneros Disponibles</Label>
+                      <div className="space-y-2">
+                        {["masculino", "femenino", "unisex"].map((gender) => (
+                          <div key={gender} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`gender-${gender}`}
+                              checked={form.watch("genders").includes(gender as any)}
+                              onCheckedChange={(checked) => {
+                                const currentGenders = form.watch("genders");
+                                if (checked) {
+                                  form.setValue("genders", [...currentGenders, gender as any]);
+                                } else {
+                                  form.setValue("genders", currentGenders.filter(g => g !== gender));
+                                }
+                              }}
+                              className="data-[state=checked]:bg-uniform-primary"
+                            />
+                            <Label
+                              htmlFor={`gender-${gender}`}
+                              className="text-sm font-roboto cursor-pointer capitalize"
+                            >
+                              {gender}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                      {form.watch("genders").length > 0 && (
+                        <div className="flex flex-wrap gap-1 pt-2">
+                          {form.watch("genders").map((gender) => (
+                            <Badge key={gender} variant="default" className="text-xs capitalize">
+                              {gender}
+                            </Badge>
+                          ))}
+                        </div>
                       )}
-                    />
+                    </div>
 
                     <GarmentTypeSelector form={form} />
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Tallas */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg font-poppins flex items-center gap-2">
-                    <Ruler className="h-4 w-4" />
-                    Tallas Disponibles
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                    {sizes.map((size) => {
-                      const isSelected = form.watch("sizes").includes(size.name);
-                      return (
-                        <div
-                          key={size.id}
-                          className={`p-2 border rounded-md cursor-pointer text-center transition-colors ${
-                            isSelected 
-                              ? "bg-blue-500 text-white border-blue-500" 
-                              : "bg-gray-50 hover:bg-gray-100 border-gray-200"
-                          }`}
-                          onClick={() => toggleSize(size.name)}
-                        >
-                          <span className="text-sm font-roboto">{size.name}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="space-y-2">
-                    <Label className="text-sm font-roboto">Agregar Nueva Talla</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Ej: 3XL"
-                        value={newSizeName}
-                        onChange={(e) => setNewSizeName(e.target.value)}
-                      />
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => createSizeMutation.mutate({ 
-                          name: newSizeName,
-                          sortOrder: sizes.length + 1 
-                        })}
-                        disabled={!newSizeName.trim() || createSizeMutation.isPending}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {form.watch("sizes").length > 0 && (
-                    <div className="space-y-2">
-                      <Label className="text-sm font-roboto">Tallas Seleccionadas:</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {form.watch("sizes").map((sizeName) => (
-                          <Badge key={sizeName} variant="secondary" className="font-roboto">
-                            {sizeName}
-                            <X 
-                              className="h-3 w-3 ml-1 cursor-pointer" 
-                              onClick={() => toggleSize(sizeName)}
-                            />
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              {/* Tallas Dinámicas */}
+              <DynamicSizeSelector
+                garmentTypeId={form.watch("garmentTypeId")}
+                gender={form.watch("genders")?.[0]} // Use the first selected gender for now
+                selectedSizes={form.watch("sizes")}
+                onSizesChange={(sizes) => form.setValue("sizes", sizes)}
+                label="Tallas Disponibles"
+              />
 
               {/* Colores */}
               <Card>

@@ -9,13 +9,17 @@ import {
   insertSizeSchema,
   insertColorSchema,
   insertGarmentTypeSchema,
+  insertSizeRangeSchema,
   insertOrderSchema,
   insertOrderItemSchema,
   insertQuoteSchema,
   customerRegistrationSchema,
-  quoteRequestSchema
+  quoteRequestSchema,
+  sizeRanges
 } from "@shared/schema";
 import { z } from "zod";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 
 
@@ -313,6 +317,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(400).json({ message: "Failed to create garment type" });
     }
   });
+
+  // Size ranges routes
+  app.get("/api/size-ranges", async (req, res) => {
+    try {
+      const { garmentTypeId, gender } = req.query;
+      let conditions = [eq(sizeRanges.isActive, true)];
+      
+      if (garmentTypeId) {
+        conditions.push(eq(sizeRanges.garmentTypeId, parseInt(garmentTypeId as string)));
+      }
+      
+      if (gender) {
+        conditions.push(eq(sizeRanges.gender, gender as string));
+      }
+      
+      const ranges = await db.select().from(sizeRanges).where(and(...conditions));
+      res.json(ranges);
+    } catch (error: any) {
+      console.error("Error fetching size ranges:", error);
+      res.status(500).json({ message: "Failed to fetch size ranges" });
+    }
+  });
+
+  // Get available sizes for specific garment type and gender
+  app.get("/api/size-ranges/available-sizes", async (req, res) => {
+    try {
+      const { garmentTypeId, gender } = req.query;
+      
+      if (!garmentTypeId || !gender) {
+        return res.status(400).json({ message: "garmentTypeId and gender are required" });
+      }
+
+      // Get size range for the specific garment type and gender
+      const [sizeRange] = await db
+        .select()
+        .from(sizeRanges)
+        .where(
+          and(
+            eq(sizeRanges.garmentTypeId, parseInt(garmentTypeId as string)),
+            eq(sizeRanges.gender, gender as string),
+            eq(sizeRanges.isActive, true)
+          )
+        );
+
+      if (!sizeRange) {
+        // Return empty result with appropriate message
+        return res.json({ sizes: [], sizeType: "standard" });
+      }
+
+      let sizes: string[] = [];
+      
+      // Generate sizes based on the range configuration
+      if (sizeRange.sizeList && sizeRange.sizeList.length > 0) {
+        sizes = sizeRange.sizeList;
+      } else if (sizeRange.minSize && sizeRange.maxSize) {
+        // Generate numeric range
+        const min = parseInt(sizeRange.minSize);
+        const max = parseInt(sizeRange.maxSize);
+        for (let i = min; i <= max; i++) {
+          sizes.push(i.toString());
+        }
+      } else {
+        // Use default sizes based on type
+        switch (sizeRange.sizeType) {
+          case 'standard':
+            sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+            break;
+          case 'waist':
+            sizes = ['28', '30', '32', '34', '36', '38', '40', '42', '44'];
+            break;
+          case 'clothing':
+            sizes = ['5', '7', '9', '11', '13', '15', '17', '19', '21'];
+            break;
+          default:
+            sizes = ['S', 'M', 'L', 'XL'];
+        }
+      }
+
+      res.json({
+        sizes,
+        sizeType: sizeRange.sizeType
+      });
+    } catch (error: any) {
+      console.error("Error fetching available sizes:", error);
+      res.status(500).json({ message: "Failed to fetch available sizes" });
+    }
+  });
+
+
 
   // Products
   app.get('/api/products', async (req, res) => {

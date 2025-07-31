@@ -88,6 +88,19 @@ export const garmentTypes = pgTable("garment_types", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Size ranges by gender and garment type
+export const sizeRanges = pgTable("size_ranges", {
+  id: serial("id").primaryKey(),
+  garmentTypeId: integer("garment_type_id").references(() => garmentTypes.id),
+  gender: varchar("gender", { length: 20 }).notNull(), // masculino, femenino, unisex
+  sizeType: varchar("size_type", { length: 50 }).notNull(), // waist, clothing, shoes, etc.
+  minSize: integer("min_size"),
+  maxSize: integer("max_size"),
+  sizeList: text("size_list").array(), // for non-numeric sizes like XS, S, M, L, XL
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Gender enum
 export const genderEnum = pgEnum("gender", ["masculino", "femenino", "unisex"]);
 
@@ -214,6 +227,14 @@ export const colorsRelations = relations(colors, ({ many }) => ({
 
 export const garmentTypesRelations = relations(garmentTypes, ({ many }) => ({
   products: many(products),
+  sizeRanges: many(sizeRanges),
+}));
+
+export const sizeRangesRelations = relations(sizeRanges, ({ one }) => ({
+  garmentType: one(garmentTypes, {
+    fields: [sizeRanges.garmentTypeId],
+    references: [garmentTypes.id],
+  }),
 }));
 
 export const inventoryRelations = relations(inventory, ({ one }) => ({
@@ -334,6 +355,11 @@ export const quoteRequestSchema = z.object({
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+
+// Size range types
+export type SizeRange = typeof sizeRanges.$inferSelect;
+export type InsertSizeRange = typeof sizeRanges.$inferInsert;
+export const insertSizeRangeSchema = createInsertSchema(sizeRanges);
 
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categories.$inferSelect;
