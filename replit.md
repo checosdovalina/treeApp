@@ -1,11 +1,9 @@
-# Replit.md - TREE Uniformes & Kodiak Industrial E-commerce Platform  
+# Replit.md - TREE Uniformes & Kodiak Industrial E-commerce Platform
 
 ## Overview
-
-This is a full-stack e-commerce application for "TREE Uniformes & Kodiak Industrial," a uniform/clothing business specializing in industrial and corporate uniforms. The system provides both admin management capabilities and a public store interface. It's built with React (frontend), Express.js (backend), and PostgreSQL database using Drizzle ORM.
+This is a full-stack e-commerce application for "TREE Uniformes & Kodiak Industrial," a uniform/clothing business specializing in industrial and corporate uniforms. The system provides both admin management capabilities and a public store interface. It supports B2B (quote-based) and B2C (direct purchase) sales models. Key capabilities include product and inventory management, quote creation with PDF export, sales reporting, customer management with purchase history, and a public catalog with advanced filtering. The project aims to provide a modern, mobile-optimized e-commerce experience matching industry standards.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 User language: Spanish (communicate in Spanish)
 User role: Administrator seeking to access admin functions
@@ -17,275 +15,53 @@ Authentication: Role-based system with admin vs customer accounts and appropriat
 
 ### Frontend Architecture
 - **Framework**: React with TypeScript
-- **Build Tool**: Vite for development and production builds
-- **Routing**: Wouter for client-side routing
+- **Build Tool**: Vite
+- **Routing**: Wouter
 - **State Management**: TanStack Query for server state management
-- **UI Components**: Radix UI with shadcn/ui component library
-- **Styling**: Tailwind CSS with custom design tokens for uniform branding
+- **UI Components**: Radix UI with shadcn/ui
+- **Styling**: Tailwind CSS with custom design tokens for uniform branding. Incorporates brand colors (azul profundo #1F4287, amarillo dorado #FFCC00), Poppins and Roboto fonts, and professional styling elements throughout.
 - **Forms**: React Hook Form with Zod validation
+- **Design Decisions**: Mobile-first design, responsive grid system, enhanced header (80px height, golden border), redesigned mobile menu, updated footer, gradient button styles, skeleton screens, shimmer effects, and comprehensive error handling.
 
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript
 - **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Replit Auth with OIDC integration
+- **Authentication**: Replit Auth with OIDC integration, role-based access for admin and customer roles
 - **Session Management**: Express sessions with PostgreSQL storage
 - **Build**: ESBuild for server bundling
 
 ### Database Architecture
 - **ORM**: Drizzle with PostgreSQL dialect
-- **Schema Location**: `shared/schema.ts` for type-safe database operations
+- **Schema Location**: `shared/schema.ts`
 - **Migrations**: Drizzle-kit for database migrations in `./migrations`
+- **Key Tables**: Users, sessions, products (with SKU, brand, size, color, garment type tracking), categories, brands, sizes, colors, garment_types, orders, order_items, quotes, inventory.
 
-## Key Components
-
-### Authentication System
-- **Provider**: Replit Auth with OIDC
-- **Role-based Access**: Admin and customer roles
-- **Session Storage**: PostgreSQL-backed sessions using connect-pg-simple
-- **Protected Routes**: Middleware for admin-only endpoints
-
-### Product Management
-- **Categories**: Hierarchical product categorization
-- **Inventory**: Size and color variant tracking
-- **Images**: Multiple image support per product
-- **Status Management**: Active/inactive product states
-
-### Order Management
-- **Quote System**: Manual quote creation for B2B customers
-- **Order Processing**: Full order lifecycle management
-- **Customer Management**: Customer database with purchase history
-
-### Shopping Cart
-- **Client-side Storage**: localStorage-based cart persistence
-- **Real-time Updates**: React hooks for cart state management
-- **Variant Support**: Size and color selection
-
-### Admin Dashboard
-- **Product CRUD**: Full product management interface
-- **Order Management**: Order processing and tracking
-- **Customer Management**: Customer database and history
-- **Quote Generation**: PDF export and email capabilities
-- **Analytics**: Sales reporting and product performance
-
-## Data Flow
-
-1. **Authentication Flow**:
-   - User accesses protected routes → Auth middleware checks session
-   - New users redirected to Replit Auth → OIDC flow → User creation/update
-   - Session stored in PostgreSQL with TTL
-
-2. **Product Management Flow**:
-   - Admin creates/updates products → Validation → Database storage
-   - Public catalog queries active products with filtering
-   - Inventory tracking per product variant
-
-3. **Order Flow**:
-   - Customer adds items to cart → localStorage storage
-   - Checkout process → Order creation → Inventory updates
-   - Admin order management → Status updates
-
-4. **Quote Flow**:
-   - Admin creates manual quotes → PDF generation → Email delivery
-   - Quote conversion to orders
+### Key Features & Technical Implementations
+- **Authentication System**: Replit Auth, role-based access, protected routes, PostgreSQL-backed sessions.
+- **Product Management**: Hierarchical categorization, inventory tracking (size/color variants), multiple image support (URL/file upload with base64 conversion), active/inactive states, dynamic brand/size/color/category creation. Gender-specific size configurations based on garment type. SKU implementation with validation.
+- **Order Management**: Manual quote creation (B2B) with PDF export and email, full order lifecycle management, customer database with purchase history.
+- **Shopping Cart**: Client-side localStorage persistence, real-time updates, variant support.
+- **Admin Dashboard**: Comprehensive CRUD for products, order processing, customer management, quote generation, sales analytics.
+- **UI/UX**: Consistent branding across customer and admin interfaces, mobile-optimized navigation, advanced filtering/sorting, WhatsApp integration for product inquiry.
 
 ## External Dependencies
 
 ### Database
 - **Provider**: Neon Database (PostgreSQL)
-- **Connection**: Connection pooling with @neondatabase/serverless
-- **Environment**: DATABASE_URL required for connection
+- **Connection**: @neondatabase/serverless for connection pooling
 
 ### Authentication
 - **Provider**: Replit Auth
-- **Configuration**: REPLIT_DOMAINS, ISSUER_URL, REPL_ID required
-- **Session**: SESSION_SECRET for session encryption
+- **Configuration**: Requires `REPLIT_DOMAINS`, `ISSUER_URL`, `REPL_ID`, `SESSION_SECRET`.
 
 ### UI Libraries
-- **Radix UI**: Comprehensive component primitives
+- **Radix UI**: Component primitives
 - **Tailwind CSS**: Utility-first styling
 - **Lucide React**: Icon library
 - **React Hook Form**: Form management
 - **Zod**: Schema validation
 
 ### Development Tools
-- **Vite**: Development server and build tool
-- **TypeScript**: Type safety across the stack
-- **ESBuild**: Server bundling for production
-
-## Deployment Strategy
-
-### Development
-- **Frontend**: Vite dev server with HMR
-- **Backend**: tsx for TypeScript execution
-- **Database**: Drizzle-kit for schema management
-
-### Production
-- **Build Process**: 
-  - Frontend: Vite build → `dist/public`
-  - Backend: ESBuild → `dist/index.js`
-- **Startup**: Node.js serving bundled Express app
-- **Static Files**: Frontend served from `/dist/public`
-
-### Environment Variables
-- `DATABASE_URL`: PostgreSQL connection string
-- `SESSION_SECRET`: Session encryption key
-- `REPL_ID`: Replit authentication identifier
-- `REPLIT_DOMAINS`: Allowed domains for auth
-- `ISSUER_URL`: OIDC issuer URL (defaults to Replit)
-
-### Business Requirements
-Based on the requirements document, the system supports:
-- Product and inventory management by admin
-- Quote creation and PDF export
-- Sales reporting and analytics
-- Customer management with purchase history
-- Public catalog with filtering
-- Corporate uniform solutions
-
-The architecture is designed to handle both B2B (quote-based) and B2C (direct purchase) sales models typical for uniform businesses.
-
-### Recent Changes and Improvements (January 2025)
-
-#### Brand-Consistent UI Redesign (July 2025)
-- **Complete Visual Identity Integration**: Updated entire customer interface to reflect TREE Uniformes & Kodiak Industrial branding
-- **Corporate Color Scheme**: Implemented official brand colors - azul profundo (#1F4287) y amarillo dorado (#FFCC00) throughout the application
-- **Enhanced Header Design**: Increased header height to 80px, added golden border, enlarged logo display
-- **Fixed Menu Overlapping Issues**: Corrected navigation responsiveness by adjusting breakpoints (hidden on lg instead of md)
-- **Professional Typography**: Applied Poppins font for headings and Roboto for body text for consistent brand typography
-- **Redesigned Mobile Menu**: Updated mobile navigation with brand colors, improved spacing, and smooth transitions
-- **Updated Footer**: Applied corporate blue background with golden accents and proper brand text colors
-- **Advanced Button Styles**: Created gradient button styles with brand colors and professional hover effects
-- **Responsive Navigation**: Ensured proper display and functionality across all device sizes without overlapping issues
-
-#### Advanced Product Management System (July 2025)
-- **Dynamic Brand Management**: Created comprehensive brand system with ability to add new brands on-the-fly
-- **Checkbox-based Size Selection**: Implemented intuitive size selection with visual checkboxes and dynamic size creation
-- **Advanced Color Management**: Added color selection with hex codes and visual color swatches
-- **Dynamic Category Creation**: Enhanced category system allowing real-time category addition during product creation
-- **Professional Image Management**: Implemented multiple image upload with preview and easy removal
-- **Database Schema Enhancement**: Added brands, sizes, and colors tables with proper relationships
-- **Modern UI Components**: Created advanced product form using cards, scrollable areas, and professional styling
-- **Complete CRUD Operations**: Full API implementation for all new entities (brands, sizes, colors)
-- **Data Seeding**: Populated database with realistic initial data for brands, sizes, and colors
-
-#### Brand Integration (July 2025)
-- **Logo Integration**: Successfully integrated TREE Uniformes & Kodiak Industrial logo throughout the platform
-- **Consistent Branding**: Updated all layouts (customer, admin) with new brand identity
-- **Mobile Optimization**: Ensured logo displays correctly on mobile devices and responsive layouts
-- **Footer Updates**: Updated company information and contact details to reflect new branding
-- **Landing Page**: Redesigned landing page with new brand messaging and visual identity
-
-#### SKU Implementation (July 2025)
-- **Database Schema Update**: Added SKU (Stock Keeping Unit) column to products table with unique constraint
-- **Product Form Enhancement**: Extended advanced product form to include SKU input field with validation
-- **SKU Display**: Integrated SKU display in both admin product management and customer catalog
-- **Data Migration**: Added unique SKU codes to existing products following standard format
-- **Validation Rules**: Implemented SKU format validation (uppercase letters, numbers, hyphens, underscores)
-
-#### Image Upload System (July 2025)
-- **Local File Support**: Added ability to upload images directly from device (PNG, JPG, JPEG, WEBP)
-- **Dual Input Methods**: Supports both URL-based and file-based image uploads
-- **Base64 Conversion**: Converts uploaded files to base64 for storage and display
-- **Multi-file Upload**: Allows multiple image selection in a single upload
-- **File Validation**: Validates file types and handles upload errors gracefully
-- **Preview System**: Real-time preview of uploaded images with remove functionality
-
-#### Brand Logo Management System (July 2025)
-- **Complete Brand Management**: Created comprehensive BrandManager component for admin panel
-- **Logo Upload Support**: Dual method logo upload (file upload + URL input) with base64 conversion
-- **Visual Brand Display**: Brand logos display throughout customer and admin interfaces
-- **Database Integration**: Enhanced brands table with logo and isActive fields
-- **Brand Filtering**: Fixed product filtering by brand with proper ID-to-name mapping
-- **File Validation**: Logo upload validation (file type, size limits)
-- **Visual Interface**: Professional brand cards with logo previews and management controls
-- **Integration Examples**: Successfully added PREZENZA brand logo as working example
-
-#### Advanced Gender-Specific Size Management System (July 2025)
-- **Gender-Specific Size Configurations**: Implemented separate size ranges for each gender per garment type
-- **Pantalones Configuration**: Excludes unisex option, shows only masculine (28-44 waist) and feminine (5-21 clothing) sizes
-- **Garment-Specific Gender Rules**: 
-  - Pantalones: Only masculine and feminine options
-  - Faldas/Vestidos: Only feminine and unisex options  
-  - Other garments: All genders (masculine, feminine, unisex)
-- **Separated Size Modules**: Each selected gender displays its own dedicated size selection module
-- **Visual Gender Differentiation**: Color-coded modules (blue for masculine, pink for feminine, green for unisex)
-- **Dynamic Size Types**: Automatic display of size type labels (waist sizes, clothing sizes, standard sizes)
-- **Individual Gender Selection**: Clear visual separation showing available sizes per gender
-- **Smart Size Management**: Prevents selection of unavailable gender/size combinations
-
-#### Professional Category Images Enhancement (July 2025)
-- **Research-Based Image Selection**: Conducted comprehensive web research on uniform types for each industry
-- **Professional Image URLs**: Updated category images with authentic professional photos for each sector:
-  - Medical uniforms (scrubs and nursing attire)
-  - Industrial workwear (construction and safety equipment)
-  - Corporate uniforms (executive and business attire)
-  - Gastronomy uniforms (chef coats and kitchen wear)
-  - Security uniforms (professional security gear)
-- **Visual Enhancement**: Added thematic icons, improved gradients, and professional styling elements
-- **Image Quality**: Implemented high-resolution images with proper cropping and focus on uniform details
-- **User Experience**: Enhanced category cards with better visual hierarchy and professional appearance
-
-#### Database Migration to Neon PostgreSQL (July 2025)
-- **Production Database Setup**: Successfully migrated to Neon PostgreSQL cloud database
-- **Schema Deployment**: All tables created and operational:
-  - Users, sessions (authentication)
-  - Products, categories, brands, sizes, colors, garment_types (catalog)
-  - Orders, order_items, quotes, inventory (business operations)
-- **Data Verification**: Confirmed data integrity with 11 products, 5 categories, 7 brands
-- **Performance Optimization**: Database queries optimized for production workload
-- **Environment Configuration**: DATABASE_URL properly configured for Neon connection
-- **Drizzle ORM Integration**: Schema migrations working correctly with push commands
-
-### Recent Changes and Improvements (January 2025)
-
-#### Authentication System Enhancements
-- **Role-based Login System**: Created comprehensive login page with dual interface (admin vs customer)
-- **Smart Redirections**: Admins redirect to admin panel, customers to store interface
-- **Session Management**: Improved authentication flows with proper error handling
-- **Security**: Added unauthorized error handling at both page and endpoint levels
-
-#### Customer Experience Overhaul
-- **Modern Store Interface**: Redesigned customer-facing pages inspired by lacasadelachamarra.com
-- **Mobile-First Design**: Fully responsive layout optimized for mobile devices
-- **Customer Layout**: New layout component with mobile-optimized navigation and footer
-- **Shopping Cart**: Complete cart functionality with localStorage persistence
-- **Product Catalog**: Advanced filtering, sorting, and search capabilities
-- **Touch-Friendly UI**: Improved touch targets and mobile interactions
-
-#### Mobile Responsiveness
-- **Responsive Grid System**: Mobile-first product grids with auto-fit layouts
-- **Touch Optimizations**: Improved button sizes and touch targets for mobile
-- **Viewport Management**: Proper handling of mobile viewports and safe areas
-- **Mobile Navigation**: Collapsible mobile menu with sheet component
-- **Performance**: Optimized loading states and animations for mobile
-
-#### UI/UX Improvements
-- **Design System**: Enhanced CSS variables and utility classes for uniform branding
-- **Loading States**: Skeleton screens and shimmer effects for better UX
-- **Error Handling**: Comprehensive error states with user-friendly messages
-- **Accessibility**: Improved keyboard navigation and screen reader support
-- **Visual Hierarchy**: Better spacing, typography, and visual organization
-
-#### Shopping Experience
-- **Product Selection**: Interactive color and size selection with visual feedback
-- **Cart Management**: Real-time cart updates with quantity controls
-- **WhatsApp Integration**: Direct product inquiry via WhatsApp
-- **Product Favorites**: Wishlist functionality (foundation laid)
-- **Advanced Search**: Multi-parameter search with category filtering
-
-#### Technical Infrastructure
-- **Component Architecture**: Modular components for better maintainability
-- **State Management**: Improved cart state with localStorage persistence
-- **Route Management**: Comprehensive routing system with role-based access
-- **API Integration**: Consistent error handling and loading states
-- **Performance**: Optimized bundle sizes and loading patterns
-
-#### Admin Panel Fixes
-- **Product Management**: Fixed product form rendering and validation issues
-- **Navigation**: Resolved nested link warnings in admin sidebar
-- **Dashboard**: Improved admin dashboard with proper data visualization
-- **Inventory**: Enhanced inventory management with better UX
-- **Form Interaction**: Fixed navigation conflicts in product cards - removed conflicting onClick events and added stopPropagation to action buttons
-- **Edit Functionality**: Resolved issue where edit buttons were opening new pages instead of modal forms
-
-The system now provides a complete e-commerce experience with professional admin tools and a modern, mobile-optimized customer interface that matches industry standards.
+- **Vite**: Frontend development server and build tool
+- **TypeScript**: Type safety
+- **ESBuild**: Backend bundling
