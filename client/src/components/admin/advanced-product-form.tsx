@@ -271,17 +271,31 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
     } else {
       form.setValue("sizes", [...currentSizes, sizeName]);
     }
+    
+    // Trigger form re-render to update UI
+    form.trigger("sizes");
   };
 
   const toggleColor = (colorName: string) => {
+    console.log('Toggle color clicked:', colorName);
     const currentColors = form.getValues("colors");
     const isSelected = currentColors.includes(colorName);
     
+    console.log('Current colors:', currentColors);
+    console.log('Is selected:', isSelected);
+    
     if (isSelected) {
-      form.setValue("colors", currentColors.filter(c => c !== colorName));
+      const newColors = currentColors.filter(c => c !== colorName);
+      form.setValue("colors", newColors);
+      console.log('Removed color, new colors:', newColors);
     } else {
-      form.setValue("colors", [...currentColors, colorName]);
+      const newColors = [...currentColors, colorName];
+      form.setValue("colors", newColors);
+      console.log('Added color, new colors:', newColors);
     }
+    
+    // Trigger form re-render to update UI
+    form.trigger("colors");
   };
 
   return (
@@ -569,7 +583,11 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                               ? "bg-blue-500 text-white border-blue-500" 
                               : "bg-gray-50 hover:bg-gray-100 border-gray-200"
                           }`}
-                          onClick={() => toggleColor(color.name)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleColor(color.name);
+                          }}
                         >
                           <div className="flex items-center gap-2">
                             {color.hexCode && (
