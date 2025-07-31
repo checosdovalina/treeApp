@@ -200,14 +200,18 @@ The architecture is designed to handle both B2B (quote-based) and B2C (direct pu
 - **Visual Interface**: Professional brand cards with logo previews and management controls
 - **Integration Examples**: Successfully added PREZENZA brand logo as working example
 
-#### Gender-Based Product Filtering System (July 2025)
-- **Database Schema Enhancement**: Added gender enum field to products table with values: masculino, femenino, unisex
-- **Admin Product Form**: Integrated gender selector in advanced product form for product creation/editing
-- **Customer Filtering**: Implemented gender filter in customer catalog with visual selector
-- **API Integration**: Updated product endpoints to support gender-based filtering and queries
-- **UI Components**: Added gender badges to product cards and active filter displays
-- **Data Migration**: Populated existing products with appropriate gender classifications
-- **Comprehensive Filtering**: Gender filter works alongside category, brand, and search filters
+#### Advanced Gender-Specific Size Management System (July 2025)
+- **Gender-Specific Size Configurations**: Implemented separate size ranges for each gender per garment type
+- **Pantalones Configuration**: Excludes unisex option, shows only masculine (28-44 waist) and feminine (5-21 clothing) sizes
+- **Garment-Specific Gender Rules**: 
+  - Pantalones: Only masculine and feminine options
+  - Faldas/Vestidos: Only feminine and unisex options  
+  - Other garments: All genders (masculine, feminine, unisex)
+- **Separated Size Modules**: Each selected gender displays its own dedicated size selection module
+- **Visual Gender Differentiation**: Color-coded modules (blue for masculine, pink for feminine, green for unisex)
+- **Dynamic Size Types**: Automatic display of size type labels (waist sizes, clothing sizes, standard sizes)
+- **Individual Gender Selection**: Clear visual separation showing available sizes per gender
+- **Smart Size Management**: Prevents selection of unavailable gender/size combinations
 
 #### Professional Category Images Enhancement (July 2025)
 - **Research-Based Image Selection**: Conducted comprehensive web research on uniform types for each industry

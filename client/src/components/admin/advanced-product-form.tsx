@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import type { Product, Category, Brand, Size, Color } from "@shared/schema";
 import { GarmentTypeSelector } from "./garment-type-selector";
-import { MultiGenderSizeSelector } from "@/components/ui/multi-gender-size-selector";
+import { SeparatedGenderSizeSelector } from "@/components/ui/separated-gender-size-selector";
 import { MultiGenderSelector } from "@/components/ui/multi-gender-selector";
 
 // Schema de validación para el formulario de producto
@@ -540,13 +540,13 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                 label="Géneros Disponibles"
               />
 
-              {/* Tallas Dinámicas */}
-              <MultiGenderSizeSelector
+              {/* Tallas por Género */}
+              <SeparatedGenderSizeSelector
                 garmentTypeId={form.watch("garmentTypeId")}
                 genders={form.watch("genders") || []}
                 selectedSizes={form.watch("sizes")}
                 onSizesChange={(sizes) => form.setValue("sizes", sizes)}
-                label="Tallas Disponibles"
+                label="Tallas por Género"
               />
 
               {/* Colores */}
