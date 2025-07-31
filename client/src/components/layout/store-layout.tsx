@@ -47,33 +47,31 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/store">
-              <a className="flex items-center space-x-3">
-                <img 
-                  src={treeLogo} 
-                  alt="TREE Uniformes & Kodiak Industrial"
-                  className="h-10 w-auto"
-                />
-                <div className="hidden sm:block">
-                  <h1 className="text-xl font-bold text-uniform-neutral-900">TREE Uniformes</h1>
-                  <p className="text-sm text-gray-600">& Kodiak Industrial</p>
-                </div>
-              </a>
+            <Link href="/store" className="flex items-center space-x-3">
+              <img 
+                src={treeLogo} 
+                alt="TREE Uniformes & Kodiak Industrial"
+                className="h-10 w-auto"
+              />
+              <div className="hidden sm:block">
+                <h1 className="text-xl font-bold text-uniform-neutral-900">TREE Uniformes</h1>
+                <p className="text-sm text-gray-600">& Kodiak Industrial</p>
+              </div>
             </Link>
 
             {/* Navigation - Desktop */}
             <nav className="hidden md:flex items-center space-x-8">
               {navigation.map((item) => (
-                <Link key={item.name} href={item.href}>
-                  <a
-                    className={`transition-colors ${
-                      location === item.href
-                        ? 'text-uniform-primary font-medium'
-                        : 'text-uniform-neutral-900 hover:text-uniform-primary'
-                    }`}
-                  >
-                    {item.name}
-                  </a>
+                <Link 
+                  key={item.name} 
+                  href={item.href}
+                  className={`transition-colors ${
+                    location === item.href
+                      ? 'text-uniform-primary font-medium'
+                      : 'text-uniform-neutral-900 hover:text-uniform-primary'
+                  }`}
+                >
+                  {item.name}
                 </Link>
               ))}
             </nav>
@@ -129,13 +127,13 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
                   
                   <nav className="space-y-4">
                     {navigation.map((item) => (
-                      <Link key={item.name} href={item.href}>
-                        <a
-                          className="block py-2 text-lg text-uniform-neutral-900 hover:text-uniform-primary"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          {item.name}
-                        </a>
+                      <Link 
+                        key={item.name} 
+                        href={item.href}
+                        className="block py-2 text-lg text-uniform-neutral-900 hover:text-uniform-primary"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {item.name}
                       </Link>
                     ))}
                   </nav>
@@ -143,7 +141,7 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
                   <div className="mt-8 pt-8 border-t">
                     {isAuthenticated ? (
                       <div className="space-y-4">
-                        <p className="font-medium">Hola, {user?.firstName}</p>
+                        <p className="font-medium">Hola, {(user as any)?.firstName || 'Usuario'}</p>
                         <Button variant="outline" size="sm" className="w-full">
                           Mi Cuenta
                         </Button>

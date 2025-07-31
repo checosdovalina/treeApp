@@ -544,7 +544,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
               <MultiGenderSelector
                 garmentTypeId={form.watch("garmentTypeId")}
                 selectedGenders={form.watch("genders") || []}
-                onGendersChange={(genders) => form.setValue("genders", genders)}
+                onGendersChange={(genders) => form.setValue("genders", genders as ("masculino" | "femenino" | "unisex")[])}
                 label="Géneros Disponibles"
               />
 
