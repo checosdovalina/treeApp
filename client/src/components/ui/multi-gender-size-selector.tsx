@@ -33,27 +33,46 @@ export function MultiGenderSizeSelector({
   const [availableSizes, setAvailableSizes] = useState<{[key: string]: string[]}>({});
   const [combinedSizes, setCombinedSizes] = useState<string[]>([]);
 
-  // Fetch available sizes for each gender
-  const genderQueries = genders.map(gender => 
-    useQuery<SizeRangeData>({
-      queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, gender],
-      enabled: !!garmentTypeId && !!gender,
-      retry: false,
-      select: (data) => ({ ...data, gender })
-    })
-  );
+  // Fetch sizes for masculine gender
+  const { data: masculineData } = useQuery<SizeRangeData>({
+    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'masculino'],
+    enabled: !!garmentTypeId && genders.includes('masculino'),
+    retry: false,
+  });
+
+  // Fetch sizes for feminine gender
+  const { data: feminineData } = useQuery<SizeRangeData>({
+    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'femenino'],
+    enabled: !!garmentTypeId && genders.includes('femenino'),
+    retry: false,
+  });
+
+  // Fetch sizes for unisex gender
+  const { data: unisexData, isLoading } = useQuery<SizeRangeData>({
+    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'unisex'],
+    enabled: !!garmentTypeId && genders.includes('unisex'),
+    retry: false,
+  });
 
   useEffect(() => {
     const newAvailableSizes: {[key: string]: string[]} = {};
     const allSizes = new Set<string>();
     
-    genderQueries.forEach((query, index) => {
-      if (query.data) {
-        const gender = genders[index];
-        newAvailableSizes[gender] = query.data.sizes || [];
-        query.data.sizes?.forEach(size => allSizes.add(size));
-      }
-    });
+    // Process each gender's data
+    if (masculineData && genders.includes('masculino')) {
+      newAvailableSizes['masculino'] = masculineData.sizes || [];
+      masculineData.sizes?.forEach(size => allSizes.add(size));
+    }
+    
+    if (feminineData && genders.includes('femenino')) {
+      newAvailableSizes['femenino'] = feminineData.sizes || [];
+      feminineData.sizes?.forEach(size => allSizes.add(size));
+    }
+    
+    if (unisexData && genders.includes('unisex')) {
+      newAvailableSizes['unisex'] = unisexData.sizes || [];
+      unisexData.sizes?.forEach(size => allSizes.add(size));
+    }
     
     setAvailableSizes(newAvailableSizes);
     setCombinedSizes(Array.from(allSizes).sort((a, b) => {
@@ -65,7 +84,7 @@ export function MultiGenderSizeSelector({
       }
       return a.localeCompare(b);
     }));
-  }, [genderQueries.map(q => q.data).join(','), genders.join(',')]);
+  }, [masculineData, feminineData, unisexData, genders]);
 
   const handleSizeToggle = (size: string) => {
     const newSizes = selectedSizes.includes(size)
@@ -107,8 +126,6 @@ export function MultiGenderSizeSelector({
       </Card>
     );
   }
-
-  const isLoading = genderQueries.some(q => q.isLoading);
 
   if (isLoading) {
     return (
