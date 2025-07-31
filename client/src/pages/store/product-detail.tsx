@@ -36,6 +36,11 @@ export default function ProductDetail() {
     enabled: !!id && !isNaN(Number(id)),
   });
 
+  // Obtener colores de la base de datos
+  const { data: colors = [] } = useQuery<{id: number, name: string, hexCode: string}[]>({
+    queryKey: ['/api/colors'],
+  });
+
   const addToCartMutation = useMutation({
     mutationFn: async () => {
       if (!product) throw new Error('Product not found');
@@ -300,28 +305,22 @@ export default function ProductDetail() {
                   Color {selectedColor && `- ${selectedColor}`}
                 </label>
                 <div className="flex flex-wrap gap-3">
-                  {product.colors.map((color: string) => {
-                    const colors = {
-                      'Blanco': '#FFFFFF', 'Negro': '#000000', 'Azul': '#0066CC',
-                      'Azul Marino': '#001F3F', 'Azul Claro': '#87CEEB', 'Rojo': '#FF0000',
-                      'Verde': '#008000', 'Verde Quirófano': '#00CED1', 'Amarillo': '#FFFF00',
-                      'Naranja': '#FFA500', 'Naranja Alta Visibilidad': '#FF6600',
-                      'Gris': '#808080', 'Gris Claro': '#D3D3D3', 'Morado': '#800080',
-                      'Rosa': '#FFC0CB', 'Café': '#8B4513', 'Beige': '#F5F5DC'
-                    };
-                    const hexColor = colors[color as keyof typeof colors] || '#CCCCCC';
+                  {product.colors.map((colorName: string) => {
+                    // Buscar el color en la base de datos
+                    const colorData = colors.find(c => c.name === colorName);
+                    const hexColor = colorData?.hexCode || '#CCCCCC';
                     
                     return (
                       <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
+                        key={colorName}
+                        onClick={() => setSelectedColor(colorName)}
                         className={`w-10 h-10 rounded-full border-4 transition-all ${
-                          selectedColor === color 
+                          selectedColor === colorName 
                             ? 'border-uniform-primary ring-2 ring-blue-200 scale-110' 
                             : 'border-gray-300 hover:border-gray-400'
                         }`}
                         style={{ backgroundColor: hexColor }}
-                        title={color}
+                        title={colorName}
                       />
                     );
                   })}
