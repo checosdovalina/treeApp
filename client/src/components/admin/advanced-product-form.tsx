@@ -33,6 +33,7 @@ import {
 import type { Product, Category, Brand, Size, Color } from "@shared/schema";
 import { GarmentTypeSelector } from "./garment-type-selector";
 import { MultiGenderSizeSelector } from "@/components/ui/multi-gender-size-selector";
+import { MultiGenderSelector } from "@/components/ui/multi-gender-selector";
 
 // Schema de validación para el formulario de producto
 const productFormSchema = z.object({
@@ -521,55 +522,23 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                 </CardContent>
               </Card>
 
-              {/* Género y Tipo de Prenda */}
+              {/* Tipo de Prenda */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg font-poppins">Género y Tipo</CardTitle>
+                  <CardTitle className="text-lg font-poppins">Tipo de Prenda</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <Label className="text-sm font-roboto">Géneros Disponibles</Label>
-                      <div className="space-y-2">
-                        {["masculino", "femenino", "unisex"].map((gender) => (
-                          <div key={gender} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`gender-${gender}`}
-                              checked={form.watch("genders").includes(gender as any)}
-                              onCheckedChange={(checked) => {
-                                const currentGenders = form.watch("genders");
-                                if (checked) {
-                                  form.setValue("genders", [...currentGenders, gender as any]);
-                                } else {
-                                  form.setValue("genders", currentGenders.filter(g => g !== gender));
-                                }
-                              }}
-                              className="data-[state=checked]:bg-uniform-primary"
-                            />
-                            <Label
-                              htmlFor={`gender-${gender}`}
-                              className="text-sm font-roboto cursor-pointer capitalize"
-                            >
-                              {gender}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                      {form.watch("genders").length > 0 && (
-                        <div className="flex flex-wrap gap-1 pt-2">
-                          {form.watch("genders").map((gender) => (
-                            <Badge key={gender} variant="default" className="text-xs capitalize">
-                              {gender}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    <GarmentTypeSelector form={form} />
-                  </div>
+                <CardContent>
+                  <GarmentTypeSelector form={form} />
                 </CardContent>
               </Card>
+
+              {/* Géneros */}
+              <MultiGenderSelector
+                garmentTypeId={form.watch("garmentTypeId")}
+                selectedGenders={form.watch("genders") || []}
+                onGendersChange={(genders) => form.setValue("genders", genders)}
+                label="Géneros Disponibles"
+              />
 
               {/* Tallas Dinámicas */}
               <MultiGenderSizeSelector
