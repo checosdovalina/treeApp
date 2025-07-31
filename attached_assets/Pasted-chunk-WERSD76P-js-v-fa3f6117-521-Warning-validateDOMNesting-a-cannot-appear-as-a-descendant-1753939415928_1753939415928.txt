@@ -1,0 +1,52 @@
+chunk-WERSD76P.js?v=fa3f6117:521 Warning: validateDOMNesting(...): <a> cannot appear as a descendant of <a>.
+    at a
+    at a
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=fa3f6117:337:18
+    at div
+    at div
+    at header
+    at div
+    at StoreLayout (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/src/components/layout/store-layout.tsx:39:39)
+    at ProductDetail (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/src/pages/store/product-detail.tsx:35:18)
+    at Route (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=fa3f6117:323:16)
+    at Switch (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=fa3f6117:379:17)
+    at Router (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/src/App.tsx?v=pnjNLq5K3BL_HptzOolBT:41:48)
+    at Provider (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IFTONRVK.js?v=fa3f6117:38:15)
+    at TooltipProvider (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=fa3f6117:61:5)
+    at QueryClientProvider (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=fa3f6117:2805:3)
+    at App
+printWarning @ chunk-WERSD76P.js?v=fa3f6117:521
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=fa3f6117:555
+flush @ @tanstack_react-query.js?v=fa3f6117:569
+batch @ @tanstack_react-query.js?v=fa3f6117:587
+dispatch_fn @ @tanstack_react-query.js?v=fa3f6117:996
+setData @ @tanstack_react-query.js?v=fa3f6117:696
+onSuccess @ @tanstack_react-query.js?v=fa3f6117:897
+resolve @ @tanstack_react-query.js?v=fa3f6117:456
+Promise.then
+run @ @tanstack_react-query.js?v=fa3f6117:498
+start @ @tanstack_react-query.js?v=fa3f6117:536
+fetch @ @tanstack_react-query.js?v=fa3f6117:926
+executeFetch_fn @ @tanstack_react-query.js?v=fa3f6117:2211
+onSubscribe @ @tanstack_react-query.js?v=fa3f6117:1898
+subscribe @ @tanstack_react-query.js?v=fa3f6117:24
+(anonymous) @ @tanstack_react-query.js?v=fa3f6117:3022
+subscribeToStore @ chunk-WERSD76P.js?v=fa3f6117:11984
+commitHookEffectListMount @ chunk-WERSD76P.js?v=fa3f6117:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=fa3f6117:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=fa3f6117:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=fa3f6117:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=fa3f6117:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=fa3f6117:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=fa3f6117:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=fa3f6117:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=fa3f6117:9119
+commitRootImpl @ chunk-WERSD76P.js?v=fa3f6117:19432
+commitRoot @ chunk-WERSD76P.js?v=fa3f6117:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=fa3f6117:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=fa3f6117:18718
+workLoop @ chunk-WERSD76P.js?v=fa3f6117:197
+flushWork @ chunk-WERSD76P.js?v=fa3f6117:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=fa3f6117:384Understand this error
+50:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received

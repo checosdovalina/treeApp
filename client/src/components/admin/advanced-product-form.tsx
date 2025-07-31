@@ -277,21 +277,15 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
   };
 
   const toggleColor = (colorName: string) => {
-    console.log('Toggle color clicked:', colorName);
     const currentColors = form.getValues("colors");
     const isSelected = currentColors.includes(colorName);
-    
-    console.log('Current colors:', currentColors);
-    console.log('Is selected:', isSelected);
     
     if (isSelected) {
       const newColors = currentColors.filter(c => c !== colorName);
       form.setValue("colors", newColors);
-      console.log('Removed color, new colors:', newColors);
     } else {
       const newColors = [...currentColors, colorName];
       form.setValue("colors", newColors);
-      console.log('Added color, new colors:', newColors);
     }
     
     // Trigger form re-render to update UI
