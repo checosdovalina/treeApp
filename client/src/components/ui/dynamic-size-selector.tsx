@@ -80,7 +80,12 @@ export function DynamicSizeSelector({
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500">
-            Selecciona el tipo de prenda y género para ver las tallas disponibles
+            {!garmentTypeId && !gender 
+              ? "Selecciona el tipo de prenda y género para ver las tallas disponibles"
+              : !garmentTypeId 
+              ? "Selecciona el tipo de prenda para ver las tallas"
+              : "Selecciona al menos un género para ver las tallas disponibles"
+            }
           </p>
         </CardContent>
       </Card>

@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import type { Product, Category, Brand, Size, Color } from "@shared/schema";
 import { GarmentTypeSelector } from "./garment-type-selector";
-import { DynamicSizeSelector } from "@/components/ui/dynamic-size-selector";
+import { MultiGenderSizeSelector } from "@/components/ui/multi-gender-size-selector";
 
 // Schema de validación para el formulario de producto
 const productFormSchema = z.object({
@@ -98,7 +98,7 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
       description: product?.description || "",
       categoryId: product?.categoryId || 0,
       brand: product?.brand || "",
-      genders: product?.genders || ["unisex"],
+      genders: (product?.genders as ("masculino" | "femenino" | "unisex")[]) || ["unisex"],
       garmentTypeId: product?.garmentTypeId || 1,
       price: product?.price || "",
       images: product?.images || [],
@@ -186,8 +186,8 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
     },
   });
 
-  const onSubmit = (data: ProductFormData) => {
-    productMutation.mutate(data);
+  const onSubmit = (data: any) => {
+    productMutation.mutate(data as ProductFormData);
   };
 
   // Funciones para manejar imágenes
@@ -572,9 +572,9 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
               </Card>
 
               {/* Tallas Dinámicas */}
-              <DynamicSizeSelector
+              <MultiGenderSizeSelector
                 garmentTypeId={form.watch("garmentTypeId")}
-                gender={form.watch("genders")?.[0]} // Use the first selected gender for now
+                genders={form.watch("genders") || []}
                 selectedSizes={form.watch("sizes")}
                 onSizesChange={(sizes) => form.setValue("sizes", sizes)}
                 label="Tallas Disponibles"
