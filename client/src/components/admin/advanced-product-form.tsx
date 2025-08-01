@@ -28,12 +28,106 @@ import {
   Package,
   Tag,
   Palette,
-  Ruler
+  Ruler,
+  GripVertical
 } from "lucide-react";
+
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { Product, Category, Brand, Size, Color } from "@shared/schema";
 import { GarmentTypeSelector } from "./garment-type-selector";
 import { SeparatedGenderSizeSelector } from "@/components/ui/separated-gender-size-selector";
 import { MultiGenderSelector } from "@/components/ui/multi-gender-selector";
+
+// Componente sortable para imagen individual
+interface SortableImageProps {
+  imageUrl: string;
+  index: number;
+  onRemove: (index: number) => void;
+}
+
+function SortableImage({ imageUrl, index, onRemove }: SortableImageProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: index.toString() });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative group border-2 rounded-md overflow-hidden ${
+        isDragging ? 'border-blue-400 shadow-lg' : 'border-gray-200'
+      }`}
+    >
+      <div className="flex items-center">
+        {/* Drag handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing p-2 bg-gray-50 border-r flex-shrink-0"
+        >
+          <GripVertical className="h-4 w-4 text-gray-400" />
+        </div>
+        
+        {/* Imagen */}
+        <div className="flex-1 relative">
+          <img
+            src={imageUrl}
+            alt={`Imagen ${index + 1}`}
+            className="w-full h-16 object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f3f4f6'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%236b7280' text-anchor='middle' dy='.3em'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
+            }}
+          />
+          
+          {/* Número de orden */}
+          <div className="absolute top-1 left-1 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
+            {index + 1}
+          </div>
+          
+          {/* Botón eliminar */}
+          <Button
+            type="button"
+            size="sm"
+            variant="destructive"
+            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 h-6 w-6"
+            onClick={() => onRemove(index)}
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Schema de validación para el formulario de producto
 const productFormSchema = z.object({
@@ -259,7 +353,34 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
   const removeImage = (index: number) => {
     const currentImages = form.getValues("images");
     form.setValue("images", currentImages.filter((_, i) => i !== index));
-  };
+  }
+
+  // Configuración de sensores para drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Función para manejar el final del arrastre
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const currentImages = form.getValues("images");
+      const oldIndex = currentImages.findIndex((_, i) => i.toString() === active.id);
+      const newIndex = currentImages.findIndex((_, i) => i.toString() === over?.id);
+      
+      const newImages = arrayMove(currentImages, oldIndex, newIndex);
+      form.setValue("images", newImages);
+      
+      toast({
+        title: "Orden actualizado",
+        description: "El orden de las imágenes ha sido actualizado.",
+      });
+    }
+  };;
 
   // Funciones para manejar selecciones múltiples
   const toggleSize = (sizeName: string) => {
@@ -724,30 +845,33 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
                   
                   {form.watch("images").length > 0 && (
                     <div className="space-y-2">
-                      <Label className="text-sm font-roboto">Imágenes Actuales:</Label>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {form.watch("images").map((imageUrl, index) => (
-                          <div key={index} className="relative group">
-                            <img
-                              src={imageUrl}
-                              alt={`Imagen ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-md border"
-                              onError={(e) => {
-                                e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f3f4f6'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%236b7280' text-anchor='middle' dy='.3em'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="destructive"
-                              className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 h-6 w-6"
-                              onClick={() => removeImage(index)}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
+                      <Label className="text-sm font-roboto">
+                        Imágenes Actuales (arrastra para reordenar):
+                      </Label>
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                      >
+                        <SortableContext
+                          items={form.watch("images").map((_, index) => index.toString())}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div className="space-y-2">
+                            {form.watch("images").map((imageUrl, index) => (
+                              <SortableImage
+                                key={index}
+                                imageUrl={imageUrl}
+                                index={index}
+                                onRemove={removeImage}
+                              />
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        </SortableContext>
+                      </DndContext>
+                      <p className="text-xs text-gray-500">
+                        💡 La primera imagen será la imagen principal del producto.
+                      </p>
                     </div>
                   )}
                 </CardContent>
