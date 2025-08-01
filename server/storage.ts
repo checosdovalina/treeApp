@@ -34,7 +34,7 @@ import {
   type InsertQuote,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, ilike, count } from "drizzle-orm";
+import { eq, desc, and, sql, ilike, count, arrayContains } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -230,7 +230,8 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (filters?.gender) {
-      conditions.push(eq(products.gender, filters.gender as any));
+      // Check if the gender is included in the genders array
+      conditions.push(arrayContains(products.genders, [filters.gender]));
     }
     
     if (filters?.garmentTypeId) {

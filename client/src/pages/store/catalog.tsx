@@ -362,7 +362,7 @@ export default function CatalogPage() {
                 <span className="text-sm text-gray-600">Filtros activos:</span>
                 {selectedCategory && (
                   <Badge variant="secondary" className="flex items-center gap-1">
-                    {categories?.find((cat: any) => cat.id.toString() === selectedCategory)?.name}
+                    {Array.isArray(categories) ? categories.find((cat: any) => cat.id.toString() === selectedCategory)?.name : 'Categoría'}
                     <X 
                       className="h-3 w-3 cursor-pointer" 
                       onClick={() => setSelectedCategory("")}
@@ -371,7 +371,7 @@ export default function CatalogPage() {
                 )}
                 {selectedBrand && (
                   <Badge variant="secondary" className="flex items-center gap-1">
-                    {brands?.find((brand: any) => brand.id.toString() === selectedBrand)?.name}
+                    {Array.isArray(brands) ? brands.find((brand: any) => brand.id.toString() === selectedBrand)?.name : 'Marca'}
                     <X 
                       className="h-3 w-3 cursor-pointer" 
                       onClick={() => setSelectedBrand("")}
@@ -390,7 +390,7 @@ export default function CatalogPage() {
                 )}
                 {selectedGarmentType && (
                   <Badge variant="secondary" className="flex items-center gap-1">
-                    {garmentTypes?.find((type: any) => type.id.toString() === selectedGarmentType)?.displayName}
+                    {Array.isArray(garmentTypes) ? garmentTypes.find((type: any) => type.id.toString() === selectedGarmentType)?.displayName : 'Tipo'}
                     <X 
                       className="h-3 w-3 cursor-pointer" 
                       onClick={() => setSelectedGarmentType("")}
