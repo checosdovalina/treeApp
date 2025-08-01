@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -19,7 +20,8 @@ import {
   LogOut,
   Building,
   Phone,
-  Mail
+  Mail,
+  ChevronDown
 } from "lucide-react";
 
 interface CustomerLayoutProps {
@@ -28,11 +30,26 @@ interface CustomerLayoutProps {
 
 export default function CustomerLayout({ children }: CustomerLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showCatalogSubmenu, setShowCatalogSubmenu] = useState(false);
+  const [showMobileCatalogSubmenu, setShowMobileCatalogSubmenu] = useState(false);
   const { user, isAuthenticated } = useAuth() as { user: any; isAuthenticated: boolean };
   const { items } = useCart();
   const [location] = useLocation();
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Obtener datos para submenús
+  const { data: categories = [] } = useQuery<any[]>({
+    queryKey: ['/api/categories'],
+  });
+
+  const { data: brands = [] } = useQuery<any[]>({
+    queryKey: ['/api/brands'],
+  });
+
+  const { data: garmentTypes = [] } = useQuery<any[]>({
+    queryKey: ['/api/garment-types'],
+  });
 
   const navigation = [
     { name: "Inicio", href: "/store", icon: Home },
@@ -70,6 +87,99 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = location === item.href;
+                
+                // Catálogo con submenú
+                if (item.name === "Catálogo") {
+                  return (
+                    <div 
+                      key={item.name}
+                      className="relative"
+                      onMouseEnter={() => setShowCatalogSubmenu(true)}
+                      onMouseLeave={() => setShowCatalogSubmenu(false)}
+                    >
+                      <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-poppins font-medium transition-all duration-200 cursor-pointer ${
+                        isActive
+                          ? "bg-uniform-blue text-white shadow-md"
+                          : "text-uniform-dark hover:text-uniform-blue hover:bg-uniform-gold/10 hover:shadow-sm"
+                      }`}>
+                        <Icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                        <ChevronDown className="h-3 w-3" />
+                      </div>
+                      
+                      {/* Submenú */}
+                      {showCatalogSubmenu && (
+                        <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                          <div className="p-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              {/* Tipos de Prenda */}
+                              <div>
+                                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Tipos de Prenda</h3>
+                                <div className="space-y-2">
+                                  <Link 
+                                    href="/store/catalog" 
+                                    className="block text-sm text-gray-600 hover:text-uniform-blue transition-colors"
+                                  >
+                                    Ver Todos
+                                  </Link>
+                                  {garmentTypes.slice(0, 4).map((type: any) => (
+                                    <Link 
+                                      key={type.id}
+                                      href={`/store/catalog?garmentType=${type.id}`}
+                                      className="block text-sm text-gray-600 hover:text-uniform-blue transition-colors"
+                                    >
+                                      {type.displayName}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Marcas */}
+                              <div>
+                                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Marcas</h3>
+                                <div className="space-y-2">
+                                  <Link 
+                                    href="/store/brands" 
+                                    className="block text-sm text-gray-600 hover:text-uniform-blue transition-colors"
+                                  >
+                                    Ver Todas
+                                  </Link>
+                                  {brands.slice(0, 4).map((brand: any) => (
+                                    <Link 
+                                      key={brand.id}
+                                      href={`/store/catalog?brand=${brand.id}`}
+                                      className="block text-sm text-gray-600 hover:text-uniform-blue transition-colors"
+                                    >
+                                      {brand.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Sección adicional */}
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <h3 className="font-semibold text-gray-900 mb-3 text-sm">Categorías</h3>
+                              <div className="flex flex-wrap gap-2">
+                                {categories.slice(0, 3).map((category: any) => (
+                                  <Link 
+                                    key={category.id}
+                                    href={`/store/catalog?category=${category.id}`}
+                                    className="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-600 hover:bg-uniform-gold/20 hover:text-uniform-blue transition-colors"
+                                  >
+                                    {category.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                
+                // Otros elementos del menú normales
                 return (
                   <Link
                     key={item.name}
@@ -194,6 +304,88 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                       {navigation.map((item) => {
                         const Icon = item.icon;
                         const isActive = location === item.href;
+                        
+                        // Catálogo con submenú expandible
+                        if (item.name === "Catálogo") {
+                          return (
+                            <div key={item.name}>
+                              <div
+                                onClick={() => setShowMobileCatalogSubmenu(!showMobileCatalogSubmenu)}
+                                className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-poppins font-medium transition-all duration-200 cursor-pointer ${
+                                  isActive
+                                    ? "bg-uniform-blue text-white shadow-md"
+                                    : "text-uniform-dark hover:text-uniform-blue hover:bg-uniform-gold/10"
+                                }`}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <Icon className="h-5 w-5" />
+                                  <span>{item.name}</span>
+                                </div>
+                                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showMobileCatalogSubmenu ? 'rotate-180' : ''}`} />
+                              </div>
+                              
+                              {/* Submenú expandible */}
+                              {showMobileCatalogSubmenu && (
+                                <div className="ml-8 mt-2 space-y-2">
+                                  <Link
+                                    href="/store/catalog"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="block px-3 py-2 text-sm text-gray-600 hover:text-uniform-blue rounded"
+                                  >
+                                    Ver Todo el Catálogo
+                                  </Link>
+                                  
+                                  {/* Tipos de Prenda */}
+                                  <div className="border-l-2 border-gray-200 pl-3">
+                                    <p className="text-xs font-semibold text-gray-500 mb-2">TIPOS DE PRENDA</p>
+                                    {garmentTypes.slice(0, 5).map((type: any) => (
+                                      <Link
+                                        key={type.id}
+                                        href={`/store/catalog?garmentType=${type.id}`}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="block px-2 py-1 text-sm text-gray-600 hover:text-uniform-blue rounded"
+                                      >
+                                        {type.displayName}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                  
+                                  {/* Marcas */}
+                                  <div className="border-l-2 border-gray-200 pl-3">
+                                    <p className="text-xs font-semibold text-gray-500 mb-2">MARCAS</p>
+                                    {brands.slice(0, 4).map((brand: any) => (
+                                      <Link
+                                        key={brand.id}
+                                        href={`/store/catalog?brand=${brand.id}`}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="block px-2 py-1 text-sm text-gray-600 hover:text-uniform-blue rounded"
+                                      >
+                                        {brand.name}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                  
+                                  {/* Categorías */}
+                                  <div className="border-l-2 border-gray-200 pl-3">
+                                    <p className="text-xs font-semibold text-gray-500 mb-2">CATEGORÍAS</p>
+                                    {categories.slice(0, 3).map((category: any) => (
+                                      <Link
+                                        key={category.id}
+                                        href={`/store/catalog?category=${category.id}`}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="block px-2 py-1 text-sm text-gray-600 hover:text-uniform-blue rounded"
+                                      >
+                                        {category.name}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        }
+                        
+                        // Otros elementos del menú normales
                         return (
                           <Link
                             key={item.name}
