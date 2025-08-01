@@ -197,6 +197,9 @@ export default function CatalogPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
               {/* Search */}
               <div className="lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Buscar
+                </label>
                 <div className="relative">
                   <Input
                     placeholder="Buscar productos..."
@@ -210,12 +213,15 @@ export default function CatalogPage() {
 
               {/* Category Filter */}
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Categoría
+                </label>
                 <Select value={selectedCategory || "all"} onValueChange={(value) => setSelectedCategory(value === "all" ? "" : value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Categoría" />
+                    <SelectValue placeholder="Todas las categorías" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
+                    <SelectItem value="all">Todas las categorías</SelectItem>
                     {categories && Array.isArray(categories) ? categories.map((cat: any) => (
                       <SelectItem key={cat.id} value={cat.id.toString()}>
                         {cat.name}
@@ -227,12 +233,15 @@ export default function CatalogPage() {
 
               {/* Brand Filter */}
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Marca
+                </label>
                 <Select value={selectedBrand || "all"} onValueChange={(value) => setSelectedBrand(value === "all" ? "" : value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Marca" />
+                    <SelectValue placeholder="Todas las marcas" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
+                    <SelectItem value="all">Todas las marcas</SelectItem>
                     {brands && Array.isArray(brands) ? brands.filter((brand: any) => brand.isActive).map((brand: any) => (
                       <SelectItem key={brand.id} value={brand.id.toString()}>
                         {brand.name}
@@ -244,12 +253,15 @@ export default function CatalogPage() {
 
               {/* Gender Filter */}
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Género
+                </label>
                 <Select value={selectedGender || "all"} onValueChange={(value) => setSelectedGender(value === "all" ? "" : value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Género" />
+                    <SelectValue placeholder="Todos los géneros" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="all">Todos los géneros</SelectItem>
                     <SelectItem value="masculino">Masculino</SelectItem>
                     <SelectItem value="femenino">Femenino</SelectItem>
                     <SelectItem value="unisex">Unisex</SelectItem>
@@ -259,12 +271,15 @@ export default function CatalogPage() {
 
               {/* Garment Type Filter */}
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tipo de Prenda
+                </label>
                 <Select value={selectedGarmentType || "all"} onValueChange={(value) => setSelectedGarmentType(value === "all" ? "" : value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Tipo de Prenda" />
+                    <SelectValue placeholder="Todos los tipos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="all">Todos los tipos</SelectItem>
                     {garmentTypes && Array.isArray(garmentTypes) ? garmentTypes.map((type: any) => (
                       <SelectItem key={type.id} value={type.id.toString()}>
                         {type.displayName}
@@ -276,9 +291,12 @@ export default function CatalogPage() {
 
               {/* Sort By */}
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ordenar por
+                </label>
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Ordenar por" />
+                    <SelectValue placeholder="Nombre A-Z" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="name">Nombre A-Z</SelectItem>
@@ -290,24 +308,49 @@ export default function CatalogPage() {
                 </Select>
               </div>
 
-              {/* View Toggle */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={viewMode === "grid" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className="flex-1"
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className="flex-1"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
+              {/* Actions */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Acciones
+                </label>
+                <div className="flex flex-col gap-2">
+                  {/* Clear Filters Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSearchTerm("");
+                      setSelectedCategory("");
+                      setSelectedBrand("");
+                      setSelectedGender("");
+                      setSelectedGarmentType("");
+                    }}
+                    className="w-full text-xs"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Limpiar filtros
+                  </Button>
+                  
+                  {/* View Toggle */}
+                  <div className="flex gap-1">
+                    <Button
+                      variant={viewMode === "grid" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setViewMode("grid")}
+                      className="flex-1"
+                    >
+                      <Grid className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant={viewMode === "list" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setViewMode("list")}
+                      className="flex-1"
+                    >
+                      <List className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
