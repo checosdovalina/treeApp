@@ -82,7 +82,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative">
-          <div className="aspect-square bg-gray-100 overflow-hidden">
+          <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
             {product.images && product.images.length > 0 ? (
               <img 
                 src={product.images[0]} 
