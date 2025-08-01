@@ -318,37 +318,29 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Size Selection - Solo mostrar si hay género seleccionado O si es un producto de un solo género */}
-            {product.sizes?.length > 0 && (
+            {/* Size Selection - Solo mostrar cuando hay género seleccionado O es producto de un solo género */}
+            {product.sizes?.length > 0 && (selectedGender || product.genders?.length === 1) && (
               <div>
                 <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
                   Talla {selectedGender && `(${selectedGender})`}
                 </label>
-                {!selectedGender && product.genders?.length > 1 ? (
-                  <div className="p-4 bg-gray-50 rounded-lg border">
-                    <p className="text-sm text-gray-600 text-center">
-                      Por favor selecciona primero el género para ver las tallas disponibles
-                    </p>
-                  </div>
-                ) : (
-                  <Select value={selectedSize} onValueChange={setSelectedSize}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecciona una talla" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {/* Para productos de un solo género, mostrar todas las tallas */}
-                      {/* Para productos multi-género, mostrar tallas filtradas por género */}
-                      {(product.genders?.length === 1 ? 
-                        product.sizes : 
-                        availableSizesForGender
-                      ).map((size: string) => (
-                        <SelectItem key={size} value={size}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                <Select value={selectedSize} onValueChange={setSelectedSize}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecciona una talla" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {/* Para productos de un solo género, mostrar todas las tallas */}
+                    {/* Para productos multi-género, mostrar tallas filtradas por género */}
+                    {(product.genders?.length === 1 ? 
+                      product.sizes : 
+                      availableSizesForGender
+                    ).map((size: string) => (
+                      <SelectItem key={size} value={size}>
+                        {size}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {selectedGender && availableSizesForGender.length > 0 && (
                   <p className="text-xs text-gray-500 mt-1">
                     {availableSizesForGender.length} tallas disponibles para {selectedGender}
