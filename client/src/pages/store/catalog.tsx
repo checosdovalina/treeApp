@@ -56,12 +56,21 @@ export default function CatalogPage() {
     others: false
   });
 
-  // Get brand from URL params
+  // Get filters from URL params
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const brandParam = urlParams.get('brand');
+    const garmentTypeParam = urlParams.get('garmentType');
+    const categoryParam = urlParams.get('category');
+    
     if (brandParam) {
       setSelectedBrand(brandParam);
+    }
+    if (garmentTypeParam) {
+      setSelectedGarmentType(garmentTypeParam);
+    }
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
     }
   }, [location]);
 
