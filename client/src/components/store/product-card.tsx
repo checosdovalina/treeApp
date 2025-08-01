@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -74,12 +75,22 @@ export default function ProductCard({ product }: ProductCardProps) {
     setIsImageModalOpen(true);
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevenir navegación si se hace clic en botones
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    e.preventDefault();
+    setLocation(`/store/product/${product.id}`);
+  };
+
   return (
-    <Link href={`/store/product/${product.id}`}>
+    <div>
       <Card 
         className="overflow-hidden hover:shadow-md transition-all duration-300 product-card-hover cursor-pointer group"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={handleCardClick}
       >
         <div className="relative">
           <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
@@ -203,6 +214,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
       />
-    </Link>
+    </div>
   );
 }
