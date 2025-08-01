@@ -45,6 +45,7 @@ export default function CatalogPage() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   
   // States for collapsible filters
   const [expandedSections, setExpandedSections] = useState({
@@ -429,35 +430,58 @@ export default function CatalogPage() {
             <div className="flex-1">
               {/* Mobile Filters & Controls */}
               <div className="lg:hidden bg-white rounded-lg shadow-sm border p-4 mb-6">
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={clearAllFilters}
-                    className="w-full text-xs"
-                  >
-                    <X className="h-3 w-3 mr-1" />
-                    Limpiar filtros
-                  </Button>
+                <div className="flex flex-col gap-3">
+                  {/* Search Bar */}
+                  <div className="relative">
+                    <Input
+                      placeholder="Buscar productos..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  </div>
                   
-                  {/* View Toggle */}
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     <Button
-                      variant={viewMode === "grid" ? "default" : "outline"}
+                      variant="outline"
                       size="sm"
-                      onClick={() => setViewMode("grid")}
-                      className="flex-1"
+                      onClick={() => setShowMobileFilters(true)}
+                      className="flex-1 text-xs"
                     >
-                      <Grid className="h-3 w-3" />
+                      <Filter className="h-3 w-3 mr-1" />
+                      Filtros
                     </Button>
+                    
                     <Button
-                      variant={viewMode === "list" ? "default" : "outline"}
+                      variant="outline"
                       size="sm"
-                      onClick={() => setViewMode("list")}
-                      className="flex-1"
+                      onClick={clearAllFilters}
+                      className="flex-1 text-xs"
                     >
-                      <List className="h-3 w-3" />
+                      <X className="h-3 w-3 mr-1" />
+                      Limpiar
                     </Button>
+                    
+                    {/* View Toggle */}
+                    <div className="flex gap-1">
+                      <Button
+                        variant={viewMode === "grid" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setViewMode("grid")}
+                        className="px-2"
+                      >
+                        <Grid className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant={viewMode === "list" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setViewMode("list")}
+                        className="px-2"
+                      >
+                        <List className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -807,6 +831,211 @@ export default function CatalogPage() {
             </div>
           )}
         </div>
+
+        {/* Mobile Filters Modal */}
+        {showMobileFilters && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden">
+            <div className="fixed inset-y-0 left-0 w-80 bg-white shadow-xl transform transition-transform">
+              <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b">
+                  <h2 className="text-lg font-semibold">Filtros</h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowMobileFilters(false)}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                {/* Filters Content */}
+                <div className="flex-1 overflow-y-auto">
+                  {/* Browse by Category */}
+                  <div className="border-b">
+                    <button
+                      onClick={() => toggleSection('categories')}
+                      className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
+                    >
+                      <span>Buscar por Categoría</span>
+                      {expandedSections.categories ? (
+                        <Minus className="h-4 w-4" />
+                      ) : (
+                        <Plus className="h-4 w-4" />
+                      )}
+                    </button>
+                    {expandedSections.categories && (
+                      <div className="px-4 pb-4">
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => setSelectedCategory("")}
+                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                              !selectedCategory ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                            }`}
+                          >
+                            Todas las Categorías
+                          </button>
+                          {categories && Array.isArray(categories) ? categories.map((cat: any) => (
+                            <button
+                              key={cat.id}
+                              onClick={() => setSelectedCategory(cat.id.toString())}
+                              className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                                selectedCategory === cat.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                              }`}
+                            >
+                              {cat.name}
+                            </button>
+                          )) : null}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Browse by Brand */}
+                  <div className="border-b">
+                    <button
+                      onClick={() => toggleSection('brands')}
+                      className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
+                    >
+                      <span>Buscar por Marca</span>
+                      {expandedSections.brands ? (
+                        <Minus className="h-4 w-4" />
+                      ) : (
+                        <Plus className="h-4 w-4" />
+                      )}
+                    </button>
+                    {expandedSections.brands && (
+                      <div className="px-4 pb-4">
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => setSelectedBrand("")}
+                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                              !selectedBrand ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                            }`}
+                          >
+                            Todas las Marcas
+                          </button>
+                          {brands && Array.isArray(brands) ? brands.map((brand: any) => (
+                            <button
+                              key={brand.id}
+                              onClick={() => setSelectedBrand(brand.id.toString())}
+                              className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                                selectedBrand === brand.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                              }`}
+                            >
+                              {brand.name}
+                            </button>
+                          )) : null}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Browse by Gender */}
+                  <div className="border-b">
+                    <button
+                      onClick={() => toggleSection('genders')}
+                      className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
+                    >
+                      <span>Buscar por Género</span>
+                      {expandedSections.genders ? (
+                        <Minus className="h-4 w-4" />
+                      ) : (
+                        <Plus className="h-4 w-4" />
+                      )}
+                    </button>
+                    {expandedSections.genders && (
+                      <div className="px-4 pb-4">
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => setSelectedGender("")}
+                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                              !selectedGender ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                            }`}
+                          >
+                            Todos los Géneros
+                          </button>
+                          {["masculino", "femenino", "unisex"].map((gender) => (
+                            <button
+                              key={gender}
+                              onClick={() => setSelectedGender(gender)}
+                              className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                                selectedGender === gender ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                              }`}
+                            >
+                              {gender === "masculino" ? "Masculino" : 
+                               gender === "femenino" ? "Femenino" : "Unisex"}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Browse by Garment Type */}
+                  <div className="border-b">
+                    <button
+                      onClick={() => toggleSection('garmentTypes')}
+                      className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
+                    >
+                      <span>Buscar por Tipo de Prenda</span>
+                      {expandedSections.garmentTypes ? (
+                        <Minus className="h-4 w-4" />
+                      ) : (
+                        <Plus className="h-4 w-4" />
+                      )}
+                    </button>
+                    {expandedSections.garmentTypes && (
+                      <div className="px-4 pb-4">
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => setSelectedGarmentType("")}
+                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                              !selectedGarmentType ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                            }`}
+                          >
+                            Todos los Tipos
+                          </button>
+                          {garmentTypes && Array.isArray(garmentTypes) ? garmentTypes.map((type: any) => (
+                            <button
+                              key={type.id}
+                              onClick={() => setSelectedGarmentType(type.id.toString())}
+                              className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                                selectedGarmentType === type.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                              }`}
+                            >
+                              {type.displayName}
+                            </button>
+                          )) : null}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="border-t p-4">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={clearAllFilters}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Limpiar
+                    </Button>
+                    <Button
+                      className="flex-1"
+                      onClick={() => setShowMobileFilters(false)}
+                    >
+                      Aplicar Filtros
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </CustomerLayout>
   );
