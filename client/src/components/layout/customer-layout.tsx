@@ -32,6 +32,8 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showCatalogSubmenu, setShowCatalogSubmenu] = useState(false);
   const [showMobileCatalogSubmenu, setShowMobileCatalogSubmenu] = useState(false);
+  const [showBrandsSubmenu, setShowBrandsSubmenu] = useState(false);
+  const [showMobileBrandsSubmenu, setShowMobileBrandsSubmenu] = useState(false);
   const { user, isAuthenticated } = useAuth() as { user: any; isAuthenticated: boolean };
   const { items } = useCart();
   const [location] = useLocation();
@@ -168,6 +170,64 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                                     className="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-600 hover:bg-uniform-gold/20 hover:text-uniform-blue transition-colors"
                                   >
                                     {category.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                
+                // Marcas con submenú
+                if (item.name === "Marcas") {
+                  return (
+                    <div 
+                      key={item.name}
+                      className="relative"
+                      onMouseEnter={() => setShowBrandsSubmenu(true)}
+                      onMouseLeave={() => setShowBrandsSubmenu(false)}
+                    >
+                      <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-poppins font-medium transition-all duration-200 cursor-pointer ${
+                        isActive
+                          ? "bg-uniform-blue text-white shadow-md"
+                          : "text-uniform-dark hover:text-uniform-blue hover:bg-uniform-gold/10 hover:shadow-sm"
+                      }`}>
+                        <Icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                        <ChevronDown className="h-3 w-3" />
+                      </div>
+                      
+                      {/* Submenú de Marcas */}
+                      {showBrandsSubmenu && (
+                        <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                          <div className="p-4">
+                            <h3 className="font-semibold text-gray-900 mb-3 text-sm">Marcas Disponibles</h3>
+                            <div className="space-y-2 max-h-60 overflow-y-auto">
+                              <Link 
+                                href="/store/brands" 
+                                className="block text-sm text-gray-600 hover:text-uniform-blue transition-colors font-medium"
+                              >
+                                Ver Todas las Marcas
+                              </Link>
+                              <div className="border-t pt-2 mt-2">
+                                {brands.map((brand: any) => (
+                                  <Link 
+                                    key={brand.id}
+                                    href={`/store/catalog?brand=${brand.id}`}
+                                    className="flex items-center justify-between px-3 py-2 text-sm text-gray-600 hover:text-uniform-blue hover:bg-gray-50 rounded transition-colors"
+                                  >
+                                    <span>{brand.name}</span>
+                                    {brand.description && (
+                                      <span className="text-xs text-gray-400 ml-2">
+                                        {brand.description.length > 20 ? 
+                                          `${brand.description.substring(0, 20)}...` : 
+                                          brand.description
+                                        }
+                                      </span>
+                                    )}
                                   </Link>
                                 ))}
                               </div>
@@ -376,6 +436,56 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                                         className="block px-2 py-1 text-sm text-gray-600 hover:text-uniform-blue rounded"
                                       >
                                         {category.name}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        }
+                        
+                        // Marcas con submenú expandible
+                        if (item.name === "Marcas") {
+                          return (
+                            <div key={item.name}>
+                              <div
+                                onClick={() => setShowMobileBrandsSubmenu(!showMobileBrandsSubmenu)}
+                                className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-poppins font-medium transition-all duration-200 cursor-pointer ${
+                                  isActive
+                                    ? "bg-uniform-blue text-white shadow-md"
+                                    : "text-uniform-dark hover:text-uniform-blue hover:bg-uniform-gold/10"
+                                }`}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <Icon className="h-5 w-5" />
+                                  <span>{item.name}</span>
+                                </div>
+                                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showMobileBrandsSubmenu ? 'rotate-180' : ''}`} />
+                              </div>
+                              
+                              {/* Submenú de marcas expandible */}
+                              {showMobileBrandsSubmenu && (
+                                <div className="ml-8 mt-2 space-y-2">
+                                  <Link
+                                    href="/store/brands"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="block px-3 py-2 text-sm text-gray-600 hover:text-uniform-blue rounded font-medium"
+                                  >
+                                    Ver Todas las Marcas
+                                  </Link>
+                                  
+                                  {/* Lista de marcas */}
+                                  <div className="border-l-2 border-gray-200 pl-3 max-h-48 overflow-y-auto">
+                                    <p className="text-xs font-semibold text-gray-500 mb-2">MARCAS DISPONIBLES</p>
+                                    {brands.map((brand: any) => (
+                                      <Link
+                                        key={brand.id}
+                                        href={`/store/catalog?brand=${brand.id}`}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="block px-2 py-1 text-sm text-gray-600 hover:text-uniform-blue rounded"
+                                      >
+                                        {brand.name}
                                       </Link>
                                     ))}
                                   </div>
