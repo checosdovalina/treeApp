@@ -23,7 +23,11 @@ import {
   Grid,
   List,
   ArrowUpDown,
-  X
+  X,
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  Minus
 } from "lucide-react";
 
 export default function CatalogPage() {
@@ -41,6 +45,15 @@ export default function CatalogPage() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+  
+  // States for collapsible filters
+  const [expandedSections, setExpandedSections] = useState({
+    categories: true,
+    brands: false,
+    genders: false,
+    garmentTypes: false,
+    others: false
+  });
 
   // Get brand from URL params
   useEffect(() => {
@@ -178,6 +191,21 @@ export default function CatalogPage() {
     window.open(whatsappUrl, '_blank');
   };
 
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section as keyof typeof prev]
+    }));
+  };
+
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("");
+    setSelectedBrand("");
+    setSelectedGender("");
+    setSelectedGarmentType("");
+  };
+
   return (
     <CustomerLayout>
       <div className="min-h-screen bg-gray-50">
@@ -192,139 +220,220 @@ export default function CatalogPage() {
             </p>
           </div>
 
-          {/* Filters and Search */}
-          <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-              {/* Search */}
-              <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Buscar
-                </label>
-                <div className="relative">
-                  <Input
-                    placeholder="Buscar productos..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          {/* Main Content Layout */}
+          <div className="flex gap-8">
+            {/* Sidebar Filters */}
+            <div className="hidden lg:block w-80 flex-shrink-0">
+              <div className="bg-white rounded-lg shadow-sm border">
+                {/* Search Section */}
+                <div className="p-4 border-b">
+                  <div className="relative">
+                    <Input
+                      placeholder="Buscar productos..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  </div>
+                </div>
+
+                {/* Browse by Category */}
+                <div className="border-b">
+                  <button
+                    onClick={() => toggleSection('categories')}
+                    className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
+                  >
+                    <span>Buscar por Categoría</span>
+                    {expandedSections.categories ? (
+                      <Minus className="h-4 w-4" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                  </button>
+                  {expandedSections.categories && (
+                    <div className="px-4 pb-4">
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => setSelectedCategory("")}
+                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                            !selectedCategory ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Todas las Categorías
+                        </button>
+                        {categories && Array.isArray(categories) ? categories.map((cat: any) => (
+                          <button
+                            key={cat.id}
+                            onClick={() => setSelectedCategory(cat.id.toString())}
+                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                              selectedCategory === cat.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                            }`}
+                          >
+                            {cat.name}
+                          </button>
+                        )) : null}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Browse by Brand */}
+                <div className="border-b">
+                  <button
+                    onClick={() => toggleSection('brands')}
+                    className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
+                  >
+                    <span>Buscar por Marca</span>
+                    {expandedSections.brands ? (
+                      <Minus className="h-4 w-4" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                  </button>
+                  {expandedSections.brands && (
+                    <div className="px-4 pb-4">
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => setSelectedBrand("")}
+                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                            !selectedBrand ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Todas las Marcas
+                        </button>
+                        {brands && Array.isArray(brands) ? brands.filter((brand: any) => brand.isActive).map((brand: any) => (
+                          <button
+                            key={brand.id}
+                            onClick={() => setSelectedBrand(brand.id.toString())}
+                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                              selectedBrand === brand.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                            }`}
+                          >
+                            {brand.name}
+                          </button>
+                        )) : null}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Browse by Gender */}
+                <div className="border-b">
+                  <button
+                    onClick={() => toggleSection('genders')}
+                    className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
+                  >
+                    <span>Buscar por Género</span>
+                    {expandedSections.genders ? (
+                      <Minus className="h-4 w-4" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                  </button>
+                  {expandedSections.genders && (
+                    <div className="px-4 pb-4">
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => setSelectedGender("")}
+                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                            !selectedGender ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Todos los Géneros
+                        </button>
+                        <button
+                          onClick={() => setSelectedGender("masculino")}
+                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                            selectedGender === "masculino" ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Masculino
+                        </button>
+                        <button
+                          onClick={() => setSelectedGender("femenino")}
+                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                            selectedGender === "femenino" ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Femenino
+                        </button>
+                        <button
+                          onClick={() => setSelectedGender("unisex")}
+                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                            selectedGender === "unisex" ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Unisex
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Browse by Garment Type */}
+                <div className="border-b">
+                  <button
+                    onClick={() => toggleSection('garmentTypes')}
+                    className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
+                  >
+                    <span>Buscar por Tipo de Prenda</span>
+                    {expandedSections.garmentTypes ? (
+                      <Minus className="h-4 w-4" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                  </button>
+                  {expandedSections.garmentTypes && (
+                    <div className="px-4 pb-4">
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => setSelectedGarmentType("")}
+                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                            !selectedGarmentType ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          Todos los Tipos
+                        </button>
+                        {garmentTypes && Array.isArray(garmentTypes) ? garmentTypes.map((type: any) => (
+                          <button
+                            key={type.id}
+                            onClick={() => setSelectedGarmentType(type.id.toString())}
+                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
+                              selectedGarmentType === type.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                            }`}
+                          >
+                            {type.displayName}
+                          </button>
+                        )) : null}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Clear Filters */}
+                <div className="p-4">
+                  <Button
+                    variant="outline"
+                    onClick={clearAllFilters}
+                    className="w-full"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Limpiar Filtros
+                  </Button>
                 </div>
               </div>
+            </div>
 
-              {/* Category Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Categoría
-                </label>
-                <Select value={selectedCategory || "all"} onValueChange={(value) => setSelectedCategory(value === "all" ? "" : value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todas las categorías" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas las categorías</SelectItem>
-                    {categories && Array.isArray(categories) ? categories.map((cat: any) => (
-                      <SelectItem key={cat.id} value={cat.id.toString()}>
-                        {cat.name}
-                      </SelectItem>
-                    )) : null}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Brand Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Marca
-                </label>
-                <Select value={selectedBrand || "all"} onValueChange={(value) => setSelectedBrand(value === "all" ? "" : value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todas las marcas" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas las marcas</SelectItem>
-                    {brands && Array.isArray(brands) ? brands.filter((brand: any) => brand.isActive).map((brand: any) => (
-                      <SelectItem key={brand.id} value={brand.id.toString()}>
-                        {brand.name}
-                      </SelectItem>
-                    )) : null}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Gender Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Género
-                </label>
-                <Select value={selectedGender || "all"} onValueChange={(value) => setSelectedGender(value === "all" ? "" : value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos los géneros" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos los géneros</SelectItem>
-                    <SelectItem value="masculino">Masculino</SelectItem>
-                    <SelectItem value="femenino">Femenino</SelectItem>
-                    <SelectItem value="unisex">Unisex</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Garment Type Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tipo de Prenda
-                </label>
-                <Select value={selectedGarmentType || "all"} onValueChange={(value) => setSelectedGarmentType(value === "all" ? "" : value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos los tipos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos los tipos</SelectItem>
-                    {garmentTypes && Array.isArray(garmentTypes) ? garmentTypes.map((type: any) => (
-                      <SelectItem key={type.id} value={type.id.toString()}>
-                        {type.displayName}
-                      </SelectItem>
-                    )) : null}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Sort By */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ordenar por
-                </label>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Nombre A-Z" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="name">Nombre A-Z</SelectItem>
-                    <SelectItem value="price-asc">Precio: menor a mayor</SelectItem>
-                    <SelectItem value="price-desc">Precio: mayor a menor</SelectItem>
-                    <SelectItem value="newest">Más recientes</SelectItem>
-                    <SelectItem value="popular">Más populares</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Actions */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Acciones
-                </label>
-                <div className="flex flex-col gap-2">
-                  {/* Clear Filters Button */}
+            {/* Main Content */}
+            <div className="flex-1">
+              {/* Mobile Filters & Controls */}
+              <div className="lg:hidden bg-white rounded-lg shadow-sm border p-4 mb-6">
+                <div className="flex flex-wrap gap-3">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      setSearchTerm("");
-                      setSelectedCategory("");
-                      setSelectedBrand("");
-                      setSelectedGender("");
-                      setSelectedGarmentType("");
-                    }}
+                    onClick={clearAllFilters}
                     className="w-full text-xs"
                   >
                     <X className="h-3 w-3 mr-1" />
