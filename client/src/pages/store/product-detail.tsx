@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import StoreLayout from "@/components/layout/store-layout";
@@ -60,6 +60,13 @@ export default function ProductDetail() {
     // Fallback: mostrar todas las tallas del producto
     return product?.sizes || [];
   }, [product?.sizes, selectedGender, sizesData]);
+
+  // Auto-seleccionar género si solo hay uno disponible
+  useEffect(() => {
+    if (product?.genders?.length === 1 && !selectedGender) {
+      setSelectedGender(product.genders[0]);
+    }
+  }, [product?.genders, selectedGender]);
 
   // Resetear la talla seleccionada cuando cambie el género
   const handleGenderChange = (gender: string) => {
@@ -303,8 +310,8 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Gender Selection - Mostrar SIEMPRE si hay múltiples géneros */}
-            {product.genders?.length > 1 && (
+            {/* Gender Selection - Mostrar SIEMPRE si hay géneros disponibles */}
+            {product.genders?.length > 0 && (
               <div>
                 <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
                   Género
@@ -318,8 +325,8 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Size Selection - Solo mostrar cuando hay género seleccionado O es producto de un solo género */}
-            {product.sizes?.length > 0 && (selectedGender || product.genders?.length === 1) && (
+            {/* Size Selection - Solo mostrar cuando hay género seleccionado */}
+            {product.sizes?.length > 0 && selectedGender && (
               <div>
                 <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
                   Talla {selectedGender && `(${selectedGender})`}
@@ -329,12 +336,8 @@ export default function ProductDetail() {
                     <SelectValue placeholder="Selecciona una talla" />
                   </SelectTrigger>
                   <SelectContent>
-                    {/* Para productos de un solo género, mostrar todas las tallas */}
-                    {/* Para productos multi-género, mostrar tallas filtradas por género */}
-                    {(product.genders?.length === 1 ? 
-                      product.sizes : 
-                      availableSizesForGender
-                    ).map((size: string) => (
+                    {/* Mostrar tallas filtradas por género seleccionado */}
+                    {availableSizesForGender.map((size: string) => (
                       <SelectItem key={size} value={size}>
                         {size}
                       </SelectItem>
