@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import StoreLayout from "@/components/layout/store-layout";
@@ -40,6 +40,32 @@ export default function ProductDetail() {
   const { data: colors = [] } = useQuery<{id: number, name: string, hexCode: string}[]>({
     queryKey: ['/api/colors'],
   });
+
+  // Obtener las tallas disponibles por género
+  const { data: sizesData } = useQuery<{sizes: string[]}>({
+    queryKey: [`/api/size-ranges/available-sizes?garmentTypeId=${product?.garmentTypeId}&gender=${selectedGender}`],
+    enabled: !!selectedGender && !!product?.garmentTypeId,
+  });
+
+  // Obtener las tallas filtradas por género seleccionado
+  const availableSizesForGender = useMemo(() => {
+    if (!selectedGender) return [];
+    
+    // Si tenemos datos de tallas específicas por género, usarlas
+    if (sizesData?.sizes) {
+      // Filtrar solo las tallas que están disponibles en el producto
+      return sizesData.sizes.filter(size => product?.sizes?.includes(size));
+    }
+    
+    // Fallback: mostrar todas las tallas del producto
+    return product?.sizes || [];
+  }, [product?.sizes, selectedGender, sizesData]);
+
+  // Resetear la talla seleccionada cuando cambie el género
+  const handleGenderChange = (gender: string) => {
+    setSelectedGender(gender);
+    setSelectedSize(""); // Resetear talla al cambiar género
+  };
 
   const addToCartMutation = useMutation({
     mutationFn: async () => {
@@ -277,24 +303,57 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Size Selection */}
+            {/* Gender Selection - Mostrar SIEMPRE si hay múltiples géneros */}
+            {product.genders?.length > 1 && (
+              <div>
+                <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
+                  Género
+                </label>
+                <GenderSelector
+                  availableGenders={product.genders}
+                  selectedGender={selectedGender}
+                  onGenderChange={handleGenderChange}
+                  variant="buttons"
+                />
+              </div>
+            )}
+
+            {/* Size Selection - Solo mostrar si hay género seleccionado O si es un producto de un solo género */}
             {product.sizes?.length > 0 && (
               <div>
                 <label className="block text-sm font-medium text-uniform-neutral-900 mb-2">
-                  Talla
+                  Talla {selectedGender && `(${selectedGender})`}
                 </label>
-                <Select value={selectedSize} onValueChange={setSelectedSize}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecciona una talla" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {product.sizes.map((size: string) => (
-                      <SelectItem key={size} value={size}>
-                        {size}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {!selectedGender && product.genders?.length > 1 ? (
+                  <div className="p-4 bg-gray-50 rounded-lg border">
+                    <p className="text-sm text-gray-600 text-center">
+                      Por favor selecciona primero el género para ver las tallas disponibles
+                    </p>
+                  </div>
+                ) : (
+                  <Select value={selectedSize} onValueChange={setSelectedSize}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecciona una talla" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {/* Para productos de un solo género, mostrar todas las tallas */}
+                      {/* Para productos multi-género, mostrar tallas filtradas por género */}
+                      {(product.genders?.length === 1 ? 
+                        product.sizes : 
+                        availableSizesForGender
+                      ).map((size: string) => (
+                        <SelectItem key={size} value={size}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                {selectedGender && availableSizesForGender.length > 0 && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {availableSizesForGender.length} tallas disponibles para {selectedGender}
+                  </p>
+                )}
               </div>
             )}
 
@@ -328,15 +387,7 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Gender Selection - Solo para productos mixtos */}
-            {product.genders?.length > 1 && (
-              <GenderSelector
-                availableGenders={product.genders}
-                selectedGender={selectedGender}
-                onGenderChange={setSelectedGender}
-                variant="buttons"
-              />
-            )}
+
 
             {/* Quantity */}
             <div>
