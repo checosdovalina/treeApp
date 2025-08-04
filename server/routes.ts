@@ -589,6 +589,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/products/:id/color-images/clear', isAdmin, async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+      
+      await storage.clearProductColorImages(productId);
+      res.json({ message: "All color images cleared successfully" });
+    } catch (error) {
+      console.error("Error clearing product color images:", error);
+      res.status(500).json({ message: "Failed to clear product color images" });
+    }
+  });
+
   // Orders
   app.get('/api/orders', isAuthenticated, async (req: any, res) => {
     try {

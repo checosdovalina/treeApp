@@ -55,7 +55,7 @@ import type { Product, Category, Brand, Size, Color } from "@shared/schema";
 import { GarmentTypeSelector } from "./garment-type-selector";
 import { SeparatedGenderSizeSelector } from "@/components/ui/separated-gender-size-selector";
 import { MultiGenderSelector } from "@/components/ui/multi-gender-selector";
-import { ProductColorImages } from "./product-color-images";
+import { SimpleColorImages } from "./simple-color-images";
 
 // Componente sortable para imagen individual
 interface SortableImageProps {
@@ -879,12 +879,13 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
               </Card>
 
               {/* Imágenes por Color - Solo mostrar si estamos editando un producto existente */}
-              {product && product.id && (
-                <ProductColorImages 
+              {product && product.id && form.watch("images").length > 0 && (
+                <SimpleColorImages 
                   productId={product.id}
                   availableColors={colors.filter(color => 
                     form.watch("colors").includes(color.name)
                   )}
+                  productImages={form.watch("images")}
                 />
               )}
 

@@ -90,6 +90,7 @@ export interface IStorage {
   createProductColorImage(productColorImage: InsertProductColorImage): Promise<ProductColorImage>;
   updateProductColorImage(id: number, updates: Partial<InsertProductColorImage>): Promise<ProductColorImage>;
   deleteProductColorImage(id: number): Promise<void>;
+  clearProductColorImages(productId: number): Promise<void>;
   
   // Order operations
   getOrders(filters?: {
@@ -550,6 +551,44 @@ export class DatabaseStorage implements IStorage {
       .from(orders)
       .orderBy(desc(orders.createdAt))
       .limit(limit);
+  }
+
+  // Product Color Images operations
+  async getProductColorImages(productId: number) {
+    return await db
+      .select()
+      .from(productColorImages)
+      .where(eq(productColorImages.productId, productId))
+      .orderBy(productColorImages.sortOrder);
+  }
+
+  async createProductColorImage(data: any) {
+    const [colorImage] = await db
+      .insert(productColorImages)
+      .values(data)
+      .returning();
+    return colorImage;
+  }
+
+  async updateProductColorImage(id: number, data: any) {
+    const [colorImage] = await db
+      .update(productColorImages)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(productColorImages.id, id))
+      .returning();
+    return colorImage;
+  }
+
+  async deleteProductColorImage(id: number) {
+    await db
+      .delete(productColorImages)
+      .where(eq(productColorImages.id, id));
+  }
+
+  async clearProductColorImages(productId: number) {
+    await db
+      .delete(productColorImages)
+      .where(eq(productColorImages.productId, productId));
   }
 }
 
