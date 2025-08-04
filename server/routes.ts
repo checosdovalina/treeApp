@@ -450,6 +450,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/products', isAdmin, async (req, res) => {
     try {
       const data = insertProductSchema.parse(req.body);
+      
+      // Generate SKU if not provided
+      if (!data.sku || data.sku.trim() === '') {
+        const timestamp = Date.now().toString(36);
+        const random = Math.random().toString(36).substring(2, 5);
+        data.sku = `PRD-${timestamp}-${random}`.toUpperCase();
+      }
+      
       const product = await storage.createProduct(data);
       res.json(product);
     } catch (error: any) {
