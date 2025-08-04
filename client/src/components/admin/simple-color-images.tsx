@@ -24,9 +24,7 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
   const saveAssignmentsMutation = useMutation({
     mutationFn: async () => {
       // Clear existing assignments
-      await apiRequest(`/api/products/${productId}/color-images/clear`, {
-        method: "DELETE",
-      });
+      await apiRequest(`/api/products/${productId}/color-images/clear`, "DELETE");
 
       // Group images by color
       const colorGroups: {[colorId: number]: string[]} = {};
@@ -40,14 +38,11 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
 
       // Create new assignments
       const promises = Object.entries(colorGroups).map(([colorId, images]) => 
-        apiRequest(`/api/products/${productId}/color-images`, {
-          method: "POST",
-          body: JSON.stringify({
-            colorId: parseInt(colorId),
-            images,
-            isPrimary: false,
-            sortOrder: 0,
-          }),
+        apiRequest(`/api/products/${productId}/color-images`, "POST", {
+          colorId: parseInt(colorId),
+          images,
+          isPrimary: false,
+          sortOrder: 0,
         })
       );
 
@@ -159,7 +154,7 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
                           <div className="flex items-center gap-2">
                             <div 
                               className="w-4 h-4 rounded-full border border-gray-300"
-                              style={{ backgroundColor: color.hexCode }}
+                              style={{ backgroundColor: color.hexCode || "#CCCCCC" }}
                             />
                             {color.name}
                           </div>
@@ -200,7 +195,7 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
                     <div key={color.id} className="flex items-center gap-2 text-sm">
                       <div 
                         className="w-3 h-3 rounded-full border"
-                        style={{ backgroundColor: color.hexCode }}
+                        style={{ backgroundColor: color.hexCode || "#CCCCCC" }}
                       />
                       <span>{color.name}: {assignedImages} imagen{assignedImages !== 1 ? 's' : ''}</span>
                     </div>

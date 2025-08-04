@@ -2,6 +2,36 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+
+// Admin middleware
+const isAdmin = async (req: any, res: any, next: any) => {
+  try {
+    // Check if user is authenticated
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
+      // Check for admin test user
+      const adminUser = await storage.getUser('admin-test');
+      if (adminUser && adminUser.role === 'admin') {
+        return next();
+      }
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const userId = req.user?.claims?.sub;
+    if (!userId) {
+      return res.status(401).json({ message: "User ID not found" });
+    }
+
+    const user = await storage.getUser(userId);
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+
+    next();
+  } catch (error) {
+    console.error("Error in admin middleware:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 import { 
   insertProductSchema, 
   insertCategorySchema,
