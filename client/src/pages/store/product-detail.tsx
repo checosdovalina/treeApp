@@ -47,6 +47,19 @@ export default function ProductDetail() {
     enabled: !!selectedGender && !!product?.garmentTypeId,
   });
 
+  // Obtener imágenes por color del producto
+  const { data: colorImages = [] } = useQuery<{
+    id: number;
+    productId: number;
+    colorId: number;
+    images: string[];
+    isPrimary: boolean;
+    color?: { id: number; name: string; hexCode: string };
+  }[]>({
+    queryKey: [`/api/products/${id}/color-images`],
+    enabled: !!id && !isNaN(Number(id)),
+  });
+
   // Obtener las tallas filtradas por género seleccionado
   const availableSizesForGender = useMemo(() => {
     if (!selectedGender) return [];
@@ -60,6 +73,36 @@ export default function ProductDetail() {
     // Fallback: mostrar todas las tallas del producto
     return product?.sizes || [];
   }, [product?.sizes, selectedGender, sizesData]);
+
+  // Calcular las imágenes a mostrar basándose en el color seleccionado
+  const displayImages = useMemo(() => {
+    if (!selectedColor || colorImages.length === 0) {
+      // Si no hay color seleccionado o no hay imágenes por color, usar imágenes del producto
+      return product?.images || [];
+    }
+
+    // Buscar el color seleccionado en los colores disponibles
+    const selectedColorObj = colors.find(c => c.name === selectedColor);
+    if (!selectedColorObj) {
+      return product?.images || [];
+    }
+
+    // Buscar las imágenes específicas para este color
+    const colorImageSet = colorImages.find(ci => ci.colorId === selectedColorObj.id);
+    if (colorImageSet && colorImageSet.images.length > 0) {
+      return colorImageSet.images;
+    }
+
+    // Fallback: usar imágenes del producto si no hay específicas para el color
+    return product?.images || [];
+  }, [selectedColor, colorImages, colors, product?.images]);
+
+  // Resetear el índice de imagen seleccionada cuando cambien las imágenes disponibles
+  useEffect(() => {
+    if (selectedImage >= displayImages.length) {
+      setSelectedImage(0);
+    }
+  }, [displayImages, selectedImage]);
 
   // Auto-seleccionar género si solo hay uno disponible
   useEffect(() => {
@@ -93,7 +136,7 @@ export default function ProductDetail() {
         color: selectedColor,
         gender: selectedGender || product.genders?.[0],
         quantity: quantity,
-        image: product.images?.[0] || '',
+        image: getValidImageUrl(displayImages, 0),
         sku: product.sku || '',
       });
     },
@@ -225,7 +268,7 @@ export default function ProductDetail() {
           <div className="space-y-4">
             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
               {(() => {
-                if (!product.images?.length) {
+                if (!displayImages?.length) {
                   return (
                     <div className="w-full h-full flex items-center justify-center">
                       <Shirt className="h-24 w-24 text-gray-400" />
@@ -233,7 +276,7 @@ export default function ProductDetail() {
                   );
                 }
                 
-                const validImage = getValidImageUrl(product.images, selectedImage);
+                const validImage = getValidImageUrl(displayImages, selectedImage);
                 
                 return (
                   <img 
@@ -252,9 +295,9 @@ export default function ProductDetail() {
               })()}
             </div>
             
-            {product.images?.length > 1 && (
+            {displayImages?.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
-                {product.images.map((image: string, index: number) => (
+                {displayImages.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -263,7 +306,7 @@ export default function ProductDetail() {
                     }`}
                   >
                     <img 
-                      src={getValidImageUrl(product.images, index)} 
+                      src={getValidImageUrl(displayImages, index)} 
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover cursor-zoom-in"
                       onDoubleClick={() => {
@@ -537,7 +580,7 @@ export default function ProductDetail() {
 
       {/* Image Modal */}
       <ImageModal
-        src={getValidImageUrl(product.images, selectedImage)}
+        src={getValidImageUrl(displayImages, selectedImage)}
         alt={product.name}
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}

@@ -10,6 +10,7 @@ import {
   orders,
   orderItems,
   quotes,
+  productColorImages,
   type User,
   type UpsertUser,
   type Product,
@@ -32,6 +33,8 @@ import {
   type InsertOrderItem,
   type Quote,
   type InsertQuote,
+  type ProductColorImage,
+  type InsertProductColorImage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, ilike, count, arrayContains } from "drizzle-orm";
@@ -81,6 +84,12 @@ export interface IStorage {
   // Inventory operations
   getInventory(productId: number): Promise<Inventory[]>;
   updateInventory(productId: number, size: string, color: string, quantity: number): Promise<Inventory>;
+  
+  // Product color images operations
+  getProductColorImages(productId: number): Promise<ProductColorImage[]>;
+  createProductColorImage(productColorImage: InsertProductColorImage): Promise<ProductColorImage>;
+  updateProductColorImage(id: number, updates: Partial<InsertProductColorImage>): Promise<ProductColorImage>;
+  deleteProductColorImage(id: number): Promise<void>;
   
   // Order operations
   getOrders(filters?: {
@@ -317,6 +326,32 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return created;
     }
+  }
+
+  // Product color images operations
+  async getProductColorImages(productId: number): Promise<ProductColorImage[]> {
+    return await db.select().from(productColorImages).where(eq(productColorImages.productId, productId));
+  }
+
+  async createProductColorImage(productColorImage: InsertProductColorImage): Promise<ProductColorImage> {
+    const [created] = await db
+      .insert(productColorImages)
+      .values(productColorImage)
+      .returning();
+    return created;
+  }
+
+  async updateProductColorImage(id: number, updates: Partial<InsertProductColorImage>): Promise<ProductColorImage> {
+    const [updated] = await db
+      .update(productColorImages)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(productColorImages.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteProductColorImage(id: number): Promise<void> {
+    await db.delete(productColorImages).where(eq(productColorImages.id, id));
   }
 
   // Order operations

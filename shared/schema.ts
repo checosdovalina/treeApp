@@ -112,13 +112,26 @@ export const products = pgTable("products", {
   description: text("description"),
   categoryId: integer("category_id").references(() => categories.id),
   brand: varchar("brand", { length: 100 }),
-  genders: text("genders").array().default([]).notNull(), // Array of genders instead of single gender
+  gender: genderEnum("gender"), // Keep existing column with enum type for compatibility
+  genders: text("genders").array().default([]).notNull(), // New array column for multiple genders
   garmentTypeId: integer("garment_type_id").references(() => garmentTypes.id),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   images: text("images").array().default([]),
   sizes: text("sizes").array().default([]),
   colors: text("colors").array().default([]),
   isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Product color images table - to store specific images for each color
+export const productColorImages = pgTable("product_color_images", {
+  id: serial("id").primaryKey(),
+  productId: integer("product_id").references(() => products.id).notNull(),
+  colorId: integer("color_id").references(() => colors.id).notNull(),
+  images: text("images").array().default([]).notNull(), // Array of image URLs for this color
+  isPrimary: boolean("is_primary").default(false), // Primary color for product display
+  sortOrder: integer("sort_order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -207,6 +220,18 @@ export const productsRelations = relations(products, ({ one, many }) => ({
   }),
   inventory: many(inventory),
   orderItems: many(orderItems),
+  colorImages: many(productColorImages),
+}));
+
+export const productColorImagesRelations = relations(productColorImages, ({ one }) => ({
+  product: one(products, {
+    fields: [productColorImages.productId],
+    references: [products.id],
+  }),
+  color: one(colors, {
+    fields: [productColorImages.colorId],
+    references: [colors.id],
+  }),
 }));
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
@@ -223,6 +248,7 @@ export const sizesRelations = relations(sizes, ({ many }) => ({
 
 export const colorsRelations = relations(colors, ({ many }) => ({
   inventory: many(inventory),
+  productImages: many(productColorImages),
 }));
 
 export const garmentTypesRelations = relations(garmentTypes, ({ many }) => ({
@@ -318,6 +344,12 @@ export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
   id: true,
 });
 
+export const insertProductColorImageSchema = createInsertSchema(productColorImages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertQuoteSchema = createInsertSchema(quotes).omit({
   id: true,
   quoteNumber: true,
@@ -390,5 +422,9 @@ export type OrderItem = typeof orderItems.$inferSelect;
 
 export type InsertQuote = z.infer<typeof insertQuoteSchema>;
 export type Quote = typeof quotes.$inferSelect;
+
+export type InsertProductColorImage = z.infer<typeof insertProductColorImageSchema>;
+export type ProductColorImage = typeof productColorImages.$inferSelect;
+
 export type CustomerRegistration = z.infer<typeof customerRegistrationSchema>;
 export type QuoteRequest = z.infer<typeof quoteRequestSchema>;

@@ -13,6 +13,7 @@ import {
   insertOrderSchema,
   insertOrderItemSchema,
   insertQuoteSchema,
+  insertProductColorImageSchema,
   customerRegistrationSchema,
   quoteRequestSchema,
   sizeRanges
@@ -511,6 +512,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating inventory:", error);
       res.status(400).json({ message: "Failed to update inventory" });
+    }
+  });
+
+  // Product Color Images
+  app.get('/api/products/:id/color-images', async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+      const colorImages = await storage.getProductColorImages(productId);
+      res.json(colorImages);
+    } catch (error) {
+      console.error("Error fetching product color images:", error);
+      res.status(500).json({ message: "Failed to fetch product color images" });
+    }
+  });
+
+  app.post('/api/products/:id/color-images', isAdmin, async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+      
+      const data = insertProductColorImageSchema.parse({
+        ...req.body,
+        productId
+      });
+      
+      const colorImage = await storage.createProductColorImage(data);
+      res.json(colorImage);
+    } catch (error) {
+      console.error("Error creating product color image:", error);
+      res.status(400).json({ message: "Failed to create product color image" });
+    }
+  });
+
+  app.put('/api/products/:productId/color-images/:id', isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid color image ID" });
+      }
+      
+      const data = insertProductColorImageSchema.partial().parse(req.body);
+      const colorImage = await storage.updateProductColorImage(id, data);
+      res.json(colorImage);
+    } catch (error) {
+      console.error("Error updating product color image:", error);
+      res.status(400).json({ message: "Failed to update product color image" });
+    }
+  });
+
+  app.delete('/api/products/:productId/color-images/:id', isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid color image ID" });
+      }
+      
+      await storage.deleteProductColorImage(id);
+      res.json({ message: "Product color image deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting product color image:", error);
+      res.status(500).json({ message: "Failed to delete product color image" });
     }
   });
 

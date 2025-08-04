@@ -34,15 +34,15 @@ Authentication: Role-based system with admin vs customer accounts and appropriat
 - **ORM**: Drizzle with PostgreSQL dialect
 - **Schema Location**: `shared/schema.ts`
 - **Migrations**: Drizzle-kit for database migrations in `./migrations`
-- **Key Tables**: Users, sessions, products (with SKU, brand, size, color, garment type tracking), categories, brands, sizes, colors, garment_types, orders, order_items, quotes, inventory.
+- **Key Tables**: Users, sessions, products (with SKU, brand, size, color, garment type tracking), categories, brands, sizes, colors, garment_types, orders, order_items, quotes, inventory, **product_color_images** (color-specific product images).
 
 ### Key Features & Technical Implementations
 - **Authentication System**: Replit Auth, role-based access, protected routes, PostgreSQL-backed sessions.
-- **Product Management**: Hierarchical categorization, inventory tracking (size/color variants), multiple image support (URL/file upload with base64 conversion), active/inactive states, dynamic brand/size/color/category creation. Gender-specific size configurations based on garment type. SKU implementation with validation.
+- **Product Management**: Hierarchical categorization, inventory tracking (size/color variants), multiple image support (URL/file upload with base64 conversion), active/inactive states, dynamic brand/size/color/category creation. Gender-specific size configurations based on garment type. SKU implementation with validation. **NEW**: Color-specific product images system allowing customers to preview garments in selected colors.
 - **Order Management**: Manual quote creation (B2B) with PDF export and email, full order lifecycle management, customer database with purchase history.
 - **Shopping Cart**: Client-side localStorage persistence, real-time updates, variant support.
-- **Admin Dashboard**: Comprehensive CRUD for products, order processing, customer management, quote generation, sales analytics.
-- **UI/UX**: Consistent branding across customer and admin interfaces, mobile-optimized navigation, advanced filtering/sorting, WhatsApp integration for product inquiry.
+- **Admin Dashboard**: Comprehensive CRUD for products, order processing, customer management, quote generation, sales analytics. **NEW**: Product color image configuration interface.
+- **UI/UX**: Consistent branding across customer and admin interfaces, mobile-optimized navigation, advanced filtering/sorting, WhatsApp integration for product inquiry. **NEW**: Expandable navigation menus with hover-based submenus for catalog and brand filtering.
 
 ## External Dependencies
 
