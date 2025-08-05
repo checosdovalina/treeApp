@@ -76,17 +76,17 @@ export default function ProductDetail() {
 
   // Calcular las imágenes a mostrar basándose en el color seleccionado
   const displayImages = useMemo(() => {
-    console.log('Calculating display images:', {
-      selectedColor,
-      colorImagesLength: colorImages.length,
-      productImagesLength: product?.images?.length,
-      colorImages: colorImages.map(ci => ({ colorId: ci.colorId, imagesCount: ci.images.length }))
-    });
-
+    console.log('=== CALCULATING DISPLAY IMAGES ===');
+    console.log('Selected color:', selectedColor);
+    console.log('Available color images:', colorImages.length);
+    console.log('Product images:', product?.images?.length);
+    
+    // Si no hay color seleccionado, usar imágenes del producto
     if (!selectedColor) {
-      // Si no hay color seleccionado, usar imágenes del producto
-      console.log('Using product images (no color selected)');
-      return product?.images || [];
+      console.log('No color selected - using product images');
+      const productImages = product?.images || [];
+      console.log('Product images to use:', productImages.length);
+      return productImages;
     }
 
     // Buscar el color seleccionado en los colores disponibles
@@ -94,22 +94,26 @@ export default function ProductDetail() {
     console.log('Selected color object:', selectedColorObj);
     
     if (!selectedColorObj) {
-      console.log('Color not found in database, using product images');
+      console.log('Color not found in database - using product images');
       return product?.images || [];
     }
 
     // Buscar las imágenes específicas para este color
     const colorImageSet = colorImages.find(ci => ci.colorId === selectedColorObj.id);
-    console.log('Color image set found:', colorImageSet);
+    console.log('Color image set for ID', selectedColorObj.id, ':', colorImageSet);
     
     if (colorImageSet && colorImageSet.images.length > 0) {
       console.log('Using color-specific images:', colorImageSet.images);
-      return colorImageSet.images;
+      console.log('================================');
+      return [...colorImageSet.images]; // Crear nueva array para forzar re-render
     }
 
     // Fallback: usar imágenes del producto si no hay específicas para el color
-    console.log('No color-specific images found, using product images');
-    return product?.images || [];
+    console.log('No specific images for color - using product images');
+    const fallbackImages = product?.images || [];
+    console.log('Fallback images:', fallbackImages.length);
+    console.log('================================');
+    return [...fallbackImages]; // Crear nueva array para forzar re-render
   }, [selectedColor, colorImages, colors, product?.images]);
 
   // Resetear el índice de imagen seleccionada cuando cambien las imágenes disponibles
@@ -302,6 +306,7 @@ export default function ProductDetail() {
                 
                 return (
                   <img 
+                    key={`main-image-${selectedColor}-${selectedImage}`}
                     src={validImage}
                     alt={product.name}
                     className="w-full h-full object-cover cursor-zoom-in"
@@ -321,13 +326,14 @@ export default function ProductDetail() {
               <div className="grid grid-cols-4 gap-2">
                 {displayImages.map((image: string, index: number) => (
                   <button
-                    key={index}
+                    key={`thumb-${selectedColor}-${index}`}
                     onClick={() => setSelectedImage(index)}
                     className={`aspect-square rounded border-2 overflow-hidden ${
                       selectedImage === index ? 'border-uniform-primary' : 'border-gray-200'
                     }`}
                   >
                     <img 
+                      key={`thumb-img-${selectedColor}-${index}`}
                       src={getValidImageUrl(displayImages, index)} 
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover cursor-zoom-in"
