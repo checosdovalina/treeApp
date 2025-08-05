@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,10 +20,40 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
   const queryClient = useQueryClient();
   const [imageColorMap, setImageColorMap] = useState<{[imageUrl: string]: number}>({});
 
+  // Load existing color assignments
+  const { data: colorImages } = useQuery({
+    queryKey: [`/api/products/${productId}/color-images`],
+    enabled: !!productId
+  });
+
+  // Initialize imageColorMap with existing assignments
+  useEffect(() => {
+    if (colorImages && Array.isArray(colorImages) && productImages.length > 0) {
+      const newImageColorMap: {[imageUrl: string]: number} = {};
+      
+      colorImages.forEach((colorImage: any) => {
+        if (colorImage.images && Array.isArray(colorImage.images)) {
+          colorImage.images.forEach((imageUrl: string) => {
+            if (productImages.includes(imageUrl)) {
+              newImageColorMap[imageUrl] = colorImage.colorId;
+            }
+          });
+        }
+      });
+      
+      console.log('Loading existing assignments:', newImageColorMap);
+      setImageColorMap(newImageColorMap);
+    }
+  }, [colorImages, productImages]);
+
   // Save image-color assignments
   const saveAssignmentsMutation = useMutation({
     mutationFn: async () => {
+      console.log('Saving color assignments...');
+      console.log('Current imageColorMap:', imageColorMap);
+
       // Clear existing assignments
+      console.log('Clearing existing assignments...');
       await apiRequest(`/api/products/${productId}/color-images/clear`, "DELETE");
 
       // Group images by color
@@ -36,17 +66,22 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
         colorGroups[colorId].push(imageUrl);
       });
 
+      console.log('Color groups to save:', colorGroups);
+
       // Create new assignments
-      const promises = Object.entries(colorGroups).map(([colorId, images]) => 
-        apiRequest(`/api/products/${productId}/color-images`, "POST", {
+      const promises = Object.entries(colorGroups).map(([colorId, images]) => {
+        const payload = {
           colorId: parseInt(colorId),
           images,
           isPrimary: false,
           sortOrder: 0,
-        })
-      );
+        };
+        console.log('Creating assignment:', payload);
+        return apiRequest(`/api/products/${productId}/color-images`, "POST", payload);
+      });
 
       await Promise.all(promises);
+      console.log('All assignments saved successfully');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/products/${productId}/color-images`] });
@@ -65,10 +100,15 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
   });
 
   const handleColorAssignment = (imageUrl: string, colorId: number) => {
-    setImageColorMap(prev => ({
-      ...prev,
-      [imageUrl]: colorId
-    }));
+    console.log('Assigning color', colorId, 'to image:', imageUrl);
+    setImageColorMap(prev => {
+      const newMap = {
+        ...prev,
+        [imageUrl]: colorId
+      };
+      console.log('New imageColorMap:', newMap);
+      return newMap;
+    });
   };
 
   const getColorName = (colorId: number) => {
