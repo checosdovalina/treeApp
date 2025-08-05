@@ -13,6 +13,7 @@ import { useCart } from "@/hooks/useCart";
 import ImageModal from "@/components/ui/image-modal";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { GenderSelector } from "@/components/ui/gender-selector";
+import { ImageZoom } from "@/components/store/image-zoom";
 import type { Product, InventoryItem } from "../../lib/types";
 
 export default function ProductDetail() {
@@ -317,18 +318,11 @@ export default function ProductDetail() {
                 const validImage = getValidImageUrl(displayImages, selectedImage);
                 
                 return (
-                  <img 
+                  <ImageZoom
                     key={`main-image-${selectedColor}-${selectedImage}`}
                     src={validImage}
                     alt={product.name}
-                    className="w-full h-full object-cover cursor-zoom-in"
-                    onDoubleClick={() => setIsImageModalOpen(true)}
-                    title="Doble clic para ampliar"
-                    onError={(e) => {
-                      // Solo ocultar la imagen si falla, mantener funcionalidad de doble clic
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
+                    className="w-full h-full"
                   />
                 );
               })()}

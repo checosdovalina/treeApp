@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { addToCart } from "@/lib/cart";
 import { useToast } from "@/hooks/use-toast";
 import ImageModal from "@/components/ui/image-modal";
+import { ImageZoom } from "@/components/store/image-zoom";
 import { getValidImageUrl } from "@/lib/utils";
 
 interface ProductCardProps {
@@ -141,12 +142,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="relative">
           <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
             {displayImages && displayImages.length > 0 ? (
-              <img 
+              <ImageZoom
                 src={getValidImageUrl(displayImages, 0)} 
                 alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-zoom-in"
-                onDoubleClick={handleImageDoubleClick}
-                title="Doble clic para ampliar"
+                className="w-full h-full"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
