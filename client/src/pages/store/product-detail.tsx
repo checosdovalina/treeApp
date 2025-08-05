@@ -83,9 +83,9 @@ export default function ProductDetail() {
       colorImages: colorImages.map(ci => ({ colorId: ci.colorId, imagesCount: ci.images.length }))
     });
 
-    if (!selectedColor || colorImages.length === 0) {
-      // Si no hay color seleccionado o no hay imágenes por color, usar imágenes del producto
-      console.log('Using product images (no color selected or no color images)');
+    if (!selectedColor) {
+      // Si no hay color seleccionado, usar imágenes del producto
+      console.log('Using product images (no color selected)');
       return product?.images || [];
     }
 

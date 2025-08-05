@@ -52,8 +52,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   // Calcular las imágenes a mostrar basándose en el color seleccionado
   const displayImages = useMemo(() => {
-    if (!selectedColor || colorImages.length === 0) {
-      // Si no hay color seleccionado o no hay imágenes por color, usar imágenes del producto
+    if (!selectedColor) {
+      // Si no hay color seleccionado, usar imágenes del producto
       return product?.images || [];
     }
 
@@ -216,6 +216,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                     const hexColor = colorData?.hexCode || '#CCCCCC';
                     const isSelected = selectedColor === colorName;
                     
+                    if (process.env.NODE_ENV === 'development') {
+                      console.log(`Card Color: ${colorName}, Found: ${!!colorData}, Hex: ${hexColor}`);
+                    }
+                    
                     return (
                       <button
                         key={index}
@@ -229,12 +233,19 @@ export default function ProductCard({ product }: ProductCardProps) {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
+                          console.log(`Color clicked in card: ${colorName}`);
                           setSelectedColor(isSelected ? "" : colorName);
                         }}
                       />
                     );
                   })}
                 </div>
+                {/* Debug info */}
+                {process.env.NODE_ENV === 'development' && selectedColor && (
+                  <p className="text-xs text-gray-500">
+                    Seleccionado: {selectedColor} | Imágenes: {displayImages.length}
+                  </p>
+                )}
               </div>
             )}
           </div>
