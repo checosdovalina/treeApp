@@ -241,19 +241,32 @@ export default function ProductCard({ product }: ProductCardProps) {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          console.log(`Color clicked in card: ${colorName}`);
-                          setSelectedColor(isSelected ? "" : colorName);
+                          console.log('=== CARD COLOR CLICKED ===');
+                          console.log('Color name:', colorName);
+                          console.log('Currently selected:', selectedColor);
+                          console.log('Is selected:', isSelected);
+                          console.log('Will set to:', isSelected ? "" : colorName);
+                          
+                          const newColor = isSelected ? "" : colorName;
+                          setSelectedColor(newColor);
+                          
+                          console.log('Card color set to:', newColor);
+                          console.log('========================');
                         }}
                       />
                     );
                   })}
                 </div>
                 {/* Debug info */}
-                {process.env.NODE_ENV === 'development' && selectedColor && (
+                {selectedColor && (
                   <p className="text-xs text-gray-500">
                     Seleccionado: {selectedColor} | Imágenes: {displayImages.length}
                   </p>
                 )}
+                {/* Info adicional para debugging */}
+                <p className="text-xs text-blue-500">
+                  Card Colors: {product.colors?.join(', ')} | Actual: "{selectedColor}"
+                </p>
               </div>
             )}
           </div>
