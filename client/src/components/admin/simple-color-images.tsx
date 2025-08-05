@@ -71,7 +71,7 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
       
       for (const assignment of existingAssignments) {
         console.log('Deleting assignment:', assignment.id);
-        await apiRequest(`/api/products/${productId}/color-images/${assignment.id}`, "DELETE");
+        await apiRequest("DELETE", `/api/products/${productId}/color-images/${assignment.id}`);
       }
 
       // Create new assignments
@@ -84,7 +84,7 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
           sortOrder: 0,
         };
         console.log('Creating assignment for color', colorId, ':', payload);
-        const result = await apiRequest(`/api/products/${productId}/color-images`, "POST", payload);
+        const result = await apiRequest("POST", `/api/products/${productId}/color-images`, payload);
         console.log('Assignment created:', result);
         return result;
       });
