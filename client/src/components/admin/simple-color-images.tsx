@@ -52,47 +52,45 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
       console.log('=== STARTING SAVE PROCESS ===');
       console.log('Current imageColorMap:', imageColorMap);
 
-      try {
-        // Clear existing assignments
-        console.log('Step 1: Clearing existing assignments...');
-        const clearResult = await apiRequest(`/api/products/${productId}/color-images/clear`, "DELETE");
-        console.log('Clear result:', clearResult);
+      // No clear needed since we're using proper API - just group and save
+      const colorGroups: {[colorId: number]: string[]} = {};
+      
+      Object.entries(imageColorMap).forEach(([imageUrl, colorId]) => {
+        if (!colorGroups[colorId]) {
+          colorGroups[colorId] = [];
+        }
+        colorGroups[colorId].push(imageUrl);
+      });
 
-        // Group images by color
-        const colorGroups: {[colorId: number]: string[]} = {};
-        
-        Object.entries(imageColorMap).forEach(([imageUrl, colorId]) => {
-          if (!colorGroups[colorId]) {
-            colorGroups[colorId] = [];
-          }
-          colorGroups[colorId].push(imageUrl);
-        });
+      console.log('Color groups to save:', colorGroups);
 
-        console.log('Step 2: Color groups to save:', colorGroups);
-
-        // Create new assignments
-        console.log('Step 3: Creating new assignments...');
-        const promises = Object.entries(colorGroups).map(async ([colorId, images]) => {
-          const payload = {
-            colorId: parseInt(colorId),
-            images,
-            isPrimary: false,
-            sortOrder: 0,
-          };
-          console.log('Creating assignment for color', colorId, ':', payload);
-          const result = await apiRequest(`/api/products/${productId}/color-images`, "POST", payload);
-          console.log('Assignment created:', result);
-          return result;
-        });
-
-        const results = await Promise.all(promises);
-        console.log('All assignments saved successfully:', results);
-        console.log('=== SAVE PROCESS COMPLETED ===');
-      } catch (error) {
-        console.error('=== SAVE PROCESS FAILED ===');
-        console.error('Error details:', error);
-        throw error;
+      // Clear existing assignments first using proper API method  
+      console.log('Step 1: Getting existing assignments to clear...');
+      const existingAssignments = await apiRequest(`/api/products/${productId}/color-images`);
+      
+      for (const assignment of existingAssignments) {
+        console.log('Deleting assignment:', assignment.id);
+        await apiRequest(`/api/products/${productId}/color-images/${assignment.id}`, "DELETE");
       }
+
+      // Create new assignments
+      console.log('Step 2: Creating new assignments...');
+      const promises = Object.entries(colorGroups).map(async ([colorId, images]) => {
+        const payload = {
+          colorId: parseInt(colorId),
+          images,
+          isPrimary: false,
+          sortOrder: 0,
+        };
+        console.log('Creating assignment for color', colorId, ':', payload);
+        const result = await apiRequest(`/api/products/${productId}/color-images`, "POST", payload);
+        console.log('Assignment created:', result);
+        return result;
+      });
+
+      const results = await Promise.all(promises);
+      console.log('All assignments saved successfully:', results);
+      console.log('=== SAVE PROCESS COMPLETED ===');
     },
     onSuccess: () => {
       console.log('Save mutation completed successfully');
@@ -164,12 +162,16 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
             Asignar Colores a Imágenes
           </CardTitle>
           <Button 
-            onClick={() => saveAssignmentsMutation.mutate()}
+            onClick={() => {
+              console.log('Button clicked - starting save process');
+              saveAssignmentsMutation.mutate();
+            }}
             disabled={saveAssignmentsMutation.isPending}
             size="sm"
+            className="bg-blue-600 hover:bg-blue-700"
           >
             <Save className="h-4 w-4 mr-2" />
-            Guardar Asignaciones
+            {saveAssignmentsMutation.isPending ? 'Guardando...' : 'Guardar Asignaciones'}
           </Button>
         </div>
       </CardHeader>
