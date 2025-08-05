@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { addToCart } from "@/lib/cart";
 import { useToast } from "@/hooks/use-toast";
 import ImageModal from "@/components/ui/image-modal";
+import { getValidImageUrl } from "@/lib/utils";
 
 interface ProductCardProps {
   product: {
@@ -29,11 +30,48 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string>("");
 
   // Obtener colores de la base de datos
   const { data: colors = [] } = useQuery<{id: number, name: string, hexCode: string}[]>({
     queryKey: ['/api/colors'],
   });
+
+  // Obtener imágenes por color para este producto
+  const { data: colorImages = [] } = useQuery<{
+    id: number;
+    productId: number;
+    colorId: number;
+    images: string[];
+    isPrimary: boolean;
+    sortOrder: number;
+  }[]>({
+    queryKey: [`/api/products/${product.id}/color-images`],
+    enabled: !!product.id,
+  });
+
+  // Calcular las imágenes a mostrar basándose en el color seleccionado
+  const displayImages = useMemo(() => {
+    if (!selectedColor || colorImages.length === 0) {
+      // Si no hay color seleccionado o no hay imágenes por color, usar imágenes del producto
+      return product?.images || [];
+    }
+
+    // Buscar el color seleccionado en los colores disponibles
+    const selectedColorObj = colors.find(c => c.name === selectedColor);
+    if (!selectedColorObj) {
+      return product?.images || [];
+    }
+
+    // Buscar las imágenes específicas para este color
+    const colorImageSet = colorImages.find(ci => ci.colorId === selectedColorObj.id);
+    if (colorImageSet && colorImageSet.images.length > 0) {
+      return colorImageSet.images;
+    }
+
+    // Fallback: usar imágenes del producto si no hay específicas para el color
+    return product?.images || [];
+  }, [selectedColor, colorImages, colors, product?.images]);
 
   const addToCartMutation = useMutation({
     mutationFn: async () => {
@@ -94,9 +132,9 @@ export default function ProductCard({ product }: ProductCardProps) {
       >
         <div className="relative">
           <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
-            {product.images && product.images.length > 0 ? (
+            {displayImages && displayImages.length > 0 ? (
               <img 
-                src={product.images[0]} 
+                src={getValidImageUrl(displayImages, 0)} 
                 alt={product.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-zoom-in"
                 onDoubleClick={handleImageDoubleClick}
@@ -169,28 +207,33 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
             
             {product.colors && product.colors.length > 0 && (
-              <div className="flex items-center space-x-1">
+              <div className="space-y-1">
                 <span className="text-sm text-uniform-secondary">Colores:</span>
-                <div className="flex space-x-1">
-                  {product.colors.slice(0, 3).map((colorName, index) => {
+                <div className="flex flex-wrap gap-1">
+                  {product.colors.map((colorName, index) => {
                     // Buscar el color en la base de datos
                     const colorData = colors.find(c => c.name === colorName);
                     const hexColor = colorData?.hexCode || '#CCCCCC';
+                    const isSelected = selectedColor === colorName;
                     
                     return (
-                      <div
+                      <button
                         key={index}
-                        className="w-4 h-4 rounded-full border-2 border-gray-300"
+                        className={`w-6 h-6 rounded-full border-2 transition-all duration-200 ${
+                          isSelected 
+                            ? 'border-uniform-primary shadow-md scale-110' 
+                            : 'border-gray-300 hover:border-uniform-primary'
+                        }`}
                         style={{ backgroundColor: hexColor }}
                         title={colorName}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setSelectedColor(isSelected ? "" : colorName);
+                        }}
                       />
                     );
                   })}
-                  {product.colors.length > 3 && (
-                    <span className="text-xs text-uniform-secondary ml-1">
-                      +{product.colors.length - 3}
-                    </span>
-                  )}
                 </div>
               </div>
             )}
@@ -209,7 +252,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       
       {/* Image Modal */}
       <ImageModal
-        src={product.images?.[0] || ''}
+        src={getValidImageUrl(displayImages, 0)}
         alt={product.name}
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
