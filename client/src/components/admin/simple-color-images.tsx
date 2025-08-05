@@ -49,42 +49,56 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
   // Save image-color assignments
   const saveAssignmentsMutation = useMutation({
     mutationFn: async () => {
-      console.log('Saving color assignments...');
+      console.log('=== STARTING SAVE PROCESS ===');
       console.log('Current imageColorMap:', imageColorMap);
 
-      // Clear existing assignments
-      console.log('Clearing existing assignments...');
-      await apiRequest(`/api/products/${productId}/color-images/clear`, "DELETE");
+      try {
+        // Clear existing assignments
+        console.log('Step 1: Clearing existing assignments...');
+        const clearResult = await apiRequest(`/api/products/${productId}/color-images/clear`, "DELETE");
+        console.log('Clear result:', clearResult);
 
-      // Group images by color
-      const colorGroups: {[colorId: number]: string[]} = {};
-      
-      Object.entries(imageColorMap).forEach(([imageUrl, colorId]) => {
-        if (!colorGroups[colorId]) {
-          colorGroups[colorId] = [];
-        }
-        colorGroups[colorId].push(imageUrl);
-      });
+        // Group images by color
+        const colorGroups: {[colorId: number]: string[]} = {};
+        
+        Object.entries(imageColorMap).forEach(([imageUrl, colorId]) => {
+          if (!colorGroups[colorId]) {
+            colorGroups[colorId] = [];
+          }
+          colorGroups[colorId].push(imageUrl);
+        });
 
-      console.log('Color groups to save:', colorGroups);
+        console.log('Step 2: Color groups to save:', colorGroups);
 
-      // Create new assignments
-      const promises = Object.entries(colorGroups).map(([colorId, images]) => {
-        const payload = {
-          colorId: parseInt(colorId),
-          images,
-          isPrimary: false,
-          sortOrder: 0,
-        };
-        console.log('Creating assignment:', payload);
-        return apiRequest(`/api/products/${productId}/color-images`, "POST", payload);
-      });
+        // Create new assignments
+        console.log('Step 3: Creating new assignments...');
+        const promises = Object.entries(colorGroups).map(async ([colorId, images]) => {
+          const payload = {
+            colorId: parseInt(colorId),
+            images,
+            isPrimary: false,
+            sortOrder: 0,
+          };
+          console.log('Creating assignment for color', colorId, ':', payload);
+          const result = await apiRequest(`/api/products/${productId}/color-images`, "POST", payload);
+          console.log('Assignment created:', result);
+          return result;
+        });
 
-      await Promise.all(promises);
-      console.log('All assignments saved successfully');
+        const results = await Promise.all(promises);
+        console.log('All assignments saved successfully:', results);
+        console.log('=== SAVE PROCESS COMPLETED ===');
+      } catch (error) {
+        console.error('=== SAVE PROCESS FAILED ===');
+        console.error('Error details:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
+      console.log('Save mutation completed successfully');
       queryClient.invalidateQueries({ queryKey: [`/api/products/${productId}/color-images`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/products/${productId}`] });
+      queryClient.refetchQueries({ queryKey: [`/api/products/${productId}/color-images`] });
       toast({
         title: "Éxito",
         description: "Asignaciones de colores guardadas correctamente",
