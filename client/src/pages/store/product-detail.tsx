@@ -119,6 +119,13 @@ export default function ProductDetail() {
     }
   }, [displayImages, selectedImage]);
 
+  // Debug: Verificar cuando cambie el color seleccionado
+  useEffect(() => {
+    console.log(`ProductDetail: selectedColor changed to "${selectedColor}"`);
+    console.log(`ProductDetail: displayImages length:`, displayImages.length);
+    console.log(`ProductDetail: product colors:`, product?.colors);
+  }, [selectedColor, displayImages, product?.colors]);
+
   // Auto-seleccionar género si solo hay uno disponible
   useEffect(() => {
     if (product?.genders?.length === 1 && !selectedGender) {

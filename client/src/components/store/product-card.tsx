@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,6 +72,14 @@ export default function ProductCard({ product }: ProductCardProps) {
     // Fallback: usar imágenes del producto si no hay específicas para el color
     return product?.images || [];
   }, [selectedColor, colorImages, colors, product?.images]);
+
+  // Debug: Verificar cuando cambie el color seleccionado
+  useEffect(() => {
+    if (selectedColor) {
+      console.log(`ProductCard ${product.id}: Color seleccionado cambió a "${selectedColor}"`);
+      console.log(`ProductCard ${product.id}: Imágenes para mostrar:`, displayImages.length);
+    }
+  }, [selectedColor, displayImages, product.id]);
 
   const addToCartMutation = useMutation({
     mutationFn: async () => {
