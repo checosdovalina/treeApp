@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import ProductCard from "@/components/store/product-card";
 import { 
   ShoppingCart, 
   Heart, 
@@ -633,14 +634,9 @@ export default function CatalogPage() {
               ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mobile-grid-auto" 
               : "grid-cols-1"}`}>
               {products.map((product: any) => (
-                <Card 
-                  key={product.id} 
-                  className={`overflow-hidden hover:shadow-lg transition-shadow product-card-hover cursor-pointer ${
-                    viewMode === "list" ? "flex flex-col md:flex-row" : ""
-                  }`}
-                  onClick={() => window.open(`/store/product/${product.id}`, '_blank')}
-                >
-                  <div className={`relative ${viewMode === "list" ? "md:w-48 md:flex-shrink-0" : ""}`}>
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
                     <div className={`bg-gray-200 flex items-center justify-center ${
                       viewMode === "list" ? "h-full md:h-48" : "w-full h-64"
                     }`}>

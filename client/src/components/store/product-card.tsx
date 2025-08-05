@@ -77,13 +77,14 @@ export default function ProductCard({ product }: ProductCardProps) {
       return product?.images || [];
     }
 
-    // Buscar las imágenes específicas para este color
-    const colorImageSet = colorImages.find(ci => ci.colorId === selectedColorObj.id);
-    if (colorImageSet && colorImageSet.images.length > 0) {
-      return colorImageSet.images;
+    // Buscar las imágenes asignadas a ese color
+    const colorImageAssignment = colorImages.find(ci => ci.colorId === selectedColorObj.id);
+    if (colorImageAssignment && colorImageAssignment.images.length > 0) {
+      console.log(`Card: Color ${selectedColor} found, images:`, colorImageAssignment.images);
+      return colorImageAssignment.images;
     }
-
-    // Fallback: usar imágenes del producto si no hay específicas para el color
+    
+    console.log(`Card: Color ${selectedColor} not found in assignments`);
     return product?.images || [];
   }, [selectedColor, colorImages, colors, product?.images]);
 
