@@ -51,10 +51,23 @@ export default function ProductCard({ product }: ProductCardProps) {
     enabled: !!product.id,
   });
 
+  // Calcular colores disponibles basándose en las asignaciones de colores
+  const availableColors = useMemo(() => {
+    if (!colorImages.length) return [];
+    
+    return colorImages.map(colorImage => {
+      const color = colors.find(c => c.id === colorImage.colorId);
+      return color;
+    }).filter(Boolean);
+  }, [colorImages, colors]);
+
   // Calcular las imágenes a mostrar basándose en el color seleccionado
   const displayImages = useMemo(() => {
     if (!selectedColor) {
-      // Si no hay color seleccionado, usar imágenes del producto
+      // Si no hay color seleccionado, usar imágenes del producto o las primeras del color
+      if (colorImages.length > 0) {
+        return colorImages[0].images;
+      }
       return product?.images || [];
     }
 
@@ -213,34 +226,30 @@ export default function ProductCard({ product }: ProductCardProps) {
               </div>
             )}
             
-            {product.colors && product.colors.length > 0 && (
+            {availableColors && availableColors.length > 0 && (
               <div className="space-y-1">
                 <span className="text-sm text-uniform-secondary">Colores:</span>
                 <div className="flex flex-wrap gap-1">
-                  {product.colors.map((colorName, index) => {
-                    // Buscar el color en la base de datos
-                    const colorData = colors.find(c => c.name === colorName);
-                    const hexColor = colorData?.hexCode || '#CCCCCC';
-                    const isSelected = selectedColor === colorName;
+                  {availableColors.map((color, index) => {
+                    if (!color) return null;
                     
-                    if (process.env.NODE_ENV === 'development') {
-                      console.log(`Card Color: ${colorName}, Found: ${!!colorData}, Hex: ${hexColor}`);
-                    }
+                    const hexColor = color.hexCode || '#CCCCCC';
+                    const isSelected = selectedColor === color.name;
                     
                     return (
                       <button
-                        key={index}
+                        key={color.id}
                         className={`w-6 h-6 rounded-full border-2 transition-all duration-200 ${
                           isSelected 
                             ? 'border-uniform-primary shadow-md scale-110' 
                             : 'border-gray-300 hover:border-uniform-primary'
                         }`}
                         style={{ backgroundColor: hexColor }}
-                        title={colorName}
+                        title={color.name}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          const newColor = isSelected ? "" : colorName;
+                          const newColor = isSelected ? "" : color.name;
                           setSelectedColor(newColor);
                         }}
                       />
@@ -253,7 +262,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                     Seleccionado: {selectedColor} | Imágenes: {displayImages.length}
                   </p>
                 )}
-
               </div>
             )}
           </div>
