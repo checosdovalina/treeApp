@@ -454,18 +454,9 @@ export default function ProductDetail() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          console.log('=== COLOR CLICKED ===');
-                          console.log('Color name:', colorName);
-                          console.log('Currently selected:', selectedColor);
-                          console.log('Is selected:', isSelected);
-                          console.log('Will set to:', isSelected ? "" : colorName);
-                          
                           const newColor = isSelected ? "" : colorName;
                           setSelectedColor(newColor);
                           setSelectedImage(0);
-                          
-                          console.log('Color set to:', newColor);
-                          console.log('===================');
                         }}
                         className={`w-10 h-10 rounded-full border-4 transition-all duration-200 ${
                           isSelected
@@ -484,10 +475,7 @@ export default function ProductDetail() {
                     Color seleccionado: {selectedColor} | Imágenes: {displayImages.length}
                   </p>
                 )}
-                {/* Mostrar siempre info de todos los colores */}
-                <p className="text-xs text-blue-500 mt-1">
-                  Colores disponibles: {product.colors?.join(', ')} | Color actual: "{selectedColor}"
-                </p>
+
               </div>
             )}
 
