@@ -222,7 +222,7 @@ export class DatabaseStorage implements IStorage {
     search?: string;
     limit?: number;
     offset?: number;
-  }): Promise<Product[]> {
+  }): Promise<any[]> {
     let query = db.select().from(products);
     
     const conditions = [];
@@ -270,7 +270,50 @@ export class DatabaseStorage implements IStorage {
       query = query.offset(filters.offset);
     }
     
-    return await query;
+    const baseProducts = await query;
+
+    // Enrich products with color-image associations
+    const enrichedProducts = await Promise.all(
+      baseProducts.map(async (product) => {
+        // Get color images for this product
+        const colorImages = await this.getProductColorImages(product.id);
+        
+        // Get all available colors
+        const allColors = await this.getColors();
+        
+        // Create color map with images
+        const colorImageMap = new Map();
+        colorImages.forEach(ci => {
+          const color = allColors.find(c => c.id === ci.colorId);
+          if (color) {
+            colorImageMap.set(color.name, {
+              id: color.id,
+              name: color.name,
+              hexCode: color.hexCode,
+              images: ci.images
+            });
+          }
+        });
+        
+        // Get primary image - first try color images, then fallback to product images
+        let primaryImage = '';
+        if (colorImages.length > 0) {
+          const primaryColorImage = colorImages.find(ci => ci.isPrimary) || colorImages[0];
+          primaryImage = primaryColorImage.images[0] || '';
+        }
+        if (!primaryImage && product.images?.length > 0) {
+          primaryImage = product.images[0];
+        }
+        
+        return {
+          ...product,
+          colorImages: Array.from(colorImageMap.values()),
+          primaryImage
+        };
+      })
+    );
+    
+    return enrichedProducts;
   }
 
   async getProduct(id: number): Promise<Product | undefined> {
@@ -353,6 +396,10 @@ export class DatabaseStorage implements IStorage {
 
   async deleteProductColorImage(id: number): Promise<void> {
     await db.delete(productColorImages).where(eq(productColorImages.id, id));
+  }
+
+  async clearProductColorImages(productId: number): Promise<void> {
+    await db.delete(productColorImages).where(eq(productColorImages.productId, productId));
   }
 
   // Order operations

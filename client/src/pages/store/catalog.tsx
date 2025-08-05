@@ -645,19 +645,17 @@ export default function CatalogPage() {
                       viewMode === "list" ? "h-full md:h-48" : "w-full h-64"
                     }`}>
                       {(() => {
-                        if (!product.images?.length) {
+                        // Use primaryImage first, then fallback to old images array
+                        const imageToShow = product.primaryImage || 
+                                          (product.images?.length ? product.images[0] : null);
+                        
+                        if (!imageToShow) {
                           return <Package className="h-16 w-16 text-gray-400" />;
                         }
                         
-                        // Encontrar la primera imagen válida (base64 o URL que funcione)
-                        const validImage = product.images.find((img: string) => {
-                          return img.startsWith('data:image/') || 
-                                 (img.startsWith('http') && !img.includes('example.com'));
-                        }) || product.images[0];
-                        
                         return (
                           <img 
-                            src={validImage} 
+                            src={imageToShow} 
                             alt={product.name}
                             className="w-full h-full object-cover"
                             onError={(e) => {
@@ -729,7 +727,39 @@ export default function CatalogPage() {
                       </div>
                       
                       {/* Colors */}
-                      {product.colors && product.colors.length > 0 && (
+                      {product.colorImages && product.colorImages.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Colores:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {product.colorImages.slice(0, 6).map((colorInfo: any, index: number) => {
+                              return (
+                                <button
+                                  key={index}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedColor(colorInfo.name);
+                                  }}
+                                  className={`w-6 h-6 rounded-full border-2 mobile-touch-target ${
+                                    selectedColor === colorInfo.name 
+                                      ? 'border-gray-900 ring-2 ring-gray-300' 
+                                      : 'border-gray-300'
+                                  }`}
+                                  style={{ backgroundColor: colorInfo.hexCode || '#CCCCCC' }}
+                                  title={colorInfo.name}
+                                />
+                              );
+                            })}
+                            {product.colorImages.length > 6 && (
+                              <span className="text-xs text-gray-500 flex items-center">
+                                +{product.colorImages.length - 6}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Fallback to old colors array if colorImages is not available */}
+                      {(!product.colorImages || product.colorImages.length === 0) && product.colors && product.colors.length > 0 && (
                         <div className="mb-4">
                           <p className="text-sm font-medium text-gray-700 mb-2">Colores:</p>
                           <div className="flex flex-wrap gap-2">
