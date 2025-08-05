@@ -51,23 +51,10 @@ export default function ProductCard({ product }: ProductCardProps) {
     enabled: !!product.id,
   });
 
-  // Calcular colores disponibles basándose en las asignaciones de colores
-  const availableColors = useMemo(() => {
-    if (!colorImages.length) return [];
-    
-    return colorImages.map(colorImage => {
-      const color = colors.find(c => c.id === colorImage.colorId);
-      return color;
-    }).filter(Boolean);
-  }, [colorImages, colors]);
-
   // Calcular las imágenes a mostrar basándose en el color seleccionado
   const displayImages = useMemo(() => {
     if (!selectedColor) {
-      // Si no hay color seleccionado, usar imágenes del producto o las primeras del color
-      if (colorImages.length > 0) {
-        return colorImages[0].images;
-      }
+      // Si no hay color seleccionado, usar imágenes del producto
       return product?.images || [];
     }
 
@@ -77,14 +64,13 @@ export default function ProductCard({ product }: ProductCardProps) {
       return product?.images || [];
     }
 
-    // Buscar las imágenes asignadas a ese color
-    const colorImageAssignment = colorImages.find(ci => ci.colorId === selectedColorObj.id);
-    if (colorImageAssignment && colorImageAssignment.images.length > 0) {
-      console.log(`Card: Color ${selectedColor} found, images:`, colorImageAssignment.images);
-      return colorImageAssignment.images;
+    // Buscar las imágenes específicas para este color
+    const colorImageSet = colorImages.find(ci => ci.colorId === selectedColorObj.id);
+    if (colorImageSet && colorImageSet.images.length > 0) {
+      return colorImageSet.images;
     }
-    
-    console.log(`Card: Color ${selectedColor} not found in assignments`);
+
+    // Fallback: usar imágenes del producto si no hay específicas para el color
     return product?.images || [];
   }, [selectedColor, colorImages, colors, product?.images]);
 
@@ -227,30 +213,34 @@ export default function ProductCard({ product }: ProductCardProps) {
               </div>
             )}
             
-            {availableColors && availableColors.length > 0 && (
+            {product.colors && product.colors.length > 0 && (
               <div className="space-y-1">
                 <span className="text-sm text-uniform-secondary">Colores:</span>
                 <div className="flex flex-wrap gap-1">
-                  {availableColors.map((color, index) => {
-                    if (!color) return null;
+                  {product.colors.map((colorName, index) => {
+                    // Buscar el color en la base de datos
+                    const colorData = colors.find(c => c.name === colorName);
+                    const hexColor = colorData?.hexCode || '#CCCCCC';
+                    const isSelected = selectedColor === colorName;
                     
-                    const hexColor = color.hexCode || '#CCCCCC';
-                    const isSelected = selectedColor === color.name;
+                    if (process.env.NODE_ENV === 'development') {
+                      console.log(`Card Color: ${colorName}, Found: ${!!colorData}, Hex: ${hexColor}`);
+                    }
                     
                     return (
                       <button
-                        key={color.id}
+                        key={index}
                         className={`w-6 h-6 rounded-full border-2 transition-all duration-200 ${
                           isSelected 
                             ? 'border-uniform-primary shadow-md scale-110' 
                             : 'border-gray-300 hover:border-uniform-primary'
                         }`}
                         style={{ backgroundColor: hexColor }}
-                        title={color.name}
+                        title={colorName}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          const newColor = isSelected ? "" : color.name;
+                          const newColor = isSelected ? "" : colorName;
                           setSelectedColor(newColor);
                         }}
                       />
@@ -263,6 +253,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     Seleccionado: {selectedColor} | Imágenes: {displayImages.length}
                   </p>
                 )}
+
               </div>
             )}
           </div>
