@@ -66,7 +66,8 @@ export function SimpleColorImages({ productId, availableColors, productImages }:
 
       // Clear existing assignments first using proper API method  
       console.log('Step 1: Getting existing assignments to clear...');
-      const existingAssignments = await apiRequest(`/api/products/${productId}/color-images`);
+      const response = await fetch(`/api/products/${productId}/color-images`);
+      const existingAssignments = await response.json();
       
       for (const assignment of existingAssignments) {
         console.log('Deleting assignment:', assignment.id);
