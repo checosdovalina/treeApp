@@ -76,24 +76,39 @@ export default function ProductDetail() {
 
   // Calcular las imágenes a mostrar basándose en el color seleccionado
   const displayImages = useMemo(() => {
+    console.log('Calculating display images:', {
+      selectedColor,
+      colorImagesLength: colorImages.length,
+      productImagesLength: product?.images?.length,
+      colorImages: colorImages.map(ci => ({ colorId: ci.colorId, imagesCount: ci.images.length }))
+    });
+
     if (!selectedColor || colorImages.length === 0) {
       // Si no hay color seleccionado o no hay imágenes por color, usar imágenes del producto
+      console.log('Using product images (no color selected or no color images)');
       return product?.images || [];
     }
 
     // Buscar el color seleccionado en los colores disponibles
     const selectedColorObj = colors.find(c => c.name === selectedColor);
+    console.log('Selected color object:', selectedColorObj);
+    
     if (!selectedColorObj) {
+      console.log('Color not found in database, using product images');
       return product?.images || [];
     }
 
     // Buscar las imágenes específicas para este color
     const colorImageSet = colorImages.find(ci => ci.colorId === selectedColorObj.id);
+    console.log('Color image set found:', colorImageSet);
+    
     if (colorImageSet && colorImageSet.images.length > 0) {
+      console.log('Using color-specific images:', colorImageSet.images);
       return colorImageSet.images;
     }
 
     // Fallback: usar imágenes del producto si no hay específicas para el color
+    console.log('No color-specific images found, using product images');
     return product?.images || [];
   }, [selectedColor, colorImages, colors, product?.images]);
 
@@ -406,15 +421,20 @@ export default function ProductDetail() {
                     // Buscar el color en la base de datos
                     const colorData = colors.find(c => c.name === colorName);
                     const hexColor = colorData?.hexCode || '#CCCCCC';
+                    const isSelected = selectedColor === colorName;
                     
                     return (
                       <button
                         key={colorName}
-                        onClick={() => setSelectedColor(colorName)}
-                        className={`w-10 h-10 rounded-full border-4 transition-all ${
-                          selectedColor === colorName 
+                        onClick={() => {
+                          console.log('Color clicked:', colorName, 'Currently selected:', selectedColor);
+                          setSelectedColor(isSelected ? "" : colorName);
+                          setSelectedImage(0); // Resetear a la primera imagen cuando cambie el color
+                        }}
+                        className={`w-10 h-10 rounded-full border-4 transition-all duration-200 ${
+                          isSelected
                             ? 'border-uniform-primary ring-2 ring-blue-200 scale-110' 
-                            : 'border-gray-300 hover:border-gray-400'
+                            : 'border-gray-300 hover:border-gray-400 hover:scale-105'
                         }`}
                         style={{ backgroundColor: hexColor }}
                         title={colorName}
@@ -422,6 +442,12 @@ export default function ProductDetail() {
                     );
                   })}
                 </div>
+                {/* Debug info para verificar el estado */}
+                {process.env.NODE_ENV === 'development' && selectedColor && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Color seleccionado: {selectedColor} | Imágenes: {displayImages.length}
+                  </p>
+                )}
               </div>
             )}
 
