@@ -45,6 +45,7 @@ export default function CatalogPage() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+  const [productImages, setProductImages] = useState<{[key: number]: string}>({});
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   
   // States for collapsible filters
@@ -193,6 +194,12 @@ export default function CatalogPage() {
     setSelectedSize("");
     setSelectedColor("");
     setSelectedProduct(null);
+    // Clear custom images for this product
+    setProductImages(prev => {
+      const updated = { ...prev };
+      delete updated[product.id];
+      return updated;
+    });
   };
 
   const handleWhatsApp = (product: any) => {
@@ -645,9 +652,28 @@ export default function CatalogPage() {
                       viewMode === "list" ? "h-full md:h-48" : "w-full h-64"
                     }`}>
                       {(() => {
-                        // Use primaryImage first, then fallback to old images array
-                        const imageToShow = product.primaryImage || 
-                                          (product.images?.length ? product.images[0] : null);
+                        // First check if we have a selected color for this product
+                        const selectedColorForProduct = selectedProduct?.id === product.id ? selectedColor : "";
+                        let imageToShow = "";
+                        
+                        // If a color is selected, try to find its image
+                        if (selectedColorForProduct && product.colorImages?.length > 0) {
+                          const selectedColorInfo = product.colorImages.find((ci: any) => ci.name === selectedColorForProduct);
+                          if (selectedColorInfo?.images?.length > 0) {
+                            imageToShow = selectedColorInfo.images[0];
+                          }
+                        }
+                        
+                        // Fallback to custom image for this product if set
+                        if (!imageToShow && productImages[product.id]) {
+                          imageToShow = productImages[product.id];
+                        }
+                        
+                        // Fallback to primary image
+                        if (!imageToShow) {
+                          imageToShow = product.primaryImage || 
+                                       (product.images?.length ? product.images[0] : null);
+                        }
                         
                         if (!imageToShow) {
                           return <Package className="h-16 w-16 text-gray-400" />;
@@ -737,10 +763,18 @@ export default function CatalogPage() {
                                   key={index}
                                   onClick={(e) => {
                                     e.stopPropagation();
+                                    setSelectedProduct(product);
                                     setSelectedColor(colorInfo.name);
+                                    // Update the image for this product
+                                    if (colorInfo.images?.length > 0) {
+                                      setProductImages(prev => ({
+                                        ...prev,
+                                        [product.id]: colorInfo.images[0]
+                                      }));
+                                    }
                                   }}
                                   className={`w-6 h-6 rounded-full border-2 mobile-touch-target ${
-                                    selectedColor === colorInfo.name 
+                                    selectedProduct?.id === product.id && selectedColor === colorInfo.name 
                                       ? 'border-gray-900 ring-2 ring-gray-300' 
                                       : 'border-gray-300'
                                   }`}
@@ -779,10 +813,11 @@ export default function CatalogPage() {
                                   key={index}
                                   onClick={(e) => {
                                     e.stopPropagation();
+                                    setSelectedProduct(product);
                                     setSelectedColor(color);
                                   }}
                                   className={`w-6 h-6 rounded-full border-2 mobile-touch-target ${
-                                    selectedColor === color 
+                                    selectedProduct?.id === product.id && selectedColor === color 
                                       ? 'border-gray-900 ring-2 ring-gray-300' 
                                       : 'border-gray-300'
                                   }`}
@@ -831,7 +866,9 @@ export default function CatalogPage() {
                           className="flex-1 bg-uniform-primary hover:bg-blue-700 btn-mobile-optimized"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setSelectedProduct(product);
+                            if (selectedProduct?.id !== product.id) {
+                              setSelectedProduct(product);
+                            }
                             handleAddToCart(product);
                           }}
                         >
