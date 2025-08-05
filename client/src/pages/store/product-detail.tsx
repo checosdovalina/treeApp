@@ -80,6 +80,8 @@ export default function ProductDetail() {
     console.log('Selected color:', selectedColor);
     console.log('Available color images:', colorImages.length);
     console.log('Product images:', product?.images?.length);
+    console.log('All colors available:', colors.map(c => ({id: c.id, name: c.name})));
+    console.log('All color image sets:', colorImages.map(ci => ({colorId: ci.colorId, imageCount: ci.images.length})));
     
     // Si no hay color seleccionado, usar imágenes del producto
     if (!selectedColor) {
@@ -96,6 +98,16 @@ export default function ProductDetail() {
     if (!selectedColorObj) {
       console.log('Color not found in database - using product images');
       return product?.images || [];
+    }
+
+    // DEBUGGING ESPECÍFICO PARA ROJO
+    if (selectedColor === 'Rojo') {
+      console.log('🔴 DEBUGGING ROJO ESPECÍFICAMENTE:');
+      console.log('Rojo color object:', selectedColorObj);
+      console.log('Looking for colorId:', selectedColorObj.id);
+      console.log('Available colorImages:', colorImages);
+      const rojoImageSet = colorImages.find(ci => ci.colorId === selectedColorObj.id);
+      console.log('Rojo image set found:', rojoImageSet);
     }
 
     // Buscar las imágenes específicas para este color
