@@ -206,87 +206,67 @@ export default function StoreIndex() {
         </div>
       </section>
 
-      {/* Categories Section - Redesigned */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      {/* Product Categories Section */}
+      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-uniform-blue text-white px-6 py-2 rounded-full text-sm font-poppins font-semibold mb-6">
+          <div className="text-center mb-12">
+            <span className="inline-block bg-uniform-blue text-white px-6 py-2 rounded-full text-sm font-poppins font-semibold mb-4">
               NUESTRAS ESPECIALIDADES
             </span>
-            <h2 className="text-4xl md:text-5xl font-poppins font-bold text-uniform-blue mb-6">
-              Uniformes por Industria
+            <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-blue mb-4">
+              Uniformes por Categoría
             </h2>
-            <p className="text-gray-600 text-xl max-w-3xl mx-auto font-roboto leading-relaxed">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto font-roboto leading-relaxed">
               Cada sector tiene necesidades únicas. Descubre nuestras soluciones especializadas diseñadas específicamente para tu industria.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {categories && Array.isArray(categories) ? categories.slice(0, 6).map((category: any) => (
-              <Link key={category.id} href={`/store/catalog?category=${category.id}`}>
-                <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 overflow-hidden cursor-pointer border-0 bg-white rounded-2xl min-h-[320px]">
-                  <div className={`aspect-[4/3] relative overflow-hidden bg-gradient-to-br ${getCategoryGradient(category.id)}`}>
-                    {/* Patrón decorativo */}
-                    <div className="absolute inset-0 opacity-20">
-                      <div className="absolute top-4 right-4 w-16 h-16 border-2 border-white rounded-full"></div>
-                      <div className="absolute bottom-8 left-8 w-12 h-12 border border-white rounded-full"></div>
-                      <div className="absolute top-12 left-12 w-8 h-8 border border-white rounded-full"></div>
-                      <div className="absolute bottom-12 right-12 w-10 h-10 border border-white rounded-full"></div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+            {[
+              { name: 'Camisas', query: 'camisa', gradient: 'from-blue-500 via-indigo-600 to-purple-700', icon: '👔' },
+              { name: 'Polos', query: 'polo', gradient: 'from-emerald-500 via-green-600 to-teal-700', icon: '👕' },
+              { name: 'Playeras', query: 'playera', gradient: 'from-orange-500 via-red-600 to-pink-700', icon: '👚' },
+              { name: 'Pantalones', query: 'pantalon', gradient: 'from-gray-500 via-slate-600 to-blue-700', icon: '👖' },
+              { name: 'Chamarras', query: 'chamarra', gradient: 'from-cyan-500 via-blue-600 to-indigo-700', icon: '🧥' },
+              { name: 'Chalecos', query: 'chaleco', gradient: 'from-yellow-500 via-orange-600 to-red-700', icon: '🦺' },
+              { name: 'Seguridad', query: 'seguridad', gradient: 'from-red-500 via-orange-600 to-yellow-700', icon: '🛡️' },
+              { name: 'Gorras', query: 'gorra', gradient: 'from-purple-500 via-pink-600 to-red-700', icon: '🧢' },
+              { name: 'Promocionales', query: 'promocional', gradient: 'from-green-500 via-teal-600 to-blue-700', icon: '🎁' },
+              { name: 'Toallas', query: 'toalla', gradient: 'from-blue-500 via-cyan-600 to-teal-700', icon: '🏖️' },
+              { name: 'Termos', query: 'termo', gradient: 'from-slate-500 via-gray-600 to-blue-700', icon: '🍵' },
+              { name: 'Plásticos', query: 'plastico', gradient: 'from-indigo-500 via-purple-600 to-pink-700', icon: '🥤' },
+              { name: 'Cobertores', query: 'cobertor', gradient: 'from-amber-500 via-orange-600 to-red-700', icon: '🛏️' },
+              { name: 'Tarimas', query: 'tarima', gradient: 'from-stone-500 via-gray-600 to-slate-700', icon: '📦' },
+            ].map((category, index) => (
+              <Link key={index} href={`/store/catalog?search=${category.query}`}>
+                <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 overflow-hidden cursor-pointer border-0 bg-white rounded-xl h-full">
+                  <div className={`aspect-square relative overflow-hidden bg-gradient-to-br ${category.gradient}`}>
+                    {/* Pattern */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-2 right-2 w-8 h-8 border border-white rounded-full"></div>
+                      <div className="absolute bottom-2 left-2 w-6 h-6 border border-white rounded-full"></div>
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                     
-                    {/* Icon based on category */}
-                    <div className="absolute top-6 left-6">
-                      <div className="bg-uniform-gold/20 backdrop-blur-sm rounded-full p-3 border border-uniform-gold/50">
-                        {category.name.toLowerCase().includes('corporativo') && <Users className="h-6 w-6 text-uniform-gold" />}
-                        {category.name.toLowerCase().includes('industrial') && <Shield className="h-6 w-6 text-uniform-gold" />}
-                        {category.name.toLowerCase().includes('médico') && <Package className="h-6 w-6 text-uniform-gold" />}
-                        {category.name.toLowerCase().includes('gastronomía') && <TrendingUp className="h-6 w-6 text-uniform-gold" />}
-                        {category.name.toLowerCase().includes('seguridad') && <Shield className="h-6 w-6 text-uniform-gold" />}
-                        {!category.name.toLowerCase().match(/(corporativo|industrial|médico|gastronomía|seguridad)/) && <Package className="h-6 w-6 text-uniform-gold" />}
+                    {/* Category Icon */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-3xl md:text-4xl transform group-hover:scale-110 transition-transform duration-300">
+                        {category.icon}
                       </div>
                     </div>
                     
-                    <div className="absolute top-6 right-6">
-                      <div className="bg-uniform-gold text-uniform-blue px-3 py-1 rounded-full text-xs font-poppins font-bold shadow-lg">
-                        ESPECIALIDAD
-                      </div>
-                    </div>
-                    
-                    <div className="absolute bottom-6 left-6 right-6">
-                      <h3 className="text-2xl font-poppins font-bold text-white mb-3 leading-tight drop-shadow-lg">
+                    {/* Category Name */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3 text-center">
+                      <h3 className="text-white font-poppins font-bold text-sm md:text-base leading-tight">
                         {category.name.toUpperCase()}
                       </h3>
-                      <p className="text-white/90 text-sm font-roboto leading-relaxed mb-4 drop-shadow-sm">
-                        {category.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center text-uniform-gold group-hover:translate-x-2 transition-transform duration-300">
-                          <span className="text-sm font-poppins font-semibold">Explorar productos</span>
-                          <ChevronRight className="h-4 w-4 ml-2" />
-                        </div>
-                        <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-                          <span className="text-xs text-white font-poppins font-medium">Ver más</span>
-                        </div>
-                      </div>
                     </div>
+                    
+                    {/* Hover effect */}
+                    <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300"></div>
                   </div>
                 </Card>
               </Link>
-            )) : (
-              // Loading skeleton for categories
-              [...Array(6)].map((_, i) => (
-                <Card key={i} className="overflow-hidden min-h-[320px]">
-                  <div className="aspect-[4/3] bg-gray-200 animate-pulse relative">
-                    <div className="absolute bottom-6 left-6 right-6">
-                      <div className="h-6 bg-gray-300 animate-pulse mb-3 rounded"></div>
-                      <div className="h-4 bg-gray-300 animate-pulse mb-2 rounded"></div>
-                      <div className="h-4 bg-gray-300 animate-pulse w-3/4 rounded"></div>
-                    </div>
-                  </div>
-                </Card>
-              ))
-            )}
+            ))}
           </div>
         </div>
       </section>
