@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DollarSign, ShoppingCart, Package, Users, TrendingUp } from "lucide-react";
+import { DollarSign, ShoppingCart, Package, Users, TrendingUp, Store } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -73,9 +73,20 @@ export default function AdminDashboard() {
     <AdminLayout>
       <div className="p-6">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-uniform-neutral-900">Dashboard</h1>
-          <p className="text-uniform-secondary mt-2">Resumen general de tu tienda de uniformes</p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-uniform-neutral-900">Dashboard</h1>
+            <p className="text-uniform-secondary mt-2">Resumen general de tu tienda de uniformes</p>
+          </div>
+          <div className="mt-4 sm:mt-0">
+            <Button 
+              onClick={() => window.open('/store', '_blank')}
+              className="bg-uniform-primary hover:bg-uniform-darker text-white flex items-center gap-2"
+            >
+              <Store className="h-4 w-4" />
+              Ver Tienda
+            </Button>
+          </div>
         </div>
 
         {/* Key Metrics */}
