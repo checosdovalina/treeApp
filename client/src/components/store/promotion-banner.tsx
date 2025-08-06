@@ -18,7 +18,7 @@ export default function PromotionBanner({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDismissed, setIsDismissed] = useState(false);
 
-  const { data: promotions = [], isLoading } = useQuery({
+  const { data: promotions = [], isLoading } = useQuery<Promotion[]>({
     queryKey: ["/api/promotions/active"],
     refetchInterval: 60000, // Check for new promotions every minute
   });
@@ -148,7 +148,7 @@ export default function PromotionBanner({
       {/* Dots Indicator - Only show if multiple promotions */}
       {promotions.length > 1 && (
         <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {promotions.map((_, index) => (
+          {promotions.map((_, index: number) => (
             <button
               key={index}
               className={`w-2 h-2 rounded-full transition-colors duration-300 ${
@@ -170,7 +170,7 @@ export default function PromotionBanner({
 
 // Optional: Create a simpler version for smaller spaces
 export function CompactPromotionBanner() {
-  const { data: promotions = [] } = useQuery({
+  const { data: promotions = [] } = useQuery<Promotion[]>({
     queryKey: ["/api/promotions/active"],
   });
 

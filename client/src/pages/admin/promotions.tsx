@@ -96,10 +96,7 @@ export default function PromotionsPage() {
         startDate: new Date(data.startDate),
         endDate: new Date(data.endDate),
       };
-      return apiRequest("/api/promotions", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
+      return apiRequest("POST", "/api/promotions", payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/promotions"] });
@@ -127,10 +124,7 @@ export default function PromotionsPage() {
         startDate: data.startDate ? new Date(data.startDate) : undefined,
         endDate: data.endDate ? new Date(data.endDate) : undefined,
       };
-      return apiRequest(`/api/promotions/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
+      return apiRequest("PUT", `/api/promotions/${id}`, payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/promotions"] });
@@ -153,9 +147,7 @@ export default function PromotionsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/promotions/${id}`, {
-        method: "DELETE",
-      });
+      return apiRequest("DELETE", `/api/promotions/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/promotions"] });
