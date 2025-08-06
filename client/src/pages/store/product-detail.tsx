@@ -305,7 +305,7 @@ export default function ProductDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+            <div className="aspect-square sm:aspect-[4/5] md:aspect-square bg-gray-100 rounded-lg overflow-hidden">
               {(() => {
                 if (!displayImages?.length) {
                   return (

@@ -292,6 +292,12 @@
   .mobile-product-card {
     min-height: auto;
   }
+  
+  /* Better image handling for product detail page on mobile */
+  .mobile-product-detail-image {
+    aspect-ratio: 4/5 !important;
+    object-fit: contain !important;
+  }
 }
 
 /* Gradient backgrounds for avatars */
