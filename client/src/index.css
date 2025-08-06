@@ -298,6 +298,19 @@
     aspect-ratio: 4/5 !important;
     object-fit: contain !important;
   }
+  
+  /* Make product detail images more prominent on mobile */
+  @media (max-width: 640px) {
+    .product-detail-container {
+      margin-left: -1rem;
+      margin-right: -1rem;
+    }
+    
+    .product-detail-image {
+      aspect-ratio: 1 / 1.2 !important;
+      border-radius: 0 !important;
+    }
+  }
 }
 
 /* Gradient backgrounds for avatars */

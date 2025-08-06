@@ -302,10 +302,10 @@ export default function ProductDetail() {
           </ol>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-12">
           {/* Product Images */}
-          <div className="space-y-4">
-            <div className="aspect-square sm:aspect-[4/5] md:aspect-square bg-gray-100 rounded-lg overflow-hidden">
+          <div className="space-y-4 product-detail-container">
+            <div className="aspect-[3/4] sm:aspect-[4/5] md:aspect-square bg-gray-100 rounded-lg overflow-hidden product-detail-image">
               {(() => {
                 if (!displayImages?.length) {
                   return (
