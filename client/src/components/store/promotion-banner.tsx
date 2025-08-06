@@ -23,11 +23,11 @@ export default function PromotionBanner({
     refetchInterval: 60000, // Check for new promotions every minute
   });
 
-  // Debug logging (remove in production)
-  // console.log('PromotionBanner - isLoading:', isLoading);
-  // console.log('PromotionBanner - promotions:', promotions);
-  // console.log('PromotionBanner - promotions.length:', promotions.length);
-  // console.log('PromotionBanner - isDismissed:', isDismissed);
+  // Debug logging (temporary)
+  console.log('PromotionBanner - isLoading:', isLoading);
+  console.log('PromotionBanner - promotions:', promotions);
+  console.log('PromotionBanner - promotions.length:', promotions.length);
+  console.log('PromotionBanner - isDismissed:', isDismissed);
 
   // Auto rotation
   useEffect(() => {
