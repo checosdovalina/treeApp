@@ -1,5 +1,6 @@
 import {
   users,
+  localUsers,
   products,
   categories,
   brands,
@@ -13,6 +14,8 @@ import {
   productColorImages,
   type User,
   type UpsertUser,
+  type LocalUser,
+  type InsertLocalUser,
   type Product,
   type InsertProduct,
   type Category,
@@ -43,6 +46,12 @@ export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  
+  // Local authentication operations
+  getLocalUserByUsername(username: string): Promise<LocalUser | undefined>;
+  getLocalUserById(id: number): Promise<LocalUser | undefined>;
+  createLocalUser(user: InsertLocalUser): Promise<LocalUser>;
+  updateLocalUserLastLogin(id: number): Promise<void>;
   
   // Category operations
   getCategories(): Promise<Category[]>;
@@ -141,6 +150,29 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  // Local authentication operations
+  async getLocalUserByUsername(username: string): Promise<LocalUser | undefined> {
+    const [user] = await db.select().from(localUsers).where(eq(localUsers.username, username));
+    return user;
+  }
+
+  async getLocalUserById(id: number): Promise<LocalUser | undefined> {
+    const [user] = await db.select().from(localUsers).where(eq(localUsers.id, id));
+    return user;
+  }
+
+  async createLocalUser(userData: InsertLocalUser): Promise<LocalUser> {
+    const [user] = await db.insert(localUsers).values(userData).returning();
+    return user;
+  }
+
+  async updateLocalUserLastLogin(id: number): Promise<void> {
+    await db
+      .update(localUsers)
+      .set({ lastLogin: new Date() })
+      .where(eq(localUsers.id, id));
   }
 
   // Category operations

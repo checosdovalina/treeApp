@@ -2,6 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { authService, createDefaultAdmin } from "./auth";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 
 // Admin middleware
 const isAdmin = async (req: any, res: any, next: any) => {
@@ -46,7 +49,8 @@ import {
   insertProductColorImageSchema,
   customerRegistrationSchema,
   quoteRequestSchema,
-  sizeRanges
+  sizeRanges,
+  loginSchema
 } from "@shared/schema";
 import { z } from "zod";
 import { db } from "./db";
@@ -54,9 +58,109 @@ import { eq, and } from "drizzle-orm";
 
 
 
+// Local authentication middleware
+const isLocallyAuthenticated = (req: any, res: any, next: any) => {
+  if (req.session && req.session.user) {
+    return next();
+  }
+  return res.status(401).json({ message: "Authentication required" });
+};
+
+const isLocalAdmin = (req: any, res: any, next: any) => {
+  if (req.session && req.session.user && req.session.user.role === 'admin') {
+    return next();
+  }
+  return res.status(403).json({ message: "Admin access required" });
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup local session management
+  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
+  const pgStore = connectPg(session);
+  const sessionStore = new pgStore({
+    conString: process.env.DATABASE_URL,
+    createTableIfMissing: false,
+    ttl: sessionTtl,
+    tableName: "sessions",
+  });
+  
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'fallback-secret-key',
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false, // Set to true in production
+      maxAge: sessionTtl,
+    },
+  }));
+  
+  // Create default admin user on startup
+  await createDefaultAdmin();
+  
   // Auth middleware
   await setupAuth(app);
+
+  // Local authentication routes
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { username, password } = loginSchema.parse(req.body);
+      
+      const { user, success } = await authService.login(username, password);
+      
+      if (!success) {
+        return res.status(401).json({ message: "Credenciales inválidas" });
+      }
+      
+      // Store user session
+      req.session.user = user;
+      
+      res.json({ 
+        message: "Login exitoso",
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role
+        }
+      });
+    } catch (error) {
+      console.error("Error en login:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.post('/api/auth/logout', (req: any, res) => {
+    if (req.session) {
+      req.session.destroy((err: any) => {
+        if (err) {
+          return res.status(500).json({ message: "Error al cerrar sesión" });
+        }
+        res.clearCookie('connect.sid');
+        res.json({ message: "Sesión cerrada exitosamente" });
+      });
+    } else {
+      res.json({ message: "No hay sesión activa" });
+    }
+  });
+
+  app.get('/api/auth/current', (req: any, res) => {
+    if (req.session && req.session.user) {
+      const user = req.session.user;
+      return res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      });
+    }
+    res.status(401).json({ message: "No autenticado" });
+  });
 
   // Temporary auth bypass for testing
   app.get('/api/auth/user', async (req: any, res) => {

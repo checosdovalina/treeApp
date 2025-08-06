@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 // import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 const treeLogo = "/tree-logo.png";
 import { 
@@ -24,9 +27,39 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { user } = useAuth() as { user: any };
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("/api/auth/logout", {
+        method: "POST",
+      });
+    },
+    onSuccess: () => {
+      // Clear all auth-related cache
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/current"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      toast({
+        title: "Sesión cerrada",
+        description: "Has cerrado sesión exitosamente",
+      });
+      
+      // Redirect to login page
+      setLocation("/login");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Error al cerrar sesión",
+        variant: "destructive",
+      });
+    },
+  });
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: BarChart3 },
@@ -94,9 +127,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => window.location.href = '/api/logout'}
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
                 >
-                  Salir
+                  {logoutMutation.isPending ? "Cerrando..." : "Salir"}
                 </Button>
               </div>
 

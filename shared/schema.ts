@@ -26,7 +26,28 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table (required for Replit Auth)
+// Local authentication table
+export const localUsers = pgTable("local_users", {
+  id: serial("id").primaryKey(),
+  username: varchar("username", { length: 50 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(), // hashed password
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  role: varchar("role").notNull().default("customer"), // admin, customer
+  phone: varchar("phone", { length: 20 }),
+  company: varchar("company", { length: 200 }),
+  address: text("address"),
+  city: varchar("city", { length: 100 }),
+  state: varchar("state", { length: 100 }),
+  zipCode: varchar("zip_code", { length: 10 }),
+  isActive: boolean("is_active").default(true),
+  lastLogin: timestamp("last_login"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User storage table (required for Replit Auth - keeping for compatibility)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
   email: varchar("email").unique(),
@@ -384,9 +405,25 @@ export const quoteRequestSchema = z.object({
   preferredDeliveryDate: z.string().optional(),
 });
 
+// Local user schemas
+export const insertLocalUserSchema = createInsertSchema(localUsers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastLogin: true,
+});
+
+export const loginSchema = z.object({
+  username: z.string().min(3, "El usuario debe tener al menos 3 caracteres"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type LocalUser = typeof localUsers.$inferSelect;
+export type InsertLocalUser = z.infer<typeof insertLocalUserSchema>;
+export type LoginRequest = z.infer<typeof loginSchema>;
 
 // Size range types
 export type SizeRange = typeof sizeRanges.$inferSelect;
