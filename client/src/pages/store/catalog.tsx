@@ -595,8 +595,8 @@ export default function CatalogPage() {
 
           {/* Products Grid/List */}
           {productsLoading ? (
-            <div className={`grid gap-6 ${viewMode === "grid" 
-              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+            <div className={`grid gap-4 sm:gap-6 ${viewMode === "grid" 
+              ? "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" 
               : "grid-cols-1"}`}>
               {Array.from({ length: 8 }).map((_, i) => (
                 <Card key={i} className="overflow-hidden">
@@ -636,8 +636,8 @@ export default function CatalogPage() {
               )}
             </div>
           ) : (
-            <div className={`grid gap-6 ${viewMode === "grid" 
-              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mobile-grid-auto" 
+            <div className={`grid gap-4 sm:gap-6 ${viewMode === "grid" 
+              ? "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" 
               : "grid-cols-1"}`}>
               {products.map((product: any) => (
                 <Card 
@@ -649,7 +649,7 @@ export default function CatalogPage() {
                 >
                   <div className={`relative ${viewMode === "list" ? "md:w-48 md:flex-shrink-0" : ""}`}>
                     <div className={`bg-gray-200 flex items-center justify-center ${
-                      viewMode === "list" ? "h-full md:h-48" : "w-full h-56 sm:h-64 lg:h-72"
+                      viewMode === "list" ? "h-full md:h-48" : "w-full h-64 sm:h-72 md:h-80 lg:h-72"
                     }`}>
                       {(() => {
                         // First check if we have a selected color for this product

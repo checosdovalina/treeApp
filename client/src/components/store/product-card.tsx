@@ -140,7 +140,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         onClick={handleCardClick}
       >
         <div className="relative">
-          <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
+          <div className="aspect-[3/4] sm:aspect-[4/5] md:aspect-[3/4] bg-gray-100 overflow-hidden">
             {displayImages && displayImages.length > 0 ? (
               <ImageZoom
                 src={getValidImageUrl(displayImages, 0)} 

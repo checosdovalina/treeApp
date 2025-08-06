@@ -131,7 +131,7 @@ export default function StoreHome() {
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
               {[...Array(8)].map((_, i) => (
                 <Card key={i} className="overflow-hidden">
                   <div className="h-64 bg-gray-200 animate-pulse"></div>
@@ -143,7 +143,7 @@ export default function StoreHome() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
               {topProducts?.length === 0 ? (
                 <div className="col-span-full text-center py-16">
                   <Shirt className="h-16 w-16 text-gray-400 mx-auto mb-4" />
