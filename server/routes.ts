@@ -881,7 +881,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(promotions);
     } catch (error) {
       console.error("Error fetching promotions:", error);
-      res.status(500).json({ message: "Failed to fetch promotions" });
+      if (error instanceof Error) {
+        console.error("Error details:", error.message);
+      }
+      res.status(500).json({ message: "Failed to fetch promotions", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
