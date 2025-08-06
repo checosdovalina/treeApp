@@ -79,39 +79,60 @@ export default function PromotionBanner({
     <div className="relative w-full overflow-hidden">
       {/* Main Banner */}
       <div
-        className="relative h-24 md:h-32 flex items-center justify-center cursor-pointer transition-all duration-500 hover:scale-[1.02] shadow-lg"
-        style={{
-          backgroundColor: currentPromotion.backgroundColor || "#1F4287",
-          color: currentPromotion.textColor || "#FFFFFF",
-        }}
+        className="relative h-32 md:h-40 flex items-center justify-center cursor-pointer transition-all duration-500 hover:scale-[1.01] shadow-xl"
         onClick={handleBannerClick}
       >
-        {/* Background Image with better visibility */}
-        {currentPromotion.imageUrl && (
+        {/* Background Image - More prominent */}
+        {currentPromotion.imageUrl ? (
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-30"
+            className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${currentPromotion.imageUrl})` }}
+          />
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundColor: currentPromotion.backgroundColor || "#1F4287",
+            }}
           />
         )}
         
-        {/* Gradient overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
+        {/* Strong gradient overlay for text readability */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"
+          style={{
+            background: currentPromotion.imageUrl 
+              ? 'linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.5), rgba(0,0,0,0.8))'
+              : 'linear-gradient(to right, rgba(0,0,0,0.3), rgba(0,0,0,0.1), rgba(0,0,0,0.3))'
+          }}
+        ></div>
 
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-6">
-            <h3 className="text-xl md:text-2xl font-bold drop-shadow-lg">
+          <div className="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-8">
+            <h3 
+              className="text-2xl md:text-3xl font-bold drop-shadow-2xl"
+              style={{ color: currentPromotion.textColor || "#FFFFFF" }}
+            >
               {currentPromotion.title}
             </h3>
             {currentPromotion.description && (
-              <p className="text-sm md:text-lg opacity-95 drop-shadow-md max-w-md">
+              <p 
+                className="text-base md:text-xl drop-shadow-lg max-w-lg leading-relaxed"
+                style={{ color: currentPromotion.textColor || "#FFFFFF" }}
+              >
                 {currentPromotion.description}
               </p>
             )}
             {currentPromotion.promoCode && (
-              <div className="flex items-center space-x-2">
-                <span className="text-xs md:text-sm opacity-90">Código:</span>
-                <span className="bg-white bg-opacity-25 px-3 py-1.5 rounded-lg text-sm md:text-base font-mono font-bold border border-white/30 shadow-lg backdrop-blur-sm">
+              <div className="flex items-center space-x-3">
+                <span 
+                  className="text-sm md:text-base font-medium"
+                  style={{ color: currentPromotion.textColor || "#FFFFFF" }}
+                >
+                  Código:
+                </span>
+                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-2 rounded-lg text-base md:text-lg font-mono font-bold shadow-2xl transform hover:scale-105 transition-transform duration-200 border-2 border-yellow-300">
                   {currentPromotion.promoCode}
                 </span>
               </div>
@@ -119,8 +140,11 @@ export default function PromotionBanner({
           </div>
           
           {/* Call to action indicator */}
-          <div className="mt-2 text-xs md:text-sm opacity-75 animate-pulse">
-            ✨ Haz clic para ver más detalles
+          <div 
+            className="mt-3 text-sm md:text-base font-medium animate-pulse"
+            style={{ color: currentPromotion.textColor || "#FFFFFF" }}
+          >
+            🛍️ Haz clic para aprovechar esta oferta
           </div>
         </div>
 
@@ -130,24 +154,24 @@ export default function PromotionBanner({
             <Button
               variant="ghost"
               size="sm"
-              className="absolute left-2 md:left-4 text-white hover:bg-white hover:bg-opacity-30 h-10 w-10 p-0 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full shadow-lg"
+              className="absolute left-3 md:left-6 text-white hover:bg-white hover:bg-opacity-40 h-12 w-12 p-0 bg-black/40 backdrop-blur-md border-2 border-white/30 rounded-full shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-110"
               onClick={(e) => {
                 e.stopPropagation();
                 prevSlide();
               }}
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-6 w-6" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className="absolute right-12 md:right-16 text-white hover:bg-white hover:bg-opacity-30 h-10 w-10 p-0 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full shadow-lg"
+              className="absolute right-16 md:right-20 text-white hover:bg-white hover:bg-opacity-40 h-12 w-12 p-0 bg-black/40 backdrop-blur-md border-2 border-white/30 rounded-full shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-110"
               onClick={(e) => {
                 e.stopPropagation();
                 nextSlide();
               }}
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-6 w-6" />
             </Button>
           </>
         )}
@@ -157,27 +181,27 @@ export default function PromotionBanner({
           <Button
             variant="ghost"
             size="sm"
-            className="absolute right-2 md:right-4 text-white hover:bg-red-500 hover:bg-opacity-80 h-8 w-8 p-0 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full shadow-lg transition-colors duration-200"
+            className="absolute right-3 md:right-6 text-white hover:bg-red-500 hover:bg-opacity-90 h-10 w-10 p-0 bg-black/40 backdrop-blur-md border-2 border-white/30 rounded-full shadow-2xl transition-all duration-300 hover:scale-110"
             onClick={(e) => {
               e.stopPropagation();
               setIsDismissed(true);
             }}
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </Button>
         )}
       </div>
 
       {/* Dots Indicator - Only show if multiple promotions */}
       {promotions.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-3">
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4 bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
           {promotions.map((_, index: number) => (
             <button
               key={index}
-              className={`w-3 h-3 rounded-full transition-all duration-300 border-2 border-white/50 shadow-lg ${
+              className={`w-4 h-4 rounded-full transition-all duration-300 border-2 shadow-xl ${
                 index === currentIndex 
-                  ? 'bg-white scale-110 border-white' 
-                  : 'bg-white/30 hover:bg-white/60 hover:scale-105'
+                  ? 'bg-gradient-to-r from-yellow-400 to-orange-500 border-yellow-300 scale-125 shadow-yellow-400/50' 
+                  : 'bg-white/40 border-white/60 hover:bg-white/70 hover:scale-110 hover:border-white'
               }`}
               onClick={(e) => {
                 e.stopPropagation();
