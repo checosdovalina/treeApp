@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/lib/cart";
 import { useToast } from "@/hooks/use-toast";
 import CustomerLayout from "@/components/layout/customer-layout";
+import PromotionBanner from "@/components/store/promotion-banner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -84,6 +85,9 @@ export default function StoreIndex() {
 
   return (
     <CustomerLayout>
+      {/* Promotion Banner */}
+      <PromotionBanner />
+      
       {/* Hero Section - Improved Contrast */}
       <section className="relative min-h-screen bg-gradient-to-br from-slate-900 via-uniform-blue to-blue-900 text-white overflow-hidden flex items-center" style={{ marginTop: '-80px', paddingTop: '80px' }}>
         {/* Background Pattern */}

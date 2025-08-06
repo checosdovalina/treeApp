@@ -47,6 +47,7 @@ import {
   insertOrderItemSchema,
   insertQuoteSchema,
   insertProductColorImageSchema,
+  insertPromotionSchema,
   customerRegistrationSchema,
   quoteRequestSchema,
   sizeRanges,
@@ -869,6 +870,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching recent orders:", error);
       res.status(500).json({ message: "Failed to fetch recent orders" });
+    }
+  });
+
+  // Promotions routes
+  app.get('/api/promotions', async (req, res) => {
+    try {
+      const { active } = req.query;
+      const promotions = await storage.getPromotions(active === 'true');
+      res.json(promotions);
+    } catch (error) {
+      console.error("Error fetching promotions:", error);
+      res.status(500).json({ message: "Failed to fetch promotions" });
+    }
+  });
+
+  app.get('/api/promotions/active', async (req, res) => {
+    try {
+      const activePromotions = await storage.getActivePromotions();
+      res.json(activePromotions);
+    } catch (error) {
+      console.error("Error fetching active promotions:", error);
+      res.status(500).json({ message: "Failed to fetch active promotions" });
+    }
+  });
+
+  app.get('/api/promotions/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const promotion = await storage.getPromotion(id);
+      if (!promotion) {
+        return res.status(404).json({ message: "Promotion not found" });
+      }
+      res.json(promotion);
+    } catch (error) {
+      console.error("Error fetching promotion:", error);
+      res.status(500).json({ message: "Failed to fetch promotion" });
+    }
+  });
+
+  app.post('/api/promotions', isAdmin, async (req, res) => {
+    try {
+      const data = insertPromotionSchema.parse(req.body);
+      const promotion = await storage.createPromotion(data);
+      res.json(promotion);
+    } catch (error) {
+      console.error("Error creating promotion:", error);
+      res.status(400).json({ message: "Failed to create promotion" });
+    }
+  });
+
+  app.put('/api/promotions/:id', isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const data = insertPromotionSchema.partial().parse(req.body);
+      const promotion = await storage.updatePromotion(id, data);
+      res.json(promotion);
+    } catch (error) {
+      console.error("Error updating promotion:", error);
+      res.status(400).json({ message: "Failed to update promotion" });
+    }
+  });
+
+  app.delete('/api/promotions/:id', isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deletePromotion(id);
+      res.json({ message: "Promotion deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting promotion:", error);
+      res.status(500).json({ message: "Failed to delete promotion" });
     }
   });
 

@@ -229,6 +229,27 @@ export const quotes = pgTable("quotes", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Promotions
+export const promotions = pgTable("promotions", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  imageUrl: varchar("image_url", { length: 500 }),
+  linkUrl: varchar("link_url", { length: 500 }),
+  discountType: varchar("discount_type", { length: 20 }), // percentage, fixed, free_shipping
+  discountValue: decimal("discount_value", { precision: 10, scale: 2 }),
+  promoCode: varchar("promo_code", { length: 50 }),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  targetAudience: varchar("target_audience", { length: 50 }).default("all"), // all, new_customers, returning_customers
+  backgroundColor: varchar("background_color", { length: 7 }).default("#1F4287"),
+  textColor: varchar("text_color", { length: 7 }).default("#FFFFFF"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
@@ -371,6 +392,12 @@ export const insertProductColorImageSchema = createInsertSchema(productColorImag
   updatedAt: true,
 });
 
+export const insertPromotionSchema = createInsertSchema(promotions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertQuoteSchema = createInsertSchema(quotes).omit({
   id: true,
   quoteNumber: true,
@@ -459,6 +486,9 @@ export type OrderItem = typeof orderItems.$inferSelect;
 
 export type InsertQuote = z.infer<typeof insertQuoteSchema>;
 export type Quote = typeof quotes.$inferSelect;
+
+export type InsertPromotion = z.infer<typeof insertPromotionSchema>;
+export type Promotion = typeof promotions.$inferSelect;
 
 export type InsertProductColorImage = z.infer<typeof insertProductColorImageSchema>;
 export type ProductColorImage = typeof productColorImages.$inferSelect;

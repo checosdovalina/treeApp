@@ -12,6 +12,7 @@ import {
   orderItems,
   quotes,
   productColorImages,
+  promotions,
   type User,
   type UpsertUser,
   type LocalUser,
@@ -38,9 +39,11 @@ import {
   type InsertQuote,
   type ProductColorImage,
   type InsertProductColorImage,
+  type Promotion,
+  type InsertPromotion,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, ilike, count, arrayContains } from "drizzle-orm";
+import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -668,6 +671,65 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(productColorImages)
       .where(eq(productColorImages.productId, productId));
+  }
+
+  // Promotions operations
+  async getPromotions(activeOnly = false): Promise<Promotion[]> {
+    let query = db.select().from(promotions);
+    
+    if (activeOnly) {
+      const now = new Date();
+      query = query.where(
+        and(
+          eq(promotions.isActive, true),
+          lte(promotions.startDate, now),
+          gte(promotions.endDate, now)
+        )
+      );
+    }
+    
+    return await query.orderBy(promotions.sortOrder, promotions.createdAt);
+  }
+
+  async getPromotion(id: number): Promise<Promotion | undefined> {
+    const [promotion] = await db.select().from(promotions).where(eq(promotions.id, id));
+    return promotion;
+  }
+
+  async createPromotion(promotion: InsertPromotion): Promise<Promotion> {
+    const [created] = await db
+      .insert(promotions)
+      .values(promotion)
+      .returning();
+    return created;
+  }
+
+  async updatePromotion(id: number, updates: Partial<InsertPromotion>): Promise<Promotion> {
+    const [updated] = await db
+      .update(promotions)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(promotions.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deletePromotion(id: number): Promise<void> {
+    await db.delete(promotions).where(eq(promotions.id, id));
+  }
+
+  async getActivePromotions(): Promise<Promotion[]> {
+    const now = new Date();
+    return await db
+      .select()
+      .from(promotions)
+      .where(
+        and(
+          eq(promotions.isActive, true),
+          lte(promotions.startDate, now),
+          gte(promotions.endDate, now)
+        )
+      )
+      .orderBy(promotions.sortOrder, promotions.createdAt);
   }
 }
 

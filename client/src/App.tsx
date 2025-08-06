@@ -12,6 +12,7 @@ import AdminOrders from "@/pages/admin/orders";
 import AdminCustomers from "@/pages/admin/customers";
 import AdminQuotes from "@/pages/admin/quotes";
 import AdminReports from "@/pages/admin/reports";
+import AdminPromotions from "@/pages/admin/promotions";
 import StoreHome from "@/pages/store/index";
 import StoreCatalog from "@/pages/store/catalog";
 import StoreBrands from "@/pages/store/brands";
@@ -67,6 +68,7 @@ function Router() {
           <Route path="/admin/customers" component={AdminCustomers} />
           <Route path="/admin/quotes" component={AdminQuotes} />
           <Route path="/admin/reports" component={AdminReports} />
+          <Route path="/admin/promotions" component={AdminPromotions} />
           
           {/* Admin can also access store routes */}
           <Route path="/store" component={StoreHome} />
