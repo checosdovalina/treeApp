@@ -165,6 +165,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Temporary auth bypass for testing
   app.get('/api/auth/user', async (req: any, res) => {
     try {
+      // First check if user is authenticated locally
+      if (req.session && req.session.user) {
+        const user = req.session.user;
+        return res.json({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          profileImageUrl: user.profileImageUrl
+        });
+      }
+      
       // Check if user is authenticated via Replit Auth
       if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
         const userId = req.user.claims.sub;
@@ -172,24 +186,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(user);
       }
       
-      // Fallback: return admin user for testing
-      const adminUser = await storage.getUser('admin-test');
-      if (adminUser) {
-        return res.json(adminUser);
-      }
-      
-      // Create and return default admin user
-      const defaultAdmin = {
-        id: 'admin-test',
-        email: 'admin@uniformeslaguna.com',
-        firstName: 'Admin',
-        lastName: 'Test', 
-        role: 'admin',
-        profileImageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150'
-      };
-      
-      await storage.upsertUser(defaultAdmin);
-      res.json(defaultAdmin);
+      // No authenticated user found
+      return res.status(401).json({ message: "Not authenticated" });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });

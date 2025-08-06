@@ -1,25 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 
 export function useAuth() {
-  // Try local authentication first, then fallback to existing auth
-  const { data: localUser, isLoading: isLoadingLocal } = useQuery({
-    queryKey: ["/api/auth/current"],
-    queryFn: async () => {
-      const res = await apiRequest("GET", "/api/auth/current");
-      return await res.json();
-    },
-    retry: false,
-  });
-
-  const { data: replitUser, isLoading: isLoadingReplit } = useQuery({
+  // Use the existing endpoint that works fine
+  const { data: user, isLoading } = useQuery({
     queryKey: ["/api/auth/user"],
     retry: false,
-    enabled: !localUser, // Only try Replit auth if local auth fails
   });
-
-  const user = localUser || replitUser;
-  const isLoading = isLoadingLocal || (isLoadingReplit && !localUser);
 
   return {
     user,
