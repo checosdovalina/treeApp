@@ -23,6 +23,12 @@ export default function PromotionBanner({
     refetchInterval: 60000, // Check for new promotions every minute
   });
 
+  // Debug logging
+  console.log('PromotionBanner - isLoading:', isLoading);
+  console.log('PromotionBanner - promotions:', promotions);
+  console.log('PromotionBanner - promotions.length:', promotions.length);
+  console.log('PromotionBanner - isDismissed:', isDismissed);
+
   // Auto rotation
   useEffect(() => {
     if (!autoRotate || promotions.length <= 1) return;
@@ -39,7 +45,18 @@ export default function PromotionBanner({
     setCurrentIndex(0);
   }, [promotions]);
 
-  if (isLoading || isDismissed || promotions.length === 0) {
+  if (isLoading) {
+    console.log('PromotionBanner - Still loading...');
+    return null;
+  }
+
+  if (isDismissed) {
+    console.log('PromotionBanner - Banner dismissed');
+    return null;
+  }
+
+  if (promotions.length === 0) {
+    console.log('PromotionBanner - No promotions found');
     return null;
   }
 
