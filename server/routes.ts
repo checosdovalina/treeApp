@@ -914,24 +914,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/promotions', isAdmin, async (req, res) => {
     try {
+      console.log("Creating promotion with data:", req.body);
       const data = insertPromotionSchema.parse(req.body);
       const promotion = await storage.createPromotion(data);
       res.json(promotion);
     } catch (error) {
       console.error("Error creating promotion:", error);
-      res.status(400).json({ message: "Failed to create promotion" });
+      if (error instanceof Error) {
+        console.error("Error details:", error.message);
+        console.error("Error stack:", error.stack);
+      }
+      res.status(400).json({ 
+        message: "Failed to create promotion",
+        error: error instanceof Error ? error.message : "Unknown error",
+        details: req.body
+      });
     }
   });
 
   app.put('/api/promotions/:id', isAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      console.log("Updating promotion", id, "with data:", req.body);
       const data = insertPromotionSchema.partial().parse(req.body);
       const promotion = await storage.updatePromotion(id, data);
       res.json(promotion);
     } catch (error) {
       console.error("Error updating promotion:", error);
-      res.status(400).json({ message: "Failed to update promotion" });
+      if (error instanceof Error) {
+        console.error("Error details:", error.message);
+        console.error("Error stack:", error.stack);
+      }
+      res.status(400).json({ 
+        message: "Failed to update promotion",
+        error: error instanceof Error ? error.message : "Unknown error",
+        details: req.body
+      });
     }
   });
 
