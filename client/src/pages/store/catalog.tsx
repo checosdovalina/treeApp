@@ -649,7 +649,7 @@ export default function CatalogPage() {
                 >
                   <div className={`relative ${viewMode === "list" ? "md:w-48 md:flex-shrink-0" : ""}`}>
                     <div className={`bg-gray-200 flex items-center justify-center ${
-                      viewMode === "list" ? "h-full md:h-48" : "w-full h-64"
+                      viewMode === "list" ? "h-full md:h-48" : "w-full h-56 sm:h-64 lg:h-72"
                     }`}>
                       {(() => {
                         // First check if we have a selected color for this product
@@ -683,7 +683,7 @@ export default function CatalogPage() {
                           <img 
                             src={imageToShow} 
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain sm:object-contain md:object-cover"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               const parent = target.parentElement;

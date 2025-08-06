@@ -280,6 +280,18 @@
   .mobile-grid-auto {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
+  
+  /* Better image handling on mobile */
+  .mobile-product-image {
+    height: 200px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+  }
+  
+  /* Ensure product cards are properly sized on mobile */
+  .mobile-product-card {
+    min-height: auto;
+  }
 }
 
 /* Gradient backgrounds for avatars */
