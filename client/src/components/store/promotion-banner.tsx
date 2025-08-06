@@ -199,16 +199,16 @@ export default function PromotionBanner({
         )}
       </div>
 
-      {/* Dots Indicator - Responsive hero style */}
+      {/* Dots Indicator - Compact and elegant */}
       {promotions.length > 1 && (
-        <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 lg:bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-3 sm:space-x-4 md:space-x-6 bg-black/50 backdrop-blur-xl px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 rounded-full border-2 md:border-3 border-white/40 shadow-2xl">
+        <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 bg-black/40 backdrop-blur-lg px-3 py-2 rounded-full border border-white/30 shadow-lg">
           {promotions.map((_, index: number) => (
             <button
               key={index}
-              className={`w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6 lg:w-8 lg:h-8 xl:w-10 xl:h-10 rounded-full transition-all duration-500 border-2 md:border-3 shadow-2xl ${
+              className={`w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
                 index === currentIndex 
-                  ? 'bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400 border-yellow-200 scale-125 md:scale-150 shadow-yellow-400/70 animate-pulse' 
-                  : 'bg-white/60 border-white/80 hover:bg-white/90 hover:scale-110 md:hover:scale-125 hover:border-white hover:shadow-white/40'
+                  ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50 scale-125' 
+                  : 'bg-white/50 hover:bg-white/80 hover:scale-110'
               }`}
               onClick={(e) => {
                 e.stopPropagation();
