@@ -305,7 +305,7 @@ export default function ProductDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-12">
           {/* Product Images */}
           <div className="space-y-4 product-detail-container">
-            <div className="aspect-[3/4] sm:aspect-[4/5] md:aspect-square bg-gray-100 rounded-lg overflow-hidden product-detail-image">
+            <div className="aspect-[3/4] sm:aspect-[4/5] md:aspect-square bg-white rounded-lg overflow-hidden product-detail-image border border-gray-200">
               {(() => {
                 if (!displayImages?.length) {
                   return (
@@ -334,7 +334,7 @@ export default function ProductDetail() {
                   <button
                     key={`thumb-${selectedColor}-${index}`}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square rounded border-2 overflow-hidden ${
+                    className={`aspect-square rounded border-2 overflow-hidden bg-white ${
                       selectedImage === index ? 'border-uniform-primary' : 'border-gray-200'
                     }`}
                   >
@@ -342,7 +342,7 @@ export default function ProductDetail() {
                       key={`thumb-img-${selectedColor}-${index}`}
                       src={getValidImageUrl(displayImages, index)} 
                       alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover cursor-zoom-in"
+                      className="w-full h-full object-contain sm:object-contain lg:object-cover cursor-zoom-in"
                       onDoubleClick={() => {
                         setSelectedImage(index);
                         setIsImageModalOpen(true);
