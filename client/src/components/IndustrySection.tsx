@@ -2,6 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { type IndustrySection } from "@shared/schema";
+import useEmblaCarousel from "embla-carousel-react";
+import { useCallback, useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface IndustryIconProps {
   industry: string;
@@ -55,105 +58,162 @@ export default function IndustrySection() {
     queryFn: () => fetch('/api/industry-sections?active=true').then(res => res.json()),
   });
 
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    align: 'start',
+    containScroll: 'trimSnaps',
+    slidesToScroll: 1,
+    breakpoints: {
+      '(min-width: 768px)': { slidesToScroll: 2 },
+      '(min-width: 1024px)': { slidesToScroll: 3 }
+    }
+  });
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+  }, [emblaApi, onSelect]);
+
   if (isLoading || !sections || sections.length === 0) {
     return null;
   }
 
   return (
-    <section className="py-16 bg-gradient-to-br from-uniform-primary to-uniform-secondary">
+    <section className="py-12 bg-gradient-to-br from-uniform-primary to-uniform-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <div className="inline-block bg-uniform-gold/20 text-uniform-gold text-sm font-semibold px-4 py-2 rounded-full mb-4">
-            CALIDAD PREMIUM GARANTIZADA
+            EXPLORA NUESTRAS OPCIONES
           </div>
-          <h2 className="text-4xl md:text-5xl font-poppins font-black text-white mb-4">
-            UNIFORMES
+          <h2 className="text-3xl md:text-4xl font-poppins font-black text-white mb-2">
+            CATEGORÍAS DISPONIBLES
           </h2>
-          <h3 className="text-2xl md:text-3xl font-poppins font-black text-white mb-6">
-            PROFESIONALES
-          </h3>
-          <p className="text-lg text-white/90 font-roboto max-w-3xl mx-auto">
-            Especialistas en uniformes profesionales para hospitales, industrias, restaurantes y empresas corporativas.
+          <p className="text-lg text-white/90 font-roboto max-w-2xl mx-auto">
+            Descubre nuestra amplia gama de uniformes profesionales especializados
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {sections.map((section: IndustrySection) => (
-            <div
-              key={section.id}
-              className="relative group overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
-              style={{ backgroundColor: section.backgroundColor }}
-            >
-              {/* Background Image */}
-              {section.imageUrl && (
-                <div className="absolute inset-0">
-                  <img
-                    src={section.imageUrl}
-                    alt={section.title}
-                    className="w-full h-full object-cover opacity-60 group-hover:opacity-70 transition-opacity duration-300"
-                  />
-                </div>
-              )}
+        {/* Carousel Container */}
+        <div className="relative">
+          {/* Navigation Buttons */}
+          <button
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 ${
+              !canScrollPrev ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+            }`}
+            onClick={scrollPrev}
+            disabled={!canScrollPrev}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          
+          <button
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 ${
+              !canScrollNext ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+            }`}
+            onClick={scrollNext}
+            disabled={!canScrollNext}
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
 
-              {/* Content */}
-              <div className="relative p-6 h-full flex flex-col justify-between min-h-[280px]">
-                <div>
-                  {/* Icon */}
-                  <div className="mb-4" style={{ color: section.textColor }}>
-                    <IndustryIcon industry={section.industry} className="w-16 h-16" />
+          {/* Embla Viewport */}
+          <div className="overflow-hidden mx-8" ref={emblaRef}>
+            <div className="flex gap-6">
+              {sections.map((section: IndustrySection) => (
+                <div
+                  key={section.id}
+                  className="relative group overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex-none w-80"
+                  style={{ backgroundColor: section.backgroundColor }}
+                >
+                  {/* Background Image */}
+                  {section.imageUrl && (
+                    <div className="absolute inset-0">
+                      <img
+                        src={section.imageUrl}
+                        alt={section.title}
+                        className="w-full h-full object-cover opacity-60 group-hover:opacity-70 transition-opacity duration-300"
+                      />
+                    </div>
+                  )}
+
+                  {/* Content */}
+                  <div className="relative p-6 h-full flex flex-col justify-between min-h-[280px]">
+                    <div>
+                      {/* Icon */}
+                      <div className="mb-4" style={{ color: section.textColor || '#ffffff' }}>
+                        <IndustryIcon industry={section.industry} className="w-16 h-16" />
+                      </div>
+
+                      {/* Title and Description */}
+                      <h3
+                        className="text-2xl font-poppins font-black mb-2"
+                        style={{ color: section.textColor || '#ffffff' }}
+                      >
+                        {section.title}
+                      </h3>
+                      {section.subtitle && (
+                        <p
+                          className="text-sm font-roboto font-medium mb-4"
+                          style={{ color: section.textColor || '#ffffff' }}
+                        >
+                          {section.subtitle}
+                        </p>
+                      )}
+                      {section.description && (
+                        <p
+                          className="text-sm font-roboto opacity-90"
+                          style={{ color: section.textColor || '#ffffff' }}
+                        >
+                          {section.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* CTA Buttons */}
+                    <div className="flex flex-col gap-2 mt-6">
+                      <Link href={section.linkUrl || `/store/catalog?category=${section.industry}`}>
+                        <Button
+                          variant="outline"
+                          className="w-full text-sm font-semibold hover:scale-105 transition-transform duration-200"
+                          style={{
+                            borderColor: section.textColor || '#ffffff',
+                            color: section.textColor || '#ffffff',
+                            backgroundColor: 'transparent'
+                          }}
+                        >
+                          {section.buttonText || 'EXPLORAR CATÁLOGO'} →
+                        </Button>
+                      </Link>
+                      <Link href="/store/quote-request">
+                        <Button
+                          className="w-full text-sm font-semibold bg-uniform-gold text-black hover:bg-uniform-gold/90 hover:scale-105 transition-all duration-200"
+                        >
+                          SOLICITAR COTIZACIÓN
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-
-                  {/* Title and Description */}
-                  <h3
-                    className="text-2xl font-poppins font-black mb-2"
-                    style={{ color: section.textColor }}
-                  >
-                    {section.title}
-                  </h3>
-                  {section.subtitle && (
-                    <p
-                      className="text-sm font-roboto font-medium mb-4"
-                      style={{ color: section.textColor }}
-                    >
-                      {section.subtitle}
-                    </p>
-                  )}
-                  {section.description && (
-                    <p
-                      className="text-sm font-roboto opacity-90"
-                      style={{ color: section.textColor }}
-                    >
-                      {section.description}
-                    </p>
-                  )}
                 </div>
-
-                {/* CTA Buttons */}
-                <div className="flex flex-col gap-2 mt-6">
-                  <Link href={section.linkUrl || `/store/catalog?category=${section.industry}`}>
-                    <Button
-                      variant="outline"
-                      className="w-full text-sm font-semibold hover:scale-105 transition-transform duration-200"
-                      style={{
-                        borderColor: section.textColor,
-                        color: section.textColor,
-                        backgroundColor: 'transparent'
-                      }}
-                    >
-                      {section.buttonText || 'EXPLORAR CATÁLOGO'} →
-                    </Button>
-                  </Link>
-                  <Link href="/store/quote-request">
-                    <Button
-                      className="w-full text-sm font-semibold bg-uniform-gold text-black hover:bg-uniform-gold/90 hover:scale-105 transition-all duration-200"
-                    >
-                      SOLICITAR COTIZACIÓN
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
 
         {/* Bottom section with "Soluciones Completas" */}
