@@ -66,9 +66,7 @@ export default function IndustrySection() {
           <div className="inline-block bg-uniform-gold/20 text-uniform-gold text-sm font-semibold px-4 py-2 rounded-full mb-4">
             NUESTRAS ESPECIALIDADES
           </div>
-          <h2 className="text-4xl font-poppins font-black text-white mb-4">
-            Uniformes por Industria
-          </h2>
+
           <p className="text-lg text-white/90 font-roboto max-w-3xl mx-auto">
             Cada sector tiene necesidades únicas. Descubre nuestras soluciones especializadas
             diseñadas específicamente para tu industria.
