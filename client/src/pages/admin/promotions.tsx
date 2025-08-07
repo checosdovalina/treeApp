@@ -41,6 +41,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import AdminLayout from "@/components/layout/admin-layout";
 import type { Promotion } from "@shared/schema";
 
 interface PromotionFormData {
@@ -219,19 +220,20 @@ export default function PromotionsPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-[#1F4287]">Gestión de Promociones</h1>
-          <p className="text-gray-600 mt-2">
-            Administra banners promocionales y ofertas especiales
-          </p>
-        </div>
+    <AdminLayout>
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-uniform-neutral-900">Gestión de Promociones</h1>
+            <p className="text-uniform-secondary mt-2">
+              Administra banners promocionales y ofertas especiales
+            </p>
+          </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
               onClick={() => handleCloseDialog()}
-              className="bg-[#1F4287] hover:bg-[#1a3a75] text-white"
+              className="bg-uniform-primary hover:bg-uniform-darker text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Nueva Promoción
@@ -566,6 +568,7 @@ export default function PromotionsPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
