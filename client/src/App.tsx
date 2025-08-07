@@ -19,6 +19,8 @@ import StoreBrands from "@/pages/store/brands";
 import ProductDetail from "@/pages/store/product-detail";
 import Cart from "@/pages/store/cart";
 import CustomerDashboard from "@/pages/customer/dashboard";
+import CustomerRegister from "@/pages/auth/customer-register";
+import QuoteRequest from "@/pages/store/quote-request";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -42,13 +44,13 @@ function Router() {
       <Switch>
         <Route path="/" component={Landing} />
         <Route path="/login" component={LoginPage} />
-        <Route path="/auth/register" component={() => import("./pages/auth/customer-register")} />
+        <Route path="/auth/register" component={CustomerRegister} />
         <Route path="/store" component={StoreHome} />
         <Route path="/store/catalog" component={StoreCatalog} />
         <Route path="/store/brands" component={StoreBrands} />
         <Route path="/store/product/:id" component={ProductDetail} />
         <Route path="/store/cart" component={Cart} />
-        <Route path="/store/quote-request" component={() => import("./pages/store/quote-request")} />
+        <Route path="/store/quote-request" component={QuoteRequest} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -58,7 +60,7 @@ function Router() {
   return (
     <Switch>
       {/* Admin routes */}
-      {user?.role === 'admin' ? (
+      {(user as any)?.role === 'admin' ? (
         <>
           <Route path="/" component={AdminDashboard} />
           <Route path="/admin" component={AdminDashboard} />
@@ -76,7 +78,7 @@ function Router() {
           <Route path="/store/brands" component={StoreBrands} />
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
-          <Route path="/store/quote-request" component={() => import("./pages/store/quote-request")} />
+          <Route path="/store/quote-request" component={QuoteRequest} />
         </>
       ) : (
         <>
@@ -87,7 +89,7 @@ function Router() {
           <Route path="/store/brands" component={StoreBrands} />
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
-          <Route path="/store/quote-request" component={() => import("./pages/store/quote-request")} />
+          <Route path="/store/quote-request" component={QuoteRequest} />
           
           {/* Customer dashboard and account routes */}
           <Route path="/customer" component={CustomerDashboard} />
