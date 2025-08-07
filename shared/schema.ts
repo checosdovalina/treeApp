@@ -250,6 +250,20 @@ export const promotions = pgTable("promotions", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Configurable product categories for the main module
+export const productCategories = pgTable("product_categories", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  query: varchar("query", { length: 100 }).notNull(), // search term for filtering
+  gradient: varchar("gradient", { length: 200 }).notNull(),
+  icon: varchar("icon", { length: 50 }).notNull(),
+  imageUrl: varchar("image_url", { length: 500 }), // optional custom image
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0), // for ordering categories
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
@@ -401,6 +415,12 @@ export const insertPromotionSchema = createInsertSchema(promotions).omit({
   endDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
 });
 
+export const insertProductCategorySchema = createInsertSchema(productCategories).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertQuoteSchema = createInsertSchema(quotes).omit({
   id: true,
   quoteNumber: true,
@@ -492,6 +512,9 @@ export type Quote = typeof quotes.$inferSelect;
 
 export type InsertPromotion = z.infer<typeof insertPromotionSchema>;
 export type Promotion = typeof promotions.$inferSelect;
+
+export type InsertProductCategory = z.infer<typeof insertProductCategorySchema>;
+export type ProductCategory = typeof productCategories.$inferSelect;
 
 export type InsertProductColorImage = z.infer<typeof insertProductColorImageSchema>;
 export type ProductColorImage = typeof productColorImages.$inferSelect;

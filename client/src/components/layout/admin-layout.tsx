@@ -19,7 +19,8 @@ import {
   ExternalLink,
   Menu,
   X,
-  Shirt
+  Shirt,
+  FolderOpen
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -66,6 +67,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Clientes", href: "/admin/customers", icon: Users },
     { name: "Presupuestos", href: "/admin/quotes", icon: FileText },
     { name: "Promociones", href: "/admin/promotions", icon: Bell },
+    { name: "Categorías", href: "/admin/category-management", icon: FolderOpen },
     { name: "Reportes", href: "/admin/reports", icon: TrendingUp },
     { name: "Configuración", href: "/admin/settings", icon: Settings },
   ];

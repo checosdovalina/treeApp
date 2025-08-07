@@ -13,6 +13,7 @@ import {
   quotes,
   productColorImages,
   promotions,
+  productCategories,
   type User,
   type UpsertUser,
   type LocalUser,
@@ -41,6 +42,8 @@ import {
   type InsertProductColorImage,
   type Promotion,
   type InsertPromotion,
+  type ProductCategory,
+  type InsertProductCategory,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";
@@ -122,6 +125,15 @@ export interface IStorage {
   createQuote(quote: InsertQuote): Promise<Quote>;
   updateQuote(id: number, updates: Partial<InsertQuote>): Promise<Quote>;
   
+  // Product Category operations (configurable main module)
+  getProductCategories(): Promise<ProductCategory[]>;
+  getActiveProductCategories(): Promise<ProductCategory[]>;
+  getProductCategory(id: number): Promise<ProductCategory | undefined>;
+  createProductCategory(productCategory: InsertProductCategory): Promise<ProductCategory>;
+  updateProductCategory(id: number, updates: Partial<InsertProductCategory>): Promise<ProductCategory>;
+  deleteProductCategory(id: number): Promise<void>;
+  updateProductCategoriesOrder(updates: { id: number; sortOrder: number }[]): Promise<void>;
+
   // Analytics
   getDashboardStats(): Promise<{
     totalSales: string;
@@ -730,6 +742,60 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(promotions.sortOrder, promotions.createdAt);
+  }
+
+  // Product Category operations (configurable main module)
+  async getProductCategories(): Promise<ProductCategory[]> {
+    return await db
+      .select()
+      .from(productCategories)
+      .orderBy(productCategories.sortOrder, productCategories.createdAt);
+  }
+
+  async getActiveProductCategories(): Promise<ProductCategory[]> {
+    return await db
+      .select()
+      .from(productCategories)
+      .where(eq(productCategories.isActive, true))
+      .orderBy(productCategories.sortOrder, productCategories.createdAt);
+  }
+
+  async getProductCategory(id: number): Promise<ProductCategory | undefined> {
+    const [category] = await db
+      .select()
+      .from(productCategories)
+      .where(eq(productCategories.id, id));
+    return category;
+  }
+
+  async createProductCategory(categoryData: InsertProductCategory): Promise<ProductCategory> {
+    const [category] = await db
+      .insert(productCategories)
+      .values(categoryData)
+      .returning();
+    return category;
+  }
+
+  async updateProductCategory(id: number, updates: Partial<InsertProductCategory>): Promise<ProductCategory> {
+    const [updated] = await db
+      .update(productCategories)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(productCategories.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteProductCategory(id: number): Promise<void> {
+    await db.delete(productCategories).where(eq(productCategories.id, id));
+  }
+
+  async updateProductCategoriesOrder(updates: { id: number; sortOrder: number }[]): Promise<void> {
+    for (const update of updates) {
+      await db
+        .update(productCategories)
+        .set({ sortOrder: update.sortOrder, updatedAt: new Date() })
+        .where(eq(productCategories.id, update.id));
+    }
   }
 }
 
