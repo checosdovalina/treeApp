@@ -13,6 +13,7 @@ import {
   quotes,
   productColorImages,
   promotions,
+  industrySections,
   type User,
   type UpsertUser,
   type LocalUser,
@@ -41,6 +42,8 @@ import {
   type InsertProductColorImage,
   type Promotion,
   type InsertPromotion,
+  type IndustrySection,
+  type InsertIndustrySection,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";

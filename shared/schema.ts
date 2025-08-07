@@ -250,6 +250,24 @@ export const promotions = pgTable("promotions", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Industry sections - configurable homepage sections for different industries
+export const industrySections = pgTable("industry_sections", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 200 }).notNull(),
+  subtitle: text("subtitle"),
+  industry: varchar("industry", { length: 100 }).notNull(), // corporativo, gastronomia, industrial, etc.
+  description: text("description"),
+  imageUrl: varchar("image_url", { length: 500 }),
+  backgroundColor: varchar("background_color", { length: 7 }).notNull(),
+  textColor: varchar("text_color", { length: 7 }).default("#FFFFFF"),
+  linkUrl: varchar("link_url", { length: 500 }),
+  buttonText: varchar("button_text", { length: 100 }).default("Explorar productos"),
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
@@ -401,6 +419,12 @@ export const insertPromotionSchema = createInsertSchema(promotions).omit({
   endDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
 });
 
+export const insertIndustrySectionSchema = createInsertSchema(industrySections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertQuoteSchema = createInsertSchema(quotes).omit({
   id: true,
   quoteNumber: true,
@@ -498,3 +522,6 @@ export type ProductColorImage = typeof productColorImages.$inferSelect;
 
 export type CustomerRegistration = z.infer<typeof customerRegistrationSchema>;
 export type QuoteRequest = z.infer<typeof quoteRequestSchema>;
+
+export type InsertIndustrySection = z.infer<typeof insertIndustrySectionSchema>;
+export type IndustrySection = typeof industrySections.$inferSelect;
