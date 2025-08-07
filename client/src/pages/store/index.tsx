@@ -3,7 +3,7 @@ import { useCart } from "@/lib/cart";
 import { useToast } from "@/hooks/use-toast";
 import CustomerLayout from "@/components/layout/customer-layout";
 import PromotionBanner from "@/components/store/promotion-banner";
-import IndustrySection from "@/components/IndustrySection";
+import BrandsSection from "@/components/BrandsSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -193,8 +193,8 @@ export default function StoreIndex() {
         </div>
       </section>
 
-      {/* Industry Sections - Dynamic */}
-      <IndustrySection />
+      {/* Brands Section - Dynamic */}
+      <BrandsSection />
 
       {/* Featured Products */}
       <section className="py-16 bg-white">
