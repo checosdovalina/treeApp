@@ -10,6 +10,7 @@ User role: Administrator seeking to access admin functions
 Design inspiration: lacasadelachamarra.com - modern e-commerce layout with hero sections, product grids, and clean navigation
 Priority: Mobile responsiveness is essential for customer experience
 Authentication: Role-based system with admin vs customer accounts and appropriate redirections
+Data policy: Keep database clean without fictional data - no sample products or data to be inserted unless specifically requested
 
 ## System Architecture
 
