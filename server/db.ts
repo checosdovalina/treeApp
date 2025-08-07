@@ -6,6 +6,7 @@ import * as schema from "@shared/schema";
 neonConfig.webSocketConstructor = ws;
 
 // Determinar el entorno y la URL de base de datos correspondiente
+// En deployment, Replit automáticamente configura NODE_ENV=production
 const environment = process.env.NODE_ENV || 'development';
 let databaseUrl: string;
 
