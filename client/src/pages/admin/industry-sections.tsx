@@ -139,7 +139,7 @@ export default function IndustrySectionsPage() {
     const data = await apiRequest('/api/objects/upload', 'POST');
     return {
       method: "PUT" as const,
-      url: (data as any).uploadURL,
+      url: data.uploadURL,
     };
   };
 
