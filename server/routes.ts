@@ -48,6 +48,7 @@ import {
   insertQuoteSchema,
   insertProductColorImageSchema,
   insertPromotionSchema,
+  insertIndustrySectionSchema,
   customerRegistrationSchema,
   quoteRequestSchema,
   sizeRanges,
@@ -940,6 +941,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting promotion:", error);
       res.status(500).json({ message: "Failed to delete promotion" });
+    }
+  });
+
+  // Industry sections routes
+  app.get('/api/industry-sections', async (req, res) => {
+    try {
+      const { active } = req.query;
+      const sections = await storage.getIndustrySections(active === 'true');
+      res.json(sections);
+    } catch (error) {
+      console.error("Error fetching industry sections:", error);
+      res.status(500).json({ message: "Failed to fetch industry sections" });
+    }
+  });
+
+  app.get('/api/industry-sections/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const section = await storage.getIndustrySection(id);
+      if (!section) {
+        return res.status(404).json({ message: "Industry section not found" });
+      }
+      res.json(section);
+    } catch (error) {
+      console.error("Error fetching industry section:", error);
+      res.status(500).json({ message: "Failed to fetch industry section" });
+    }
+  });
+
+  app.post('/api/industry-sections', isAdmin, async (req, res) => {
+    try {
+      const data = insertIndustrySectionSchema.parse(req.body);
+      const section = await storage.createIndustrySection(data);
+      res.json(section);
+    } catch (error) {
+      console.error("Error creating industry section:", error);
+      res.status(400).json({ message: "Failed to create industry section" });
+    }
+  });
+
+  app.put('/api/industry-sections/:id', isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const data = insertIndustrySectionSchema.partial().parse(req.body);
+      const section = await storage.updateIndustrySection(id, data);
+      res.json(section);
+    } catch (error) {
+      console.error("Error updating industry section:", error);
+      res.status(400).json({ message: "Failed to update industry section" });
+    }
+  });
+
+  app.delete('/api/industry-sections/:id', isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteIndustrySection(id);
+      res.json({ message: "Industry section deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting industry section:", error);
+      res.status(500).json({ message: "Failed to delete industry section" });
     }
   });
 

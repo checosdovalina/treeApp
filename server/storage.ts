@@ -125,6 +125,21 @@ export interface IStorage {
   createQuote(quote: InsertQuote): Promise<Quote>;
   updateQuote(id: number, updates: Partial<InsertQuote>): Promise<Quote>;
   
+  // Promotions operations
+  getPromotions(activeOnly?: boolean): Promise<Promotion[]>;
+  getPromotion(id: number): Promise<Promotion | undefined>;
+  createPromotion(promotion: InsertPromotion): Promise<Promotion>;
+  updatePromotion(id: number, updates: Partial<InsertPromotion>): Promise<Promotion>;
+  deletePromotion(id: number): Promise<void>;
+  getActivePromotions(): Promise<Promotion[]>;
+  
+  // Industry sections operations
+  getIndustrySections(activeOnly?: boolean): Promise<IndustrySection[]>;
+  getIndustrySection(id: number): Promise<IndustrySection | undefined>;
+  createIndustrySection(section: InsertIndustrySection): Promise<IndustrySection>;
+  updateIndustrySection(id: number, updates: Partial<InsertIndustrySection>): Promise<IndustrySection>;
+  deleteIndustrySection(id: number): Promise<void>;
+  
   // Analytics
   getDashboardStats(): Promise<{
     totalSales: string;
@@ -733,6 +748,43 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(promotions.sortOrder, promotions.createdAt);
+  }
+
+  // Industry sections operations
+  async getIndustrySections(activeOnly = false): Promise<IndustrySection[]> {
+    let query = db.select().from(industrySections);
+    
+    if (activeOnly) {
+      query = query.where(eq(industrySections.isActive, true));
+    }
+    
+    return await query.orderBy(industrySections.sortOrder, industrySections.createdAt);
+  }
+
+  async getIndustrySection(id: number): Promise<IndustrySection | undefined> {
+    const [section] = await db.select().from(industrySections).where(eq(industrySections.id, id));
+    return section;
+  }
+
+  async createIndustrySection(section: InsertIndustrySection): Promise<IndustrySection> {
+    const [created] = await db
+      .insert(industrySections)
+      .values(section)
+      .returning();
+    return created;
+  }
+
+  async updateIndustrySection(id: number, updates: Partial<InsertIndustrySection>): Promise<IndustrySection> {
+    const [updated] = await db
+      .update(industrySections)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(industrySections.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteIndustrySection(id: number): Promise<void> {
+    await db.delete(industrySections).where(eq(industrySections.id, id));
   }
 }
 
