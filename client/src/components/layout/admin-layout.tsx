@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Clientes", href: "/admin/customers", icon: Users },
     { name: "Presupuestos", href: "/admin/quotes", icon: FileText },
     { name: "Promociones", href: "/admin/promotions", icon: Bell },
-
+    { name: "Secciones", href: "/admin/industry-sections", icon: Building },
     { name: "Reportes", href: "/admin/reports", icon: TrendingUp },
     { name: "Configuración", href: "/admin/settings", icon: Settings },
   ];
