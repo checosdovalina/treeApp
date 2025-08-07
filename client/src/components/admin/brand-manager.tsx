@@ -50,10 +50,11 @@ export default function BrandManager() {
       });
       resetForm();
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Error creating brand:", error);
       toast({
         title: "Error",
-        description: "No se pudo crear la marca.",
+        description: error?.message || "No se pudo crear la marca.",
         variant: "destructive",
       });
     },
@@ -71,10 +72,11 @@ export default function BrandManager() {
       });
       resetForm();
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Error updating brand:", error);
       toast({
         title: "Error",
-        description: "No se pudo actualizar la marca.",
+        description: error?.message || "No se pudo actualizar la marca.",
         variant: "destructive",
       });
     },
@@ -91,10 +93,11 @@ export default function BrandManager() {
         description: "La marca ha sido eliminada correctamente.",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Error deleting brand:", error);
       toast({
         title: "Error",
-        description: "No se pudo eliminar la marca.",
+        description: error?.message || "No se pudo eliminar la marca.",
         variant: "destructive",
       });
     },
