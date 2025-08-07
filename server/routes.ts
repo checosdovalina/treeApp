@@ -1018,6 +1018,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Route to update industry section image
+  app.put('/api/industry-sections/:id/image', isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { imageUrl } = req.body;
+
+      if (!imageUrl) {
+        return res.status(400).json({ error: "imageUrl is required" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(imageUrl);
+
+      // Update the industry section with the new image URL using storage interface
+      await storage.updateIndustrySection(parseInt(id), { imageUrl: objectPath });
+
+      res.json({ success: true, objectPath });
+    } catch (error) {
+      console.error("Error updating industry section image:", error);
+      res.status(500).json({ error: "Failed to update image" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -230,7 +230,7 @@ export default function IndustrySectionsPage() {
                     <FormItem>
                       <FormLabel>Subtítulo</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Ej: Uniformes ejecutivos y de oficina" />
+                        <Input {...field} value={field.value || ""} placeholder="Ej: Uniformes ejecutivos y de oficina" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -270,7 +270,7 @@ export default function IndustrySectionsPage() {
                     <FormItem>
                       <FormLabel>Descripción</FormLabel>
                       <FormControl>
-                        <Textarea {...field} placeholder="Descripción de la industria" />
+                        <Textarea {...field} value={field.value || ""} placeholder="Descripción de la industria" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -299,7 +299,7 @@ export default function IndustrySectionsPage() {
                       <FormItem>
                         <FormLabel>Color de Texto</FormLabel>
                         <FormControl>
-                          <Input {...field} type="color" />
+                          <Input {...field} value={field.value || "#FFFFFF"} type="color" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -315,7 +315,7 @@ export default function IndustrySectionsPage() {
                       <FormLabel>Imagen</FormLabel>
                       <div className="space-y-2">
                         <FormControl>
-                          <Input {...field} placeholder="URL de la imagen" />
+                          <Input {...field} value={field.value || ""} placeholder="URL de la imagen" />
                         </FormControl>
                         <ObjectUploader
                           maxNumberOfFiles={1}
@@ -340,7 +340,7 @@ export default function IndustrySectionsPage() {
                     <FormItem>
                       <FormLabel>URL de Enlace</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="/catalog?category=corporativo" />
+                        <Input {...field} value={field.value || ""} placeholder="/catalog?category=corporativo" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -354,7 +354,7 @@ export default function IndustrySectionsPage() {
                     <FormItem>
                       <FormLabel>Texto del Botón</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Explorar productos" />
+                        <Input {...field} value={field.value || ""} placeholder="Explorar productos" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -369,7 +369,7 @@ export default function IndustrySectionsPage() {
                       <FormItem>
                         <FormLabel>Orden</FormLabel>
                         <FormControl>
-                          <Input {...field} type="number" onChange={(e) => field.onChange(parseInt(e.target.value))} />
+                          <Input {...field} value={field.value || 0} type="number" onChange={(e) => field.onChange(parseInt(e.target.value))} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
