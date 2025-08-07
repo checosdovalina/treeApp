@@ -124,7 +124,19 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                                 >
                                   Ver Todos
                                 </Link>
-                                {garmentTypes.slice(0, 4).map((type: any) => (
+                                <Link 
+                                  href="/store/polos" 
+                                  className="block text-sm text-gray-600 hover:text-uniform-blue transition-colors"
+                                >
+                                  Polos
+                                </Link>
+                                <Link 
+                                  href="/store/playeras" 
+                                  className="block text-sm text-gray-600 hover:text-uniform-blue transition-colors"
+                                >
+                                  Playeras
+                                </Link>
+                                {garmentTypes.slice(0, 2).map((type: any) => (
                                   <Link 
                                     key={type.id}
                                     href={`/store/catalog?garmentType=${type.id}`}
@@ -396,7 +408,21 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                                   {/* Tipos de Prenda */}
                                   <div className="border-l-2 border-gray-200 pl-3">
                                     <p className="text-xs font-semibold text-gray-500 mb-2">TIPOS DE PRENDA</p>
-                                    {garmentTypes.slice(0, 5).map((type: any) => (
+                                    <Link
+                                      href="/store/polos"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                      className="block px-2 py-1 text-sm text-gray-600 hover:text-uniform-blue rounded font-medium"
+                                    >
+                                      Polos
+                                    </Link>
+                                    <Link
+                                      href="/store/playeras"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                      className="block px-2 py-1 text-sm text-gray-600 hover:text-uniform-blue rounded font-medium"
+                                    >
+                                      Playeras
+                                    </Link>
+                                    {garmentTypes.slice(0, 3).map((type: any) => (
                                       <Link
                                         key={type.id}
                                         href={`/store/catalog?garmentType=${type.id}`}

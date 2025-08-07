@@ -57,18 +57,24 @@ export default function CatalogPage() {
     others: false
   });
 
-  // Get filters from URL params
+  // Get filters from URL params and detect specific routes
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const brandParam = urlParams.get('brand');
     const garmentTypeParam = urlParams.get('garmentType');
     const categoryParam = urlParams.get('category');
     
+    // Check if we're on specific garment type routes
+    if (location.includes('/store/polos')) {
+      setSelectedGarmentType('polo');
+    } else if (location.includes('/store/playeras')) {
+      setSelectedGarmentType('playera');
+    } else if (garmentTypeParam) {
+      setSelectedGarmentType(garmentTypeParam);
+    }
+    
     if (brandParam) {
       setSelectedBrand(brandParam);
-    }
-    if (garmentTypeParam) {
-      setSelectedGarmentType(garmentTypeParam);
     }
     if (categoryParam) {
       setSelectedCategory(categoryParam);

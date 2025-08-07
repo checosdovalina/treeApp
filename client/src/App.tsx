@@ -48,6 +48,8 @@ function Router() {
         <Route path="/auth/register" component={CustomerRegister} />
         <Route path="/store" component={StoreHome} />
         <Route path="/store/catalog" component={StoreCatalog} />
+        <Route path="/store/polos" component={StoreCatalog} />
+        <Route path="/store/playeras" component={StoreCatalog} />
         <Route path="/store/brands" component={StoreBrands} />
         <Route path="/store/product/:id" component={ProductDetail} />
         <Route path="/store/cart" component={Cart} />
@@ -77,6 +79,8 @@ function Router() {
           {/* Admin can also access store routes */}
           <Route path="/store" component={StoreHome} />
           <Route path="/store/catalog" component={StoreCatalog} />
+          <Route path="/store/polos" component={StoreCatalog} />
+          <Route path="/store/playeras" component={StoreCatalog} />
           <Route path="/store/brands" component={StoreBrands} />
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
@@ -88,6 +92,8 @@ function Router() {
           <Route path="/" component={StoreHome} />
           <Route path="/store" component={StoreHome} />
           <Route path="/store/catalog" component={StoreCatalog} />
+          <Route path="/store/polos" component={StoreCatalog} />
+          <Route path="/store/playeras" component={StoreCatalog} />
           <Route path="/store/brands" component={StoreBrands} />
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
