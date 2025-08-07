@@ -144,18 +144,18 @@ export default function StoreIndex() {
               </div>
               
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/30">
+              <div className="grid grid-cols-3 gap-6 pt-6 border-t border-white/30">
                 <div className="text-center">
-                  <div className="text-4xl font-poppins font-black text-uniform-gold drop-shadow-lg">500+</div>
-                  <div className="text-sm text-white font-roboto font-medium drop-shadow-sm">Empresas Satisfechas</div>
+                  <div className="text-2xl font-poppins font-black text-uniform-gold drop-shadow-lg">500+</div>
+                  <div className="text-xs text-white font-roboto font-medium drop-shadow-sm">Empresas Satisfechas</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-poppins font-black text-uniform-gold drop-shadow-lg">15+</div>
-                  <div className="text-sm text-white font-roboto font-medium drop-shadow-sm">Años de Experiencia</div>
+                  <div className="text-2xl font-poppins font-black text-uniform-gold drop-shadow-lg">15+</div>
+                  <div className="text-xs text-white font-roboto font-medium drop-shadow-sm">Años de Experiencia</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-poppins font-black text-uniform-gold drop-shadow-lg">24h</div>
-                  <div className="text-sm text-white font-roboto font-medium drop-shadow-sm">Respuesta Garantizada</div>
+                  <div className="text-2xl font-poppins font-black text-uniform-gold drop-shadow-lg">24h</div>
+                  <div className="text-xs text-white font-roboto font-medium drop-shadow-sm">Respuesta Garantizada</div>
                 </div>
               </div>
             </div>
