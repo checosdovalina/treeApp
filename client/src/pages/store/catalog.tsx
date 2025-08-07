@@ -88,6 +88,11 @@ export default function CatalogPage() {
     enabled: isAuthenticated,
   });
 
+  const { data: colors = [] } = useQuery({
+    queryKey: ['/api/colors'],
+    enabled: isAuthenticated,
+  });
+
   // Filter products
   const filteredProducts = products.filter((product: any) => {
     const matchesSearch = !searchTerm || 
@@ -216,6 +221,16 @@ export default function CatalogPage() {
     setSelectedBrand("all");
     setSelectedGender("all");
     setSelectedGarmentType("all");
+  };
+
+  // Función para obtener el código hexadecimal de un color
+  const getColorHex = (colorName: string, availableColors: any[]) => {
+    if (!availableColors || !Array.isArray(availableColors)) return '#ccc';
+    
+    const color = availableColors.find(c => 
+      c.name?.toLowerCase() === colorName?.toLowerCase()
+    );
+    return color?.hexCode || '#ccc';
   };
 
   return (
@@ -495,6 +510,53 @@ export default function CatalogPage() {
                         </Badge>
                       )}
                     </div>
+
+                    {/* Colores disponibles */}
+                    {product.colors && product.colors.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-600 mb-1">Colores disponibles:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {product.colors.slice(0, 5).map((color: string, index: number) => (
+                            <div
+                              key={index}
+                              className="w-4 h-4 rounded-full border border-gray-300 shadow-sm"
+                              style={{ 
+                                backgroundColor: getColorHex(color, colors) || '#ccc'
+                              }}
+                              title={color}
+                            />
+                          ))}
+                          {product.colors.length > 5 && (
+                            <span className="text-xs text-gray-500 ml-1">
+                              +{product.colors.length - 5}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tallas disponibles */}
+                    {product.sizes && product.sizes.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-600 mb-1">Tallas disponibles:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {product.sizes.slice(0, 6).map((size: string, index: number) => (
+                            <Badge 
+                              key={index} 
+                              variant="outline" 
+                              className="text-xs px-1 py-0 h-5 text-gray-600"
+                            >
+                              {size}
+                            </Badge>
+                          ))}
+                          {product.sizes.length > 6 && (
+                            <span className="text-xs text-gray-500 ml-1">
+                              +{product.sizes.length - 6}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="flex justify-between items-center">
                       <div className="text-xl font-bold text-uniform-primary">
