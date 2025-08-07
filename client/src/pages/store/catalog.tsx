@@ -75,22 +75,6 @@ export default function CatalogPage() {
     }
   }, [location]);
 
-  // Convert garmentType name to ID when garmentTypes are loaded
-  useEffect(() => {
-    if (garmentTypes && Array.isArray(garmentTypes) && selectedGarmentType) {
-      // Check if selectedGarmentType is already an ID (numeric)
-      if (!/^\d+$/.test(selectedGarmentType)) {
-        // It's a name, find the corresponding ID
-        const garmentType = garmentTypes.find((type: any) => 
-          type.name.toLowerCase() === selectedGarmentType.toLowerCase()
-        );
-        if (garmentType) {
-          setSelectedGarmentType(garmentType.id.toString());
-        }
-      }
-    }
-  }, [garmentTypes, selectedGarmentType]);
-
   // Redirect if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -145,6 +129,22 @@ export default function CatalogPage() {
     enabled: isAuthenticated,
     retry: false,
   });
+
+  // Convert garmentType name to ID when garmentTypes are loaded
+  useEffect(() => {
+    if (garmentTypes && Array.isArray(garmentTypes) && selectedGarmentType) {
+      // Check if selectedGarmentType is already an ID (numeric)
+      if (!/^\d+$/.test(selectedGarmentType)) {
+        // It's a name, find the corresponding ID
+        const garmentType = garmentTypes.find((type: any) => 
+          type.name.toLowerCase() === selectedGarmentType.toLowerCase()
+        );
+        if (garmentType) {
+          setSelectedGarmentType(garmentType.id.toString());
+        }
+      }
+    }
+  }, [garmentTypes, selectedGarmentType]);
 
   if (isLoading) {
     return (
