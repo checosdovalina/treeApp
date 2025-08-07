@@ -88,7 +88,7 @@ export default function IndustrySection() {
                   <img
                     src={section.imageUrl}
                     alt={section.title}
-                    className="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-300"
+                    className="w-full h-full object-cover opacity-35 group-hover:opacity-45 transition-opacity duration-300"
                   />
                 </div>
               )}
@@ -103,7 +103,7 @@ export default function IndustrySection() {
 
                   {/* Icon */}
                   <div className="mb-4" style={{ color: section.textColor }}>
-                    <IndustryIcon industry={section.industry} className="w-12 h-12" />
+                    <IndustryIcon industry={section.industry} className="w-16 h-16" />
                   </div>
 
                   {/* Title and Description */}
