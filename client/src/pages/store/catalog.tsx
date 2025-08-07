@@ -47,6 +47,8 @@ export default function CatalogPage() {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [productImages, setProductImages] = useState<{[key: number]: string}>({});
+  const [productColorImages, setProductColorImages] = useState<{[key: number]: any[]}>({});
+  const [selectedColors, setSelectedColors] = useState<{[key: number]: string}>({});
 
   // Extract route parameters
   useEffect(() => {
@@ -93,8 +95,27 @@ export default function CatalogPage() {
     enabled: isAuthenticated,
   });
 
+  // Obtener imágenes por color para cada producto
+  useEffect(() => {
+    if (products && Array.isArray(products) && products.length > 0 && isAuthenticated) {
+      products.forEach((product: any) => {
+        if (!productColorImages[product.id]) {
+          fetch(`/api/products/${product.id}/color-images`)
+            .then(res => res.json())
+            .then(colorImages => {
+              setProductColorImages(prev => ({
+                ...prev,
+                [product.id]: colorImages
+              }));
+            })
+            .catch(err => console.log('Error fetching color images:', err));
+        }
+      });
+    }
+  }, [products, isAuthenticated, productColorImages]);
+
   // Filter products
-  const filteredProducts = products.filter((product: any) => {
+  const filteredProducts = (Array.isArray(products) ? products : []).filter((product: any) => {
     const matchesSearch = !searchTerm || 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -224,13 +245,43 @@ export default function CatalogPage() {
   };
 
   // Función para obtener el código hexadecimal de un color
-  const getColorHex = (colorName: string, availableColors: any[]) => {
+  const getColorHex = (colorName: string, availableColors: any) => {
     if (!availableColors || !Array.isArray(availableColors)) return '#ccc';
     
-    const color = availableColors.find(c => 
+    const color = availableColors.find((c: any) => 
       c.name?.toLowerCase() === colorName?.toLowerCase()
     );
     return color?.hexCode || '#ccc';
+  };
+
+  // Función para cambiar color del producto en el card
+  const handleColorChange = (productId: number, colorName: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevenir navegación del card
+    setSelectedColors(prev => ({
+      ...prev,
+      [productId]: colorName
+    }));
+  };
+
+  // Función para obtener la imagen a mostrar basada en el color seleccionado
+  const getProductDisplayImage = (product: any) => {
+    const selectedColor = selectedColors[product.id];
+    const colorImages = productColorImages[product.id];
+    
+    if (selectedColor && colorImages && Array.isArray(colors)) {
+      // Buscar el color object por nombre
+      const colorObj = colors.find((c: any) => c.name === selectedColor);
+      if (colorObj) {
+        // Buscar las imágenes para este color
+        const colorImageSet = colorImages.find((ci: any) => ci.colorId === colorObj.id);
+        if (colorImageSet && colorImageSet.images && colorImageSet.images.length > 0) {
+          return colorImageSet.images[0]; // Usar la primera imagen del color
+        }
+      }
+    }
+    
+    // Fallback a la imagen principal del producto
+    return product.images && product.images.length > 0 ? product.images[0] : '/api/placeholder/300/300';
   };
 
   return (
@@ -455,7 +506,7 @@ export default function CatalogPage() {
                 <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer" onClick={() => navigateToProduct(product.id)}>
                   <div className="relative">
                     <img
-                      src={productImages[product.id] || product.images?.[0] || "/api/placeholder/300/300"}
+                      src={getProductDisplayImage(product)}
                       alt={product.name}
                       className="w-full h-48 object-cover transition-transform duration-200 hover:scale-105"
                     />
@@ -519,11 +570,16 @@ export default function CatalogPage() {
                           {product.colors.slice(0, 5).map((color: string, index: number) => (
                             <div
                               key={index}
-                              className="w-4 h-4 rounded-full border border-gray-300 shadow-sm"
+                              className={`w-4 h-4 rounded-full border shadow-sm cursor-pointer transition-all duration-200 hover:scale-110 ${
+                                selectedColors[product.id] === color 
+                                  ? 'border-2 border-uniform-primary ring-2 ring-uniform-primary ring-opacity-30' 
+                                  : 'border border-gray-300 hover:border-gray-400'
+                              }`}
                               style={{ 
                                 backgroundColor: getColorHex(color, colors) || '#ccc'
                               }}
                               title={color}
+                              onClick={(e) => handleColorChange(product.id, color, e)}
                             />
                           ))}
                           {product.colors.length > 5 && (
