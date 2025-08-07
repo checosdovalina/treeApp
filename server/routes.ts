@@ -48,13 +48,11 @@ import {
   insertQuoteSchema,
   insertProductColorImageSchema,
   insertPromotionSchema,
-  insertProductCategorySchema,
   customerRegistrationSchema,
   quoteRequestSchema,
   sizeRanges,
   loginSchema
 } from "@shared/schema";
-import { ObjectStorageService } from "./objectStorage";
 import { z } from "zod";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -883,10 +881,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(promotions);
     } catch (error) {
       console.error("Error fetching promotions:", error);
-      if (error instanceof Error) {
-        console.error("Error details:", error.message);
-      }
-      res.status(500).json({ message: "Failed to fetch promotions", error: error instanceof Error ? error.message : "Unknown error" });
+      res.status(500).json({ message: "Failed to fetch promotions" });
     }
   });
 
@@ -916,42 +911,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/promotions', isAdmin, async (req, res) => {
     try {
-      console.log("Creating promotion with data:", req.body);
       const data = insertPromotionSchema.parse(req.body);
       const promotion = await storage.createPromotion(data);
       res.json(promotion);
     } catch (error) {
       console.error("Error creating promotion:", error);
-      if (error instanceof Error) {
-        console.error("Error details:", error.message);
-        console.error("Error stack:", error.stack);
-      }
-      res.status(400).json({ 
-        message: "Failed to create promotion",
-        error: error instanceof Error ? error.message : "Unknown error",
-        details: req.body
-      });
+      res.status(400).json({ message: "Failed to create promotion" });
     }
   });
 
   app.put('/api/promotions/:id', isAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      console.log("Updating promotion", id, "with data:", req.body);
       const data = insertPromotionSchema.partial().parse(req.body);
       const promotion = await storage.updatePromotion(id, data);
       res.json(promotion);
     } catch (error) {
       console.error("Error updating promotion:", error);
-      if (error instanceof Error) {
-        console.error("Error details:", error.message);
-        console.error("Error stack:", error.stack);
-      }
-      res.status(400).json({ 
-        message: "Failed to update promotion",
-        error: error instanceof Error ? error.message : "Unknown error",
-        details: req.body
-      });
+      res.status(400).json({ message: "Failed to update promotion" });
     }
   });
 
@@ -963,107 +940,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting promotion:", error);
       res.status(500).json({ message: "Failed to delete promotion" });
-    }
-  });
-
-  // Product Categories (configurable main module)
-  app.get('/api/product-categories', async (req, res) => {
-    try {
-      const { active } = req.query;
-      const categories = active === 'true' 
-        ? await storage.getActiveProductCategories()
-        : await storage.getProductCategories();
-      res.json(categories);
-    } catch (error) {
-      console.error("Error fetching product categories:", error);
-      res.status(500).json({ message: "Failed to fetch product categories" });
-    }
-  });
-
-  app.get('/api/product-categories/:id', async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const category = await storage.getProductCategory(id);
-      if (!category) {
-        return res.status(404).json({ message: "Product category not found" });
-      }
-      res.json(category);
-    } catch (error) {
-      console.error("Error fetching product category:", error);
-      res.status(500).json({ message: "Failed to fetch product category" });
-    }
-  });
-
-  app.post('/api/product-categories', isAdmin, async (req, res) => {
-    try {
-      const data = insertProductCategorySchema.parse(req.body);
-      const category = await storage.createProductCategory(data);
-      res.json(category);
-    } catch (error: any) {
-      console.error("Error creating product category:", error);
-      res.status(400).json({ message: "Failed to create product category" });
-    }
-  });
-
-  app.put('/api/product-categories/:id', isAdmin, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const data = insertProductCategorySchema.partial().parse(req.body);
-      const category = await storage.updateProductCategory(id, data);
-      res.json(category);
-    } catch (error) {
-      console.error("Error updating product category:", error);
-      res.status(400).json({ message: "Failed to update product category" });
-    }
-  });
-
-  app.delete('/api/product-categories/:id', isAdmin, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      await storage.deleteProductCategory(id);
-      res.json({ message: "Product category deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting product category:", error);
-      res.status(500).json({ message: "Failed to delete product category" });
-    }
-  });
-
-  app.put('/api/product-categories/order', isAdmin, async (req, res) => {
-    try {
-      const { updates } = req.body;
-      await storage.updateProductCategoriesOrder(updates);
-      res.json({ message: "Product categories order updated successfully" });
-    } catch (error) {
-      console.error("Error updating product categories order:", error);
-      res.status(500).json({ message: "Failed to update product categories order" });
-    }
-  });
-
-  // Object storage for public assets
-  app.get("/public-objects/:filePath(*)", async (req, res) => {
-    const filePath = req.params.filePath;
-    const objectStorageService = new ObjectStorageService();
-    try {
-      const file = await objectStorageService.searchPublicObject(filePath);
-      if (!file) {
-        return res.status(404).json({ error: "File not found" });
-      }
-      objectStorageService.downloadObject(file, res);
-    } catch (error) {
-      console.error("Error searching for public object:", error);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-  });
-
-  // Object storage upload for category images
-  app.post("/api/objects/upload", isAdmin, async (req, res) => {
-    const objectStorageService = new ObjectStorageService();
-    try {
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      res.json({ uploadURL });
-    } catch (error) {
-      console.error("Error generating upload URL:", error);
-      res.status(500).json({ error: "Failed to generate upload URL" });
     }
   });
 

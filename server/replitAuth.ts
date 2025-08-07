@@ -84,16 +84,14 @@ export async function setupAuth(app: Express) {
     verified(null, user);
   };
 
-  console.log(`🌐 REPLIT_DOMAINS configurados: ${process.env.REPLIT_DOMAINS}`);
   for (const domain of process.env
     .REPLIT_DOMAINS!.split(",")) {
-    console.log(`📝 Registrando estrategia para dominio: ${domain.trim()}`);
     const strategy = new Strategy(
       {
-        name: `replitauth:${domain.trim()}`,
+        name: `replitauth:${domain}`,
         config,
         scope: "openid email profile offline_access",
-        callbackURL: `https://${domain.trim()}/api/callback`,
+        callbackURL: `https://${domain}/api/callback`,
       },
       verify,
     );
@@ -116,11 +114,7 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    const hostname = req.hostname;
-    console.log(`🔐 Intento de login desde: ${hostname}`);
-    console.log(`🔑 Estrategias disponibles: ${Object.keys((passport as any)._strategies || {}).join(', ')}`);
-    
-    passport.authenticate(`replitauth:${hostname}`, {
+    passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
     })(req, res, next);
