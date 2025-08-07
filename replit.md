@@ -53,6 +53,8 @@ Data policy: Keep database clean without fictional data - no sample products or 
 ### Database
 - **Provider**: Neon Database (PostgreSQL)
 - **Connection**: @neondatabase/serverless for connection pooling
+- **Dual Environment**: Automatic detection between development and production databases
+- **Production**: Connected to ep-cold-boat-aep7jx5g-pooler.c-2.us-east-2.aws.neon.tech/neondb (migrated 2025-01-07)
 
 ### Authentication
 - **Provider**: Replit Auth
