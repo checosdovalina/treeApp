@@ -193,8 +193,8 @@ export default function StoreIndex() {
         </div>
       </section>
 
-      {/* Industry Sections - Dynamic */}
-      <IndustrySection />
+      {/* Industry Sections - Dynamic - HIDDEN */}
+      {/* <IndustrySection /> */}
 
       {/* Featured Products */}
       <section className="py-16 bg-white">
