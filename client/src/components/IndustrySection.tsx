@@ -88,7 +88,7 @@ export default function IndustrySection() {
                   <img
                     src={section.imageUrl}
                     alt={section.title}
-                    className="w-full h-full object-cover opacity-35 group-hover:opacity-45 transition-opacity duration-300"
+                    className="w-full h-full object-cover opacity-60 group-hover:opacity-70 transition-opacity duration-300"
                   />
                 </div>
               )}
