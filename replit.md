@@ -35,6 +35,7 @@ Data policy: Keep database clean without fictional data - no sample products or 
 - **ORM**: Drizzle with PostgreSQL dialect
 - **Schema Location**: `shared/schema.ts`
 - **Migrations**: Drizzle-kit for database migrations in `./migrations`
+- **Environment Support**: Separate development and production databases with automatic environment detection
 - **Key Tables**: Users, sessions, products (with SKU, brand, size, color, garment type tracking), categories, brands, sizes, colors, garment_types, orders, order_items, quotes, inventory, **product_color_images** (color-specific product images), **product_categories** (configurable product categories with images and gradients).
 
 ### Key Features & Technical Implementations
