@@ -34,7 +34,7 @@ Authentication: Role-based system with admin vs customer accounts and appropriat
 - **ORM**: Drizzle with PostgreSQL dialect
 - **Schema Location**: `shared/schema.ts`
 - **Migrations**: Drizzle-kit for database migrations in `./migrations`
-- **Key Tables**: Users, sessions, products (with SKU, brand, size, color, garment type tracking), categories, brands, sizes, colors, garment_types, orders, order_items, quotes, inventory, **product_color_images** (color-specific product images).
+- **Key Tables**: Users, sessions, products (with SKU, brand, size, color, garment type tracking), categories, brands, sizes, colors, garment_types, orders, order_items, quotes, inventory, **product_color_images** (color-specific product images), **product_categories** (configurable product categories with images and gradients).
 
 ### Key Features & Technical Implementations
 - **Authentication System**: Replit Auth, role-based access, protected routes, PostgreSQL-backed sessions.
@@ -43,6 +43,7 @@ Authentication: Role-based system with admin vs customer accounts and appropriat
 - **Shopping Cart**: Client-side localStorage persistence, real-time updates, variant support.
 - **Admin Dashboard**: Comprehensive CRUD for products, order processing, customer management, quote generation, sales analytics. Product color image configuration interface available.
 - **Promotional System**: **COMPLETED**: Hero-style banner system with responsive design, image management, rotation controls, and admin configuration interface. Banners adapt from 80px mobile to 600px desktop with proportional text scaling.
+- **Configurable Categories System**: **COMPLETED**: Product categories are now fully configurable through admin interface. Replaced hardcoded categories with dynamic database-driven system. Includes category management with image upload, gradient customization, and sort ordering. 14 default categories available (Camisas, Polos, Playeras, Pantalones, Chamarras, Chalecos, Seguridad, Gorras, Promocionales, Toallas, Termos, Plásticos, Cobertores, Tarimas).
 - **UI/UX**: Consistent branding across customer and admin interfaces, mobile-optimized navigation, advanced filtering/sorting, WhatsApp integration for product inquiry. Expandable navigation menus with hover-based submenus for catalog and brand filtering.
 
 ## External Dependencies
