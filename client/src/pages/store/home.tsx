@@ -43,7 +43,8 @@ export default function StoreHome() {
         </div>
       </section>
 
-      {/* Featured Categories */}
+      {/* Featured Categories - HIDDEN */}
+      {/* 
       <section className="py-16 bg-uniform-neutral-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -109,6 +110,7 @@ export default function StoreHome() {
           </div>
         </div>
       </section>
+      */}
 
       {/* Featured Products */}
       <section className="py-16">
