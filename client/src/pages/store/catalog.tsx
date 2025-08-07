@@ -46,120 +46,95 @@ export default function CatalogPage() {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [productImages, setProductImages] = useState<{[key: number]: string}>({});
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
-  
-  // States for collapsible filters
-  const [expandedSections, setExpandedSections] = useState({
-    categories: true,
-    brands: false,
-    genders: false,
-    garmentTypes: false,
-    others: false
-  });
 
-  // Get filters from URL params and detect specific routes
+  // Extract route parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const brandParam = urlParams.get('brand');
     const garmentTypeParam = urlParams.get('garmentType');
-    const categoryParam = urlParams.get('category');
     
-    // Check if we're on specific garment type routes
-    if (location.includes('/store/polos')) {
-      setSelectedGarmentType('polo');
-    } else if (location.includes('/store/playeras')) {
-      setSelectedGarmentType('playera');
-    } else if (garmentTypeParam) {
-      setSelectedGarmentType(garmentTypeParam);
-    }
-    
-    if (brandParam) {
-      setSelectedBrand(brandParam);
-    }
-    if (categoryParam) {
-      setSelectedCategory(categoryParam);
+    if (garmentTypeParam) {
+      // Map URL garment types to database IDs
+      const garmentTypeMap: { [key: string]: string } = {
+        'polo': '6',
+        'playera': '3',
+        'camisa': '5'
+      };
+      
+      if (garmentTypeMap[garmentTypeParam]) {
+        setSelectedGarmentType(garmentTypeMap[garmentTypeParam]);
+      }
     }
   }, [location]);
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Acceso requerido",
-        description: "Debes iniciar sesión para ver el catálogo completo.",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 1500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
+  // Fetch data
+  const { data: products = [], isLoading: productsLoading } = useQuery({
+    queryKey: ['/api/products'],
+    enabled: isAuthenticated,
+  });
 
-  const { data: categories } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: ['/api/categories'],
     enabled: isAuthenticated,
-    retry: false,
   });
 
-  const { data: brands } = useQuery({
+  const { data: brands = [] } = useQuery({
     queryKey: ['/api/brands'],
     enabled: isAuthenticated,
-    retry: false,
   });
 
-  const { data: garmentTypes } = useQuery({
+  const { data: garmentTypes = [] } = useQuery({
     queryKey: ['/api/garment-types'],
     enabled: isAuthenticated,
-    retry: false,
   });
 
-  const { data: products, isLoading: productsLoading } = useQuery({
-    queryKey: ['/api/products', searchTerm, selectedCategory, selectedBrand, selectedGender, selectedGarmentType, sortBy],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (searchTerm) params.append('search', searchTerm);
-      if (selectedCategory) params.append('categoryId', selectedCategory);
-      if (selectedBrand) params.append('brandId', selectedBrand);
-      if (selectedGender) params.append('gender', selectedGender);
-      if (selectedGarmentType) params.append('garmentTypeId', selectedGarmentType);
-      params.append('isActive', 'true');
-      if (sortBy) params.append('sortBy', sortBy);
-      
-      const response = await fetch(`/api/products?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error(`${response.status}: ${response.statusText}`);
-      }
-      return response.json();
-    },
-    enabled: isAuthenticated,
-    retry: false,
+  // Filter products
+  const filteredProducts = products.filter((product: any) => {
+    const matchesSearch = !searchTerm || 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.sku?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = !selectedCategory || selectedCategory === "all" ||
+      product.categoryId?.toString() === selectedCategory;
+    
+    const matchesBrand = !selectedBrand || selectedBrand === "all" ||
+      product.brandId?.toString() === selectedBrand;
+    
+    const matchesGender = !selectedGender || selectedGender === "all" ||
+      product.gender?.toLowerCase() === selectedGender.toLowerCase();
+    
+    const matchesGarmentType = !selectedGarmentType || selectedGarmentType === "all" ||
+      product.garmentTypeId?.toString() === selectedGarmentType;
+    
+    return matchesSearch && matchesCategory && matchesBrand && matchesGender && matchesGarmentType;
   });
 
-  // Convert garmentType name to ID when garmentTypes are loaded
-  useEffect(() => {
-    if (garmentTypes && Array.isArray(garmentTypes) && selectedGarmentType) {
-      // Check if selectedGarmentType is already an ID (numeric)
-      if (!/^\d+$/.test(selectedGarmentType)) {
-        // It's a name, find the corresponding ID
-        const garmentType = garmentTypes.find((type: any) => 
-          type.name.toLowerCase() === selectedGarmentType.toLowerCase()
-        );
-        if (garmentType) {
-          setSelectedGarmentType(garmentType.id.toString());
-        }
-      }
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case 'name_asc':
+        return a.name.localeCompare(b.name);
+      case 'name_desc':
+        return b.name.localeCompare(a.name);
+      case 'price_asc':
+        return (a.price || 0) - (b.price || 0);
+      case 'price_desc':
+        return (b.price || 0) - (a.price || 0);
+      default:
+        return 0;
     }
-  }, [garmentTypes, selectedGarmentType]);
+  });
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-uniform-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando catálogo...</p>
+      <CustomerLayout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-uniform-primary"></div>
+            <p className="mt-4 text-gray-600">Cargando catálogo...</p>
+          </div>
         </div>
-      </div>
+      </CustomerLayout>
     );
   }
 
@@ -167,10 +142,10 @@ export default function CatalogPage() {
     return (
       <CustomerLayout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center max-w-md mx-auto p-6">
-            <Package className="h-16 w-16 text-uniform-primary mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Catálogo de Uniformes
+          <div className="text-center bg-white rounded-lg shadow-lg p-8 max-w-md">
+            <Package className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Acceso al Catálogo
             </h2>
             <p className="text-gray-600 mb-6">
               Inicia sesión para explorar nuestra colección completa de uniformes
@@ -230,19 +205,12 @@ export default function CatalogPage() {
     window.open(whatsappUrl, '_blank');
   };
 
-  const toggleSection = (section: string) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section as keyof typeof prev]
-    }));
-  };
-
   const clearAllFilters = () => {
     setSearchTerm("");
-    setSelectedCategory("");
-    setSelectedBrand("");
-    setSelectedGender("");
-    setSelectedGarmentType("");
+    setSelectedCategory("all");
+    setSelectedBrand("all");
+    setSelectedGender("all");
+    setSelectedGarmentType("all");
   };
 
   return (
@@ -259,654 +227,288 @@ export default function CatalogPage() {
             </p>
           </div>
 
-          {/* Main Content Layout */}
-          <div className="flex gap-8">
-            {/* Sidebar Filters */}
-            <div className="hidden lg:block w-80 flex-shrink-0">
-              <div className="bg-white rounded-lg shadow-sm border">
-                {/* Search Section */}
-                <div className="p-4 border-b">
-                  <div className="relative">
-                    <Input
-                      placeholder="Buscar productos..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  </div>
-                </div>
+          {/* Compact Filter Bar */}
+          <div className="bg-white rounded-xl shadow-sm border p-4 mb-6">
+            {/* Search and Quick Filters Row */}
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+              {/* Search */}
+              <div className="relative flex-1 max-w-sm">
+                <Input
+                  placeholder="Buscar productos..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              </div>
 
-                {/* Browse by Category */}
-                <div className="border-b">
-                  <button
-                    onClick={() => toggleSection('categories')}
-                    className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
-                  >
-                    <span>Buscar por Categoría</span>
-                    {expandedSections.categories ? (
-                      <Minus className="h-4 w-4" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
-                  </button>
-                  {expandedSections.categories && (
-                    <div className="px-4 pb-4">
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => setSelectedCategory("")}
-                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                            !selectedCategory ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                          }`}
-                        >
-                          Todas las Categorías
-                        </button>
-                        {categories && Array.isArray(categories) ? categories.map((cat: any) => (
-                          <button
-                            key={cat.id}
-                            onClick={() => setSelectedCategory(cat.id.toString())}
-                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                              selectedCategory === cat.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                            }`}
-                          >
-                            {cat.name}
-                          </button>
-                        )) : null}
-                      </div>
-                    </div>
-                  )}
-                </div>
+              {/* Quick Filters */}
+              <div className="flex flex-wrap gap-2 items-center">
+                {/* Category Filter */}
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="w-auto min-w-[140px] h-9">
+                    <SelectValue placeholder="Categoría" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las Categorías</SelectItem>
+                    {categories && Array.isArray(categories) ? categories.map((cat: any) => (
+                      <SelectItem key={cat.id} value={cat.id.toString()}>{cat.name}</SelectItem>
+                    )) : null}
+                  </SelectContent>
+                </Select>
 
-                {/* Browse by Brand */}
-                <div className="border-b">
-                  <button
-                    onClick={() => toggleSection('brands')}
-                    className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
-                  >
-                    <span>Buscar por Marca</span>
-                    {expandedSections.brands ? (
-                      <Minus className="h-4 w-4" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
-                  </button>
-                  {expandedSections.brands && (
-                    <div className="px-4 pb-4">
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => setSelectedBrand("")}
-                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                            !selectedBrand ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                          }`}
-                        >
-                          Todas las Marcas
-                        </button>
-                        {brands && Array.isArray(brands) ? brands.filter((brand: any) => brand.isActive).map((brand: any) => (
-                          <button
-                            key={brand.id}
-                            onClick={() => setSelectedBrand(brand.id.toString())}
-                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                              selectedBrand === brand.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                            }`}
-                          >
-                            {brand.name}
-                          </button>
-                        )) : null}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {/* Brand Filter */}
+                <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                  <SelectTrigger className="w-auto min-w-[120px] h-9">
+                    <SelectValue placeholder="Marca" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las Marcas</SelectItem>
+                    {brands && Array.isArray(brands) ? brands.map((brand: any) => (
+                      <SelectItem key={brand.id} value={brand.id.toString()}>{brand.name}</SelectItem>
+                    )) : null}
+                  </SelectContent>
+                </Select>
 
-                {/* Browse by Gender */}
-                <div className="border-b">
-                  <button
-                    onClick={() => toggleSection('genders')}
-                    className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
-                  >
-                    <span>Buscar por Género</span>
-                    {expandedSections.genders ? (
-                      <Minus className="h-4 w-4" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
-                  </button>
-                  {expandedSections.genders && (
-                    <div className="px-4 pb-4">
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => setSelectedGender("")}
-                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                            !selectedGender ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                          }`}
-                        >
-                          Todos los Géneros
-                        </button>
-                        <button
-                          onClick={() => setSelectedGender("masculino")}
-                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                            selectedGender === "masculino" ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                          }`}
-                        >
-                          Masculino
-                        </button>
-                        <button
-                          onClick={() => setSelectedGender("femenino")}
-                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                            selectedGender === "femenino" ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                          }`}
-                        >
-                          Femenino
-                        </button>
-                        <button
-                          onClick={() => setSelectedGender("unisex")}
-                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                            selectedGender === "unisex" ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                          }`}
-                        >
-                          Unisex
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {/* Gender Filter */}
+                <Select value={selectedGender} onValueChange={setSelectedGender}>
+                  <SelectTrigger className="w-auto min-w-[100px] h-9">
+                    <SelectValue placeholder="Género" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="unisex">Unisex</SelectItem>
+                    <SelectItem value="hombre">Hombre</SelectItem>
+                    <SelectItem value="mujer">Mujer</SelectItem>
+                  </SelectContent>
+                </Select>
 
-                {/* Browse by Garment Type */}
-                <div className="border-b">
-                  <button
-                    onClick={() => toggleSection('garmentTypes')}
-                    className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
-                  >
-                    <span>Buscar por Tipo de Prenda</span>
-                    {expandedSections.garmentTypes ? (
-                      <Minus className="h-4 w-4" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
-                  </button>
-                  {expandedSections.garmentTypes && (
-                    <div className="px-4 pb-4">
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => setSelectedGarmentType("")}
-                          className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                            !selectedGarmentType ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                          }`}
-                        >
-                          Todos los Tipos
-                        </button>
-                        {garmentTypes && Array.isArray(garmentTypes) ? garmentTypes.map((type: any) => (
-                          <button
-                            key={type.id}
-                            onClick={() => setSelectedGarmentType(type.id.toString())}
-                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                              selectedGarmentType === type.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                            }`}
-                          >
-                            {type.displayName}
-                          </button>
-                        )) : null}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {/* Garment Type Filter */}
+                <Select value={selectedGarmentType} onValueChange={setSelectedGarmentType}>
+                  <SelectTrigger className="w-auto min-w-[130px] h-9">
+                    <SelectValue placeholder="Tipo de Prenda" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos los Tipos</SelectItem>
+                    {garmentTypes && Array.isArray(garmentTypes) ? garmentTypes.map((type: any) => (
+                      <SelectItem key={type.id} value={type.id.toString()}>{type.displayName}</SelectItem>
+                    )) : null}
+                  </SelectContent>
+                </Select>
 
-                {/* Clear Filters */}
-                <div className="p-4">
+                {/* Sort Filter */}
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-auto min-w-[120px] h-9">
+                    <SelectValue placeholder="Ordenar por" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default">Por defecto</SelectItem>
+                    <SelectItem value="name_asc">Nombre A-Z</SelectItem>
+                    <SelectItem value="name_desc">Nombre Z-A</SelectItem>
+                    <SelectItem value="price_asc">Precio menor</SelectItem>
+                    <SelectItem value="price_desc">Precio mayor</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Clear Filters Button */}
+                {(searchTerm || (selectedCategory && selectedCategory !== "all") || (selectedBrand && selectedBrand !== "all") || (selectedGender && selectedGender !== "all") || (selectedGarmentType && selectedGarmentType !== "all")) && (
                   <Button
                     variant="outline"
+                    size="sm"
                     onClick={clearAllFilters}
-                    className="w-full"
+                    className="h-9 px-3 text-xs"
                   >
-                    <X className="h-4 w-4 mr-2" />
-                    Limpiar Filtros
+                    <X className="h-3 w-3 mr-1" />
+                    Limpiar
                   </Button>
-                </div>
+                )}
               </div>
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1">
-              {/* Mobile Filters & Controls */}
-              <div className="lg:hidden bg-white rounded-lg shadow-sm border p-4 mb-6">
-                <div className="flex flex-col gap-3">
-                  {/* Search Bar */}
-                  <div className="relative">
-                    <Input
-                      placeholder="Buscar productos..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowMobileFilters(true)}
-                      className="flex-1 text-xs"
-                    >
-                      <Filter className="h-3 w-3 mr-1" />
-                      Filtros
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={clearAllFilters}
-                      className="flex-1 text-xs"
-                    >
-                      <X className="h-3 w-3 mr-1" />
-                      Limpiar
-                    </Button>
-                    
-                    {/* View Toggle */}
-                    <div className="flex gap-1">
-                      <Button
-                        variant={viewMode === "grid" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setViewMode("grid")}
-                        className="px-2"
-                      >
-                        <Grid className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant={viewMode === "list" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setViewMode("list")}
-                        className="px-2"
-                      >
-                        <List className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Active Filters */}
-          {(selectedCategory || selectedBrand || selectedGender || selectedGarmentType || searchTerm) && (
-            <div className="mb-6">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm text-gray-600">Filtros activos:</span>
-                {selectedCategory && (
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    {Array.isArray(categories) ? categories.find((cat: any) => cat.id.toString() === selectedCategory)?.name : 'Categoría'}
-                    <X 
-                      className="h-3 w-3 cursor-pointer" 
-                      onClick={() => setSelectedCategory("")}
-                    />
-                  </Badge>
-                )}
-                {selectedBrand && (
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    {Array.isArray(brands) ? brands.find((brand: any) => brand.id.toString() === selectedBrand)?.name : 'Marca'}
-                    <X 
-                      className="h-3 w-3 cursor-pointer" 
-                      onClick={() => setSelectedBrand("")}
-                    />
-                  </Badge>
-                )}
-                {selectedGender && (
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    {selectedGender === "masculino" ? "Masculino" : 
-                     selectedGender === "femenino" ? "Femenino" : "Unisex"}
-                    <X 
-                      className="h-3 w-3 cursor-pointer" 
-                      onClick={() => setSelectedGender("")}
-                    />
-                  </Badge>
-                )}
-                {selectedGarmentType && (
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    {Array.isArray(garmentTypes) ? garmentTypes.find((type: any) => type.id.toString() === selectedGarmentType)?.displayName : 'Tipo'}
-                    <X 
-                      className="h-3 w-3 cursor-pointer" 
-                      onClick={() => setSelectedGarmentType("")}
-                    />
-                  </Badge>
-                )}
+            {/* Active Filters Display */}
+            {(searchTerm || (selectedCategory && selectedCategory !== "all") || (selectedBrand && selectedBrand !== "all") || (selectedGender && selectedGender !== "all") || (selectedGarmentType && selectedGarmentType !== "all")) && (
+              <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t">
+                <span className="text-xs font-medium text-gray-500">Filtros activos:</span>
                 {searchTerm && (
-                  <Badge variant="secondary" className="flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
                     "{searchTerm}"
-                    <X 
-                      className="h-3 w-3 cursor-pointer" 
-                      onClick={() => setSearchTerm("")}
-                    />
-                  </Badge>
+                    <button onClick={() => setSearchTerm("")}>
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
                 )}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => {
-                    setSelectedCategory("");
-                    setSelectedBrand("");
-                    setSelectedGender("");
-                    setSelectedGarmentType("");
-                    setSearchTerm("");
-                  }}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  Limpiar filtros
-                </Button>
+                {selectedCategory && selectedCategory !== "all" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                    {categories?.find((c: any) => c.id.toString() === selectedCategory)?.name}
+                    <button onClick={() => setSelectedCategory("all")}>
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                {selectedBrand && selectedBrand !== "all" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">
+                    {brands?.find((b: any) => b.id.toString() === selectedBrand)?.name}
+                    <button onClick={() => setSelectedBrand("all")}>
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                {selectedGender && selectedGender !== "all" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-pink-100 text-pink-800 rounded-full">
+                    {selectedGender}
+                    <button onClick={() => setSelectedGender("all")}>
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                {selectedGarmentType && selectedGarmentType !== "all" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+                    {garmentTypes?.find((t: any) => t.id.toString() === selectedGarmentType)?.displayName}
+                    <button onClick={() => setSelectedGarmentType("all")}>
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Results Summary */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="text-sm text-gray-600">
-              {products?.length ? (
-                <>Mostrando {products.length} productos</>
-              ) : (
-                <>No se encontraron productos</>
-              )}
-            </div>
+          <div className="flex justify-between items-center mb-6">
+            <p className="text-sm text-gray-600">
+              {sortedProducts.length} productos encontrados
+            </p>
             <div className="flex items-center gap-2">
-              <ArrowUpDown className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-gray-600">
-                {sortBy === "name" ? "Nombre A-Z" :
-                 sortBy === "price-asc" ? "Precio: menor a mayor" :
-                 sortBy === "price-desc" ? "Precio: mayor a menor" :
-                 sortBy === "newest" ? "Más recientes" : "Más populares"}
-              </span>
+              <Button
+                variant={viewMode === "grid" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+                className="px-3"
+              >
+                <Grid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className="px-3"
+              >
+                <List className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
-          {/* Products Grid/List */}
+          {/* Products Grid */}
           {productsLoading ? (
-            <div className={`grid gap-4 sm:gap-6 ${viewMode === "grid" 
-              ? "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" 
-              : "grid-cols-1"}`}>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Card key={i} className="overflow-hidden">
-                  <div className="w-full h-64 bg-gray-200 animate-pulse"></div>
-                  <CardContent className="p-4">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded animate-pulse mb-4"></div>
-                    <div className="h-6 bg-gray-200 rounded animate-pulse"></div>
-                  </CardContent>
-                </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(12)].map((_, i) => (
+                <div key={i} className="bg-white rounded-lg shadow-sm border animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded-t-lg"></div>
+                  <div className="p-4">
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
               ))}
             </div>
-          ) : !products || products.length === 0 ? (
-            <div className="text-center py-16">
-              <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          ) : sortedProducts.length === 0 ? (
+            <div className="text-center py-12">
+              <Package className="mx-auto h-16 w-16 text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No hay productos disponibles
+                No se encontraron productos
               </h3>
-              <p className="text-gray-600 mb-6">
-                {searchTerm || selectedCategory || selectedBrand || selectedGender
-                  ? "Intenta ajustar tus filtros de búsqueda"
-                  : "Pronto tendremos productos disponibles para ti"
-                }
+              <p className="text-gray-600 mb-4">
+                Intenta ajustar los filtros para ver más resultados
               </p>
-              {(searchTerm || selectedCategory || selectedBrand || selectedGender) && (
-                <Button 
-                  variant="outline"
-                  onClick={() => {
-                    setSearchTerm("");
-                    setSelectedCategory("");
-                    setSelectedBrand("");
-                    setSelectedGender("");
-                  }}
-                >
-                  Limpiar filtros
-                </Button>
-              )}
+              <Button onClick={clearAllFilters} variant="outline">
+                Limpiar filtros
+              </Button>
             </div>
           ) : (
-            <div className={`grid gap-4 sm:gap-6 ${viewMode === "grid" 
-              ? "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" 
-              : "grid-cols-1"}`}>
-              {products.map((product: any) => (
-                <Card 
-                  key={product.id} 
-                  className={`overflow-hidden hover:shadow-lg transition-shadow product-card-hover cursor-pointer ${
-                    viewMode === "list" ? "flex flex-col md:flex-row" : ""
-                  }`}
-                  onClick={() => window.open(`/store/product/${product.id}`, '_blank')}
-                >
-                  <div className={`relative ${viewMode === "list" ? "md:w-48 md:flex-shrink-0" : ""}`}>
-                    <div className={`bg-gray-200 flex items-center justify-center ${
-                      viewMode === "list" ? "h-full md:h-48" : "w-full h-64 sm:h-72 md:h-80 lg:h-72"
-                    }`}>
-                      {(() => {
-                        // First check if we have a selected color for this product
-                        const selectedColorForProduct = selectedProduct?.id === product.id ? selectedColor : "";
-                        let imageToShow = "";
-                        
-                        // If a color is selected, try to find its image
-                        if (selectedColorForProduct && product.colorImages?.length > 0) {
-                          const selectedColorInfo = product.colorImages.find((ci: any) => ci.name === selectedColorForProduct);
-                          if (selectedColorInfo?.images?.length > 0) {
-                            imageToShow = selectedColorInfo.images[0];
-                          }
-                        }
-                        
-                        // Fallback to custom image for this product if set
-                        if (!imageToShow && productImages[product.id]) {
-                          imageToShow = productImages[product.id];
-                        }
-                        
-                        // Fallback to primary image
-                        if (!imageToShow) {
-                          imageToShow = product.primaryImage || 
-                                       (product.images?.length ? product.images[0] : null);
-                        }
-                        
-                        if (!imageToShow) {
-                          return <Package className="h-16 w-16 text-gray-400" />;
-                        }
-                        
-                        return (
-                          <img 
-                            src={imageToShow} 
-                            alt={product.name}
-                            className="w-full h-full object-contain sm:object-contain md:object-cover"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              const parent = target.parentElement;
-                              if (parent) {
-                                parent.innerHTML = '<div class="h-16 w-16 text-gray-400 mx-auto"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>';
-                              }
-                            }}
-                          />
-                        );
-                      })()}
-                    </div>
-                    
-                    <div className="absolute top-3 right-3">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="p-2 bg-white/90 hover:bg-white mobile-touch-target"
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    
-                    {product.isActive && (
-                      <div className="absolute top-3 left-3">
-                        <Badge className="bg-green-500">
-                          Disponible
-                        </Badge>
+            <div className={`grid gap-6 ${
+              viewMode === "grid" 
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+                : "grid-cols-1"
+            }`}>
+              {sortedProducts.map((product: any) => (
+                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="relative">
+                    <img
+                      src={productImages[product.id] || product.images?.[0] || "/api/placeholder/300/300"}
+                      alt={product.name}
+                      className="w-full h-48 object-cover"
+                    />
+                    <Badge 
+                      className="absolute top-2 left-2 bg-uniform-primary"
+                      variant="secondary"
+                    >
+                      {product.sku}
+                    </Badge>
+                    {product.isActive === false && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <Badge variant="destructive">No disponible</Badge>
                       </div>
                     )}
                   </div>
-                  
-                  <CardContent className={`p-4 ${viewMode === "list" ? "flex-1" : ""}`}>
-                    <div className={viewMode === "list" ? "flex flex-col h-full" : ""}>
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 mobile-text-responsive">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">
                         {product.name}
                       </h3>
-                      {product.sku && (
-                        <p className="text-xs text-blue-600 font-mono mb-1">
-                          SKU: {product.sku}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-2 mb-2">
-                        {product.brand && (
-                          <Badge variant="outline" className="text-xs">
-                            {product.brand}
-                          </Badge>
-                        )}
-                        {product.gender && (
-                          <Badge variant="outline" className="text-xs">
-                            {product.gender === "masculino" ? "Masculino" : 
-                             product.gender === "femenino" ? "Femenino" : "Unisex"}
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                        {product.description || 'Producto de calidad premium'}
-                      </p>
-                      
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-xl lg:text-2xl font-bold text-gray-900">
-                          ${product.price}
-                        </span>
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="text-sm text-gray-600 ml-1">4.8</span>
-                        </div>
-                      </div>
-                      
-                      {/* Colors */}
-                      {product.colorImages && product.colorImages.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Colores:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {product.colorImages.slice(0, 6).map((colorInfo: any, index: number) => {
-                              return (
-                                <button
-                                  key={index}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedProduct(product);
-                                    setSelectedColor(colorInfo.name);
-                                    // Update the image for this product
-                                    if (colorInfo.images?.length > 0) {
-                                      setProductImages(prev => ({
-                                        ...prev,
-                                        [product.id]: colorInfo.images[0]
-                                      }));
-                                    }
-                                  }}
-                                  className={`w-6 h-6 rounded-full border-2 mobile-touch-target ${
-                                    selectedProduct?.id === product.id && selectedColor === colorInfo.name 
-                                      ? 'border-gray-900 ring-2 ring-gray-300' 
-                                      : 'border-gray-300'
-                                  }`}
-                                  style={{ backgroundColor: colorInfo.hexCode || '#CCCCCC' }}
-                                  title={colorInfo.name}
-                                />
-                              );
-                            })}
-                            {product.colorImages.length > 6 && (
-                              <span className="text-xs text-gray-500 flex items-center">
-                                +{product.colorImages.length - 6}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Fallback to old colors array if colorImages is not available */}
-                      {(!product.colorImages || product.colorImages.length === 0) && product.colors && product.colors.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Colores:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {product.colors.slice(0, 6).map((color: string, index: number) => {
-                              const colors = {
-                                'Blanco': '#FFFFFF', 'Negro': '#000000', 'Azul': '#0066CC',
-                                'Azul Marino': '#001F3F', 'Azul Claro': '#87CEEB', 'Rojo': '#FF0000',
-                                'Verde': '#008000', 'Verde Quirófano': '#00CED1', 'Amarillo': '#FFFF00',
-                                'Naranja': '#FFA500', 'Naranja Alta Visibilidad': '#FF6600',
-                                'Gris': '#808080', 'Gris Claro': '#D3D3D3', 'Morado': '#800080',
-                                'Rosa': '#FFC0CB', 'Café': '#8B4513', 'Beige': '#F5F5DC'
-                              };
-                              const hexColor = colors[color as keyof typeof colors] || '#CCCCCC';
-                              
-                              return (
-                                <button
-                                  key={index}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedProduct(product);
-                                    setSelectedColor(color);
-                                  }}
-                                  className={`w-6 h-6 rounded-full border-2 mobile-touch-target ${
-                                    selectedProduct?.id === product.id && selectedColor === color 
-                                      ? 'border-gray-900 ring-2 ring-gray-300' 
-                                      : 'border-gray-300'
-                                  }`}
-                                  style={{ backgroundColor: hexColor }}
-                                  title={color}
-                                />
-                              );
-                            })}
-                            {product.colors.length > 6 && (
-                              <span className="text-xs text-gray-500 flex items-center">
-                                +{product.colors.length - 6}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Sizes */}
-                      {product.sizes && product.sizes.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Tallas:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {product.sizes.map((size: string, index: number) => (
-                              <button
-                                key={index}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedSize(size);
-                                }}
-                                className={`px-3 py-1 text-xs border rounded mobile-touch-target ${
-                                  selectedSize === size
-                                    ? 'border-uniform-primary bg-uniform-primary text-white'
-                                    : 'border-gray-300 hover:border-gray-400'
-                                }`}
-                              >
-                                {size}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      <div className={`flex gap-2 ${viewMode === "list" ? "mt-auto" : ""}`}>
+                      <div className="flex items-center gap-1">
                         <Button
+                          variant="ghost"
                           size="sm"
-                          className="flex-1 bg-uniform-primary hover:bg-blue-700 btn-mobile-optimized"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (selectedProduct?.id !== product.id) {
-                              setSelectedProduct(product);
-                            }
-                            handleAddToCart(product);
-                          }}
+                          className="h-8 w-8 p-0"
                         >
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          Agregar
+                          <Heart className="h-4 w-4" />
                         </Button>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      {product.description}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {product.categoryName && (
+                        <Badge variant="outline" className="text-xs">
+                          {product.categoryName}
+                        </Badge>
+                      )}
+                      {product.brandName && (
+                        <Badge variant="outline" className="text-xs">
+                          {product.brandName}
+                        </Badge>
+                      )}
+                      {product.gender && (
+                        <Badge variant="outline" className="text-xs">
+                          {product.gender}
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <div className="text-xl font-bold text-uniform-primary">
+                        ${product.price}
+                      </div>
+                      <div className="flex gap-2">
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleWhatsApp(product);
-                          }}
-                          className="mobile-touch-target"
+                          onClick={() => handleWhatsApp(product)}
+                          className="h-8 px-2"
                         >
-                          <Phone className="h-4 w-4" />
+                          <Phone className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => setSelectedProduct(product)}
+                          className="h-8 px-3"
+                        >
+                          <ShoppingCart className="h-3 w-3 mr-1" />
+                          Agregar
                         </Button>
                       </div>
                     </div>
@@ -915,225 +517,7 @@ export default function CatalogPage() {
               ))}
             </div>
           )}
-
-          {/* Load More / Pagination */}
-          {products && products.length > 0 && (
-            <div className="flex justify-center mt-12">
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="btn-mobile-optimized"
-              >
-                Cargar más productos
-              </Button>
-            </div>
-          )}
         </div>
-
-        {/* Mobile Filters Modal */}
-        {showMobileFilters && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden">
-            <div className="fixed inset-y-0 left-0 w-80 bg-white shadow-xl transform transition-transform">
-              <div className="flex flex-col h-full">
-                {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b">
-                  <h2 className="text-lg font-semibold">Filtros</h2>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowMobileFilters(false)}
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-
-                {/* Filters Content */}
-                <div className="flex-1 overflow-y-auto">
-                  {/* Browse by Category */}
-                  <div className="border-b">
-                    <button
-                      onClick={() => toggleSection('categories')}
-                      className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
-                    >
-                      <span>Buscar por Categoría</span>
-                      {expandedSections.categories ? (
-                        <Minus className="h-4 w-4" />
-                      ) : (
-                        <Plus className="h-4 w-4" />
-                      )}
-                    </button>
-                    {expandedSections.categories && (
-                      <div className="px-4 pb-4">
-                        <div className="space-y-2">
-                          <button
-                            onClick={() => setSelectedCategory("")}
-                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                              !selectedCategory ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                            }`}
-                          >
-                            Todas las Categorías
-                          </button>
-                          {categories && Array.isArray(categories) ? categories.map((cat: any) => (
-                            <button
-                              key={cat.id}
-                              onClick={() => setSelectedCategory(cat.id.toString())}
-                              className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                                selectedCategory === cat.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                              }`}
-                            >
-                              {cat.name}
-                            </button>
-                          )) : null}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Browse by Brand */}
-                  <div className="border-b">
-                    <button
-                      onClick={() => toggleSection('brands')}
-                      className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
-                    >
-                      <span>Buscar por Marca</span>
-                      {expandedSections.brands ? (
-                        <Minus className="h-4 w-4" />
-                      ) : (
-                        <Plus className="h-4 w-4" />
-                      )}
-                    </button>
-                    {expandedSections.brands && (
-                      <div className="px-4 pb-4">
-                        <div className="space-y-2">
-                          <button
-                            onClick={() => setSelectedBrand("")}
-                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                              !selectedBrand ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                            }`}
-                          >
-                            Todas las Marcas
-                          </button>
-                          {brands && Array.isArray(brands) ? brands.map((brand: any) => (
-                            <button
-                              key={brand.id}
-                              onClick={() => setSelectedBrand(brand.id.toString())}
-                              className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                                selectedBrand === brand.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                              }`}
-                            >
-                              {brand.name}
-                            </button>
-                          )) : null}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Browse by Gender */}
-                  <div className="border-b">
-                    <button
-                      onClick={() => toggleSection('genders')}
-                      className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
-                    >
-                      <span>Buscar por Género</span>
-                      {expandedSections.genders ? (
-                        <Minus className="h-4 w-4" />
-                      ) : (
-                        <Plus className="h-4 w-4" />
-                      )}
-                    </button>
-                    {expandedSections.genders && (
-                      <div className="px-4 pb-4">
-                        <div className="space-y-2">
-                          <button
-                            onClick={() => setSelectedGender("")}
-                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                              !selectedGender ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                            }`}
-                          >
-                            Todos los Géneros
-                          </button>
-                          {["masculino", "femenino", "unisex"].map((gender) => (
-                            <button
-                              key={gender}
-                              onClick={() => setSelectedGender(gender)}
-                              className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                                selectedGender === gender ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                              }`}
-                            >
-                              {gender === "masculino" ? "Masculino" : 
-                               gender === "femenino" ? "Femenino" : "Unisex"}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Browse by Garment Type */}
-                  <div className="border-b">
-                    <button
-                      onClick={() => toggleSection('garmentTypes')}
-                      className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-900 hover:bg-gray-50"
-                    >
-                      <span>Buscar por Tipo de Prenda</span>
-                      {expandedSections.garmentTypes ? (
-                        <Minus className="h-4 w-4" />
-                      ) : (
-                        <Plus className="h-4 w-4" />
-                      )}
-                    </button>
-                    {expandedSections.garmentTypes && (
-                      <div className="px-4 pb-4">
-                        <div className="space-y-2">
-                          <button
-                            onClick={() => setSelectedGarmentType("")}
-                            className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                              !selectedGarmentType ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                            }`}
-                          >
-                            Todos los Tipos
-                          </button>
-                          {garmentTypes && Array.isArray(garmentTypes) ? garmentTypes.map((type: any) => (
-                            <button
-                              key={type.id}
-                              onClick={() => setSelectedGarmentType(type.id.toString())}
-                              className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded ${
-                                selectedGarmentType === type.id.toString() ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                              }`}
-                            >
-                              {type.displayName}
-                            </button>
-                          )) : null}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <div className="border-t p-4">
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={clearAllFilters}
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      Limpiar
-                    </Button>
-                    <Button
-                      className="flex-1"
-                      onClick={() => setShowMobileFilters(false)}
-                    >
-                      Aplicar Filtros
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </CustomerLayout>
   );
