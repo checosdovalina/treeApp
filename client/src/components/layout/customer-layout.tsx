@@ -566,7 +566,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
       </header>
 
       {/* Main Content with proper spacing to avoid header overlap */}
-      <main className="flex-1 pt-20" style={{ marginTop: '80px' }}>
+      <main className="flex-1 pt-20">
         {children}
       </main>
 
