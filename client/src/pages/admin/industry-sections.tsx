@@ -136,11 +136,10 @@ export default function IndustrySectionsPage() {
   };
 
   const handleGetUploadParameters = async () => {
-    const response = await apiRequest('POST', '/api/objects/upload');
-    const data = await response.json();
+    const data = await apiRequest('/api/objects/upload', 'POST');
     return {
       method: "PUT" as const,
-      url: data.uploadURL,
+      url: (data as any).uploadURL,
     };
   };
 
