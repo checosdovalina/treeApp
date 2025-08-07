@@ -396,6 +396,9 @@ export const insertPromotionSchema = createInsertSchema(promotions).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  startDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
+  endDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
 });
 
 export const insertQuoteSchema = createInsertSchema(quotes).omit({

@@ -93,8 +93,8 @@ export default function PromotionsPage() {
       const payload = {
         ...data,
         discountValue: data.discountValue ? parseFloat(data.discountValue) : null,
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate),
+        startDate: data.startDate,
+        endDate: data.endDate,
       };
       return apiRequest("POST", "/api/promotions", payload);
     },
@@ -121,8 +121,8 @@ export default function PromotionsPage() {
       const payload = {
         ...data,
         discountValue: data.discountValue ? parseFloat(data.discountValue) : null,
-        startDate: data.startDate ? new Date(data.startDate) : undefined,
-        endDate: data.endDate ? new Date(data.endDate) : undefined,
+        startDate: data.startDate,
+        endDate: data.endDate,
       };
       return apiRequest("PUT", `/api/promotions/${id}`, payload);
     },
