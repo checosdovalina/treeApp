@@ -27,14 +27,15 @@ import {
   ChevronDown,
   ChevronRight,
   Plus,
-  Minus
+  Minus,
+  Eye
 } from "lucide-react";
 
 export default function CatalogPage() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const { addItem } = useCart();
   const { toast } = useToast();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
@@ -203,6 +204,10 @@ export default function CatalogPage() {
     const message = `Hola, me interesa el producto: ${product.name} - $${product.price}`;
     const whatsappUrl = `https://wa.me/5218711234567?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
+  };
+
+  const navigateToProduct = (productId: number) => {
+    navigate(`/store/product/${productId}`);
   };
 
   const clearAllFilters = () => {
@@ -432,12 +437,12 @@ export default function CatalogPage() {
                 : "grid-cols-1"
             }`}>
               {sortedProducts.map((product: any) => (
-                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer" onClick={() => navigateToProduct(product.id)}>
                   <div className="relative">
                     <img
                       src={productImages[product.id] || product.images?.[0] || "/api/placeholder/300/300"}
                       alt={product.name}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-48 object-cover transition-transform duration-200 hover:scale-105"
                     />
                     <Badge 
                       className="absolute top-2 left-2 bg-uniform-primary"
@@ -461,6 +466,8 @@ export default function CatalogPage() {
                           variant="ghost"
                           size="sm"
                           className="h-8 w-8 p-0"
+                          onClick={(e) => e.stopPropagation()}
+                          title="Agregar a favoritos"
                         >
                           <Heart className="h-4 w-4" />
                         </Button>
@@ -497,14 +504,33 @@ export default function CatalogPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleWhatsApp(product)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigateToProduct(product.id);
+                          }}
                           className="h-8 px-2"
+                          title="Ver detalles"
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleWhatsApp(product);
+                          }}
+                          className="h-8 px-2"
+                          title="Contactar por WhatsApp"
                         >
                           <Phone className="h-3 w-3" />
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() => setSelectedProduct(product)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedProduct(product);
+                          }}
                           className="h-8 px-3"
                         >
                           <ShoppingCart className="h-3 w-3 mr-1" />
