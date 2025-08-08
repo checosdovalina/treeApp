@@ -310,17 +310,17 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
     
-    query = query.orderBy(desc(products.createdAt));
+    query = (query as any).orderBy(desc(products.createdAt));
     
     if (filters?.limit) {
-      query = query.limit(filters.limit);
+      query = (query as any).limit(filters.limit);
     }
     
     if (filters?.offset) {
-      query = query.offset(filters.offset);
+      query = (query as any).offset(filters.offset);
     }
     
     const baseProducts = await query;
@@ -354,7 +354,7 @@ export class DatabaseStorage implements IStorage {
           const primaryColorImage = colorImages.find(ci => ci.isPrimary) || colorImages[0];
           primaryImage = primaryColorImage.images[0] || '';
         }
-        if (!primaryImage && product.images?.length > 0) {
+        if (!primaryImage && product.images && product.images.length > 0) {
           primaryImage = product.images[0];
         }
         
@@ -475,17 +475,17 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
     
-    query = query.orderBy(desc(orders.createdAt));
+    query = (query as any).orderBy(desc(orders.createdAt));
     
     if (filters?.limit) {
-      query = query.limit(filters.limit);
+      query = (query as any).limit(filters.limit);
     }
     
     if (filters?.offset) {
-      query = query.offset(filters.offset);
+      query = (query as any).offset(filters.offset);
     }
     
     return await query;
@@ -539,10 +539,10 @@ export class DatabaseStorage implements IStorage {
     let query = db.select().from(quotes);
     
     if (customerId) {
-      query = query.where(eq(quotes.customerId, customerId));
+      query = query.where(eq(quotes.customerId, customerId)) as any;
     }
     
-    return await query.orderBy(desc(quotes.createdAt));
+    return await (query as any).orderBy(desc(quotes.createdAt));
   }
 
   async getQuote(id: number): Promise<Quote | undefined> {
@@ -624,8 +624,13 @@ export class DatabaseStorage implements IStorage {
       .select({
         id: products.id,
         name: products.name,
+        sku: products.sku,
         description: products.description,
         categoryId: products.categoryId,
+        brand: products.brand,
+        gender: products.gender,
+        genders: products.genders,
+        garmentTypeId: products.garmentTypeId,
         price: products.price,
         images: products.images,
         sizes: products.sizes,
@@ -653,43 +658,7 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
   }
 
-  // Product Color Images operations
-  async getProductColorImages(productId: number) {
-    return await db
-      .select()
-      .from(productColorImages)
-      .where(eq(productColorImages.productId, productId))
-      .orderBy(productColorImages.sortOrder);
-  }
 
-  async createProductColorImage(data: any) {
-    const [colorImage] = await db
-      .insert(productColorImages)
-      .values(data)
-      .returning();
-    return colorImage;
-  }
-
-  async updateProductColorImage(id: number, data: any) {
-    const [colorImage] = await db
-      .update(productColorImages)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(productColorImages.id, id))
-      .returning();
-    return colorImage;
-  }
-
-  async deleteProductColorImage(id: number) {
-    await db
-      .delete(productColorImages)
-      .where(eq(productColorImages.id, id));
-  }
-
-  async clearProductColorImages(productId: number) {
-    await db
-      .delete(productColorImages)
-      .where(eq(productColorImages.productId, productId));
-  }
 
   // Promotions operations
   async getPromotions(activeOnly = false): Promise<Promotion[]> {
@@ -703,10 +672,10 @@ export class DatabaseStorage implements IStorage {
           lte(promotions.startDate, now),
           gte(promotions.endDate, now)
         )
-      );
+      ) as any;
     }
     
-    return await query.orderBy(promotions.sortOrder, promotions.createdAt);
+    return await (query as any).orderBy(promotions.sortOrder, promotions.createdAt);
   }
 
   async getPromotion(id: number): Promise<Promotion | undefined> {
@@ -755,10 +724,10 @@ export class DatabaseStorage implements IStorage {
     let query = db.select().from(industrySections);
     
     if (activeOnly) {
-      query = query.where(eq(industrySections.isActive, true));
+      query = query.where(eq(industrySections.isActive, true)) as any;
     }
     
-    return await query.orderBy(industrySections.sortOrder, industrySections.createdAt);
+    return await (query as any).orderBy(industrySections.sortOrder, industrySections.createdAt);
   }
 
   async getIndustrySection(id: number): Promise<IndustrySection | undefined> {
