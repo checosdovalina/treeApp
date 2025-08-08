@@ -42,7 +42,7 @@ Authentication: Role-based system with admin vs customer accounts and appropriat
 - **Order Management**: Manual quote creation (B2B) with PDF export and email, full order lifecycle management, customer database with purchase history.
 - **Shopping Cart**: Client-side localStorage persistence, real-time updates, variant support.
 - **Admin Dashboard**: Comprehensive CRUD for products, order processing, customer management, quote generation, sales analytics. Product color image configuration interface available. **NEW**: Configurable industry sections with object storage image upload capability.
-- **UI/UX**: Consistent branding across customer and admin interfaces, mobile-optimized navigation, advanced filtering/sorting, WhatsApp integration for product inquiry. Expandable navigation menus with hover-based submenus for catalog and brand filtering. **UPDATED**: Industry sections and category cards hidden per user request for cleaner homepage layout focused on products.
+- **UI/UX**: Consistent branding across customer and admin interfaces, mobile-optimized navigation, advanced filtering/sorting, WhatsApp integration for product inquiry. Expandable navigation menus with hover-based submenus for catalog and brand filtering. **UPDATED**: Industry sections converted to rotating carousel format. Main hero section modified to show "test" instead of "UNIFORMES". Brand showcase section implemented to display active brands with logos and direct catalog filtering functionality.
 - **Object Storage Integration**: Full object storage implementation with @google-cloud/storage, @uppy file uploads, ACL policies, and secure image management for industry section configuration.
 
 ## External Dependencies

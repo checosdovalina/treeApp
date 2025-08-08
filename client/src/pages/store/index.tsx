@@ -37,6 +37,11 @@ export default function StoreIndex() {
     retry: false,
   });
 
+  const { data: brands } = useQuery({
+    queryKey: ['/api/brands'],
+    retry: false,
+  });
+
   const handleAddToCart = (product: any) => {
     if (!product.sizes?.[0] || !product.colors?.[0]) {
       toast({
@@ -147,35 +152,83 @@ export default function StoreIndex() {
 
             </div>
             
-            {/* Right Content - Visual */}
+            {/* Right Content - Brands */}
             <div className="relative">
               <div className="relative z-10">
                 <div className="bg-white/15 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-2xl">
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
-                      <Users className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
-                      <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Corporativo</div>
-                    </div>
-                    <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
-                      <Shield className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
-                      <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Industrial</div>
-                    </div>
-                    <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
-                      <Package className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
-                      <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Médico</div>
-                    </div>
-                    <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
-                      <TrendingUp className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
-                      <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Gastronomía</div>
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-uniform-gold font-poppins font-bold mb-2 text-lg drop-shadow-sm">
-                      Soluciones Completas
+                  <div className="text-center mb-6">
+                    <div className="text-uniform-gold font-poppins font-bold text-xl drop-shadow-sm mb-2">
+                      MARCAS DESTACADAS
                     </div>
                     <div className="text-white text-sm font-roboto font-medium drop-shadow-sm">
-                      Desde el diseño hasta la entrega
+                      Calidad garantizada
                     </div>
+                  </div>
+                  
+                  {brands && Array.isArray(brands) && brands.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      {brands
+                        .filter((brand: any) => brand.isActive && brand.logo)
+                        .slice(0, 4)
+                        .map((brand: any) => (
+                          <Link
+                            key={brand.id}
+                            href={`/store/catalog?brand=${brand.id}`}
+                            className="group block"
+                          >
+                            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 text-center border border-white/50 hover:bg-white hover:scale-105 transition-all duration-300 cursor-pointer">
+                              <div className="flex items-center justify-center h-12 mb-2">
+                                {brand.logo ? (
+                                  <img
+                                    src={brand.logo}
+                                    alt={brand.name}
+                                    className="max-h-10 max-w-full object-contain filter drop-shadow-sm"
+                                  />
+                                ) : (
+                                  <div className="w-10 h-10 bg-uniform-primary rounded-lg flex items-center justify-center">
+                                    <span className="text-white font-bold text-sm">
+                                      {brand.name.charAt(0)}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-700 font-poppins font-semibold truncate">
+                                {brand.name}
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
+                        <Users className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
+                        <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Corporativo</div>
+                      </div>
+                      <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
+                        <Shield className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
+                        <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Industrial</div>
+                      </div>
+                      <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
+                        <Package className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
+                        <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Médico</div>
+                      </div>
+                      <div className="bg-uniform-gold/30 backdrop-blur-sm rounded-xl p-4 text-center border border-uniform-gold/50">
+                        <TrendingUp className="h-8 w-8 mx-auto mb-2 text-uniform-gold drop-shadow-lg" />
+                        <div className="text-sm text-white font-poppins font-semibold drop-shadow-sm">Gastronomía</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="text-center">
+                    <Link href="/store/brands">
+                      <Button 
+                        variant="outline" 
+                        className="bg-transparent border-uniform-gold text-uniform-gold hover:bg-uniform-gold hover:text-slate-900 font-poppins font-semibold text-sm px-6 py-2 transition-all duration-300"
+                      >
+                        Ver todas las marcas →
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
