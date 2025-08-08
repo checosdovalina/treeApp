@@ -56,13 +56,13 @@ function BrandsCarouselSection({ brands }: { brands?: any[] }) {
   if (!activeBrands.length) return null;
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-gradient-to-br from-slate-800 to-uniform-blue">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-blue mb-4">
+          <h2 className="text-3xl md:text-4xl font-poppins font-bold text-white mb-4 drop-shadow-lg">
             NUESTRAS MARCAS
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto font-roboto">
+          <p className="text-gray-200 text-lg max-w-2xl mx-auto font-roboto drop-shadow-sm">
             Trabajamos con las mejores marcas del mercado
           </p>
         </div>
@@ -133,7 +133,7 @@ function BrandsCarouselSection({ brands }: { brands?: any[] }) {
           <Link href="/store/brands">
             <Button 
               variant="outline"
-              className="border-uniform-primary text-uniform-primary hover:bg-uniform-primary hover:text-white"
+              className="border-uniform-gold text-uniform-gold hover:bg-uniform-gold hover:text-slate-900 bg-white/10 backdrop-blur-sm font-semibold"
             >
               Ver todas las marcas
             </Button>
