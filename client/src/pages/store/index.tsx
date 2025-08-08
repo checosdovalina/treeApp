@@ -75,30 +75,25 @@ function BrandsCarouselSection({ brands }: { brands?: any[] }) {
                 <div key={brand.id} className="flex-[0_0_100%] min-w-0 sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] px-2">
                   <Link href={`/store/catalog?brand=${brand.id}`} className="block">
                     <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white border-gray-200">
-                      <CardContent className="p-6 text-center">
-                        <div className="flex items-center justify-center h-20 mb-4">
+                      <CardContent className="p-4 text-center">
+                        <div className="flex items-center justify-center h-16 mb-3">
                           {brand.logo ? (
                             <img
                               src={brand.logo}
                               alt={brand.name}
-                              className="max-h-16 max-w-full object-contain filter group-hover:scale-110 transition-transform duration-300"
+                              className="max-h-12 max-w-full object-contain filter group-hover:scale-110 transition-transform duration-300"
                             />
                           ) : (
-                            <div className="w-16 h-16 bg-uniform-primary/10 rounded-lg flex items-center justify-center group-hover:bg-uniform-primary/20 transition-colors">
-                              <Package className="h-8 w-8 text-uniform-primary" />
+                            <div className="w-12 h-12 bg-uniform-primary/10 rounded-lg flex items-center justify-center group-hover:bg-uniform-primary/20 transition-colors">
+                              <Package className="h-6 w-6 text-uniform-primary" />
                             </div>
                           )}
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-uniform-primary transition-colors mb-2">
+                        <h3 className="text-sm font-semibold text-gray-900 group-hover:text-uniform-primary transition-colors mb-2">
                           {brand.name}
                         </h3>
-                        {brand.description && (
-                          <p className="text-sm text-gray-600 line-clamp-2">
-                            {brand.description}
-                          </p>
-                        )}
-                        <div className="mt-4">
-                          <span className="text-sm text-uniform-primary font-medium group-hover:underline">
+                        <div className="mt-2">
+                          <span className="text-xs text-uniform-primary font-medium group-hover:underline">
                             Ver productos →
                           </span>
                         </div>
