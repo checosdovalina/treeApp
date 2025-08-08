@@ -93,7 +93,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Ventas Hoy"
-            value={statsLoading ? "$0" : `$${stats?.totalSales || "0"}`}
+            value={statsLoading ? "$0" : `$${(stats as any)?.totalSales || "0"}`}
             change="+12% vs ayer"
             changeType="positive"
             icon={DollarSign}
@@ -102,7 +102,7 @@ export default function AdminDashboard() {
           
           <StatCard
             title="Pedidos Nuevos"
-            value={statsLoading ? "0" : String(stats?.newOrders || 0)}
+            value={statsLoading ? "0" : String((stats as any)?.newOrders || 0)}
             change="5 pendientes"
             changeType="neutral"
             icon={ShoppingCart}
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
           
           <StatCard
             title="Productos Activos"
-            value={statsLoading ? "0" : String(stats?.activeProducts || 0)}
+            value={statsLoading ? "0" : String((stats as any)?.activeProducts || 0)}
             change="12 sin stock"
             changeType="negative"
             icon={Package}
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
           
           <StatCard
             title="Clientes Totales"
-            value={statsLoading ? "0" : String(stats?.totalCustomers || 0)}
+            value={statsLoading ? "0" : String((stats as any)?.totalCustomers || 0)}
             change="+8 esta semana"
             changeType="positive"
             icon={Users}
@@ -165,12 +165,12 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {topProducts?.length === 0 ? (
+                  {(topProducts as any)?.length === 0 ? (
                     <div className="text-center text-uniform-secondary py-8">
                       No hay datos de productos vendidos
                     </div>
                   ) : (
-                    topProducts?.map((product: any) => (
+                    (topProducts as any)?.map((product: any) => (
                       <div key={product.id} className="flex items-center space-x-4 p-3 border border-gray-200 rounded-lg">
                         <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
                           <Package className="h-8 w-8 text-gray-400" />
@@ -220,14 +220,14 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {recentOrders?.length === 0 ? (
+                    {(recentOrders as any)?.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center text-uniform-secondary py-8">
                           No hay pedidos recientes
                         </TableCell>
                       </TableRow>
                     ) : (
-                      recentOrders?.map((order: any) => (
+                      (recentOrders as any)?.map((order: any) => (
                         <TableRow key={order.id}>
                           <TableCell className="font-medium">{order.orderNumber}</TableCell>
                           <TableCell>
