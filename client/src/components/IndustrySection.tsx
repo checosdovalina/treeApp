@@ -53,9 +53,15 @@ function IndustryIcon({ industry, className = "w-12 h-12" }: IndustryIconProps) 
 }
 
 export default function IndustrySection() {
-  const { data: sections, isLoading } = useQuery({
+  const { data: sections, isLoading, isError } = useQuery({
     queryKey: ['/api/industry-sections'],
-    queryFn: () => fetch('/api/industry-sections?active=true').then(res => res.json()),
+    queryFn: async () => {
+      const res = await fetch('/api/industry-sections?active=true');
+      if (!res.ok) {
+        throw new Error('Failed to fetch industry sections');
+      }
+      return res.json();
+    },
   });
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
@@ -91,7 +97,7 @@ export default function IndustrySection() {
     emblaApi.on('reInit', onSelect);
   }, [emblaApi, onSelect]);
 
-  if (isLoading || !sections || sections.length === 0) {
+  if (isLoading || isError || !sections || !Array.isArray(sections) || sections.length === 0) {
     return null;
   }
 
