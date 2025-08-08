@@ -7,9 +7,147 @@ import IndustrySection from "@/components/IndustrySection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Package, Users, Shield, TrendingUp, Star, MessageCircle, ChevronRight } from "lucide-react";
+import { ShoppingCart, Heart, Package, Users, Shield, TrendingUp, Star, MessageCircle, ChevronRight, ChevronLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
+import useEmblaCarousel from 'embla-carousel-react';
+import { useState, useEffect, useCallback } from 'react';
+
+// Brands Carousel Component
+function BrandsCarouselSection({ brands }: { brands?: any[] }) {
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    align: 'start',
+    containScroll: 'trimSnaps',
+    slidesToScroll: 1,
+    loop: true,
+    breakpoints: {
+      '(min-width: 768px)': { slidesToScroll: 2 },
+      '(min-width: 1024px)': { slidesToScroll: 3 }
+    }
+  });
+  
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+  }, [emblaApi, onSelect]);
+
+  const activeBrands = brands?.filter((brand: any) => brand.isActive) || [];
+
+  if (!activeBrands.length) return null;
+
+  return (
+    <section className="py-12 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-poppins font-bold text-uniform-blue mb-4">
+            NUESTRAS MARCAS
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto font-roboto">
+            Trabajamos con las mejores marcas del mercado
+          </p>
+        </div>
+
+        <div className="relative">
+          {/* Carousel Container */}
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex">
+              {activeBrands.map((brand: any) => (
+                <div key={brand.id} className="flex-[0_0_100%] min-w-0 sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] px-2">
+                  <Link href={`/store/catalog?brand=${brand.id}`} className="block">
+                    <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white border-gray-200">
+                      <CardContent className="p-6 text-center">
+                        <div className="flex items-center justify-center h-20 mb-4">
+                          {brand.logo ? (
+                            <img
+                              src={brand.logo}
+                              alt={brand.name}
+                              className="max-h-16 max-w-full object-contain filter group-hover:scale-110 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 bg-uniform-primary/10 rounded-lg flex items-center justify-center group-hover:bg-uniform-primary/20 transition-colors">
+                              <Package className="h-8 w-8 text-uniform-primary" />
+                            </div>
+                          )}
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-uniform-primary transition-colors mb-2">
+                          {brand.name}
+                        </h3>
+                        {brand.description && (
+                          <p className="text-sm text-gray-600 line-clamp-2">
+                            {brand.description}
+                          </p>
+                        )}
+                        <div className="mt-4">
+                          <span className="text-sm text-uniform-primary font-medium group-hover:underline">
+                            Ver productos →
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Buttons */}
+          {activeBrands.length > 4 && (
+            <>
+              <Button
+                className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full p-0 bg-white shadow-lg hover:bg-gray-50 ${!canScrollPrev ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={scrollPrev}
+                disabled={!canScrollPrev}
+                variant="outline"
+              >
+                <ChevronLeft className="h-5 w-5 text-gray-600" />
+              </Button>
+              <Button
+                className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full p-0 bg-white shadow-lg hover:bg-gray-50 ${!canScrollNext ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={scrollNext}
+                disabled={!canScrollNext}
+                variant="outline"
+              >
+                <ChevronRight className="h-5 w-5 text-gray-600" />
+              </Button>
+            </>
+          )}
+        </div>
+
+        {/* View All Brands Button */}
+        <div className="text-center mt-8">
+          <Link href="/store/brands">
+            <Button 
+              variant="outline"
+              className="border-uniform-primary text-uniform-primary hover:bg-uniform-primary hover:text-white"
+            >
+              Ver todas las marcas
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function StoreIndex() {
   const { isAuthenticated, user } = useAuth();
@@ -95,6 +233,9 @@ export default function StoreIndex() {
       <PromotionBanner />
       
       {/* Hero Section - Completely Hidden */}
+
+      {/* Brands Carousel Section */}
+      <BrandsCarouselSection brands={brands} />
 
       {/* Industry Sections - Dynamic */}
       <IndustrySection />
