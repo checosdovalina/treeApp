@@ -874,6 +874,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Sales Analytics API
+  app.get('/api/sales/summary', isAdmin, async (req, res) => {
+    try {
+      const { dateRange } = req.query;
+      const summary = await storage.getSalesSummary(dateRange as string);
+      res.json(summary);
+    } catch (error) {
+      console.error("Error fetching sales summary:", error);
+      res.status(500).json({ message: "Failed to fetch sales summary" });
+    }
+  });
+
+  app.get('/api/sales/analytics', isAdmin, async (req, res) => {
+    try {
+      const { period, category, brand } = req.query;
+      const analytics = await storage.getSalesAnalytics({
+        period: period as string,
+        category: category as string,
+        brand: brand as string
+      });
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching sales analytics:", error);
+      res.status(500).json({ message: "Failed to fetch sales analytics" });
+    }
+  });
+
+  app.get('/api/sales/trends', isAdmin, async (req, res) => {
+    try {
+      const { period, type } = req.query;
+      const trends = await storage.getSalesTrends({
+        period: period as string,
+        type: type as string
+      });
+      res.json(trends);
+    } catch (error) {
+      console.error("Error fetching sales trends:", error);
+      res.status(500).json({ message: "Failed to fetch sales trends" });
+    }
+  });
+
   // Promotions routes
   app.get('/api/promotions', async (req, res) => {
     try {

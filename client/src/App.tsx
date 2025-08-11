@@ -11,6 +11,7 @@ import AdminProducts from "@/pages/admin/products";
 import AdminOrders from "@/pages/admin/orders";
 import AdminCustomers from "@/pages/admin/customers";
 import AdminQuotes from "@/pages/admin/quotes";
+import AdminSales from "@/pages/admin/sales";
 import AdminReports from "@/pages/admin/reports";
 import AdminPromotions from "@/pages/admin/promotions";
 import AdminIndustrySections from "@/pages/admin/industry-sections";
@@ -68,6 +69,7 @@ function Router() {
           <Route path="/" component={AdminDashboard} />
           <Route path="/admin" component={AdminDashboard} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
+          <Route path="/admin/sales" component={AdminSales} />
           <Route path="/admin/products" component={AdminProducts} />
           <Route path="/admin/orders" component={AdminOrders} />
           <Route path="/admin/customers" component={AdminCustomers} />
