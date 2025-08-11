@@ -160,28 +160,35 @@ export default function ProductDetail() {
     mutationFn: async () => {
       if (!product) throw new Error('Product not found');
       
-      return new Promise<void>((resolve) => {
-        addItem({
-          productId: product.id,
-          productName: product.name,
-          price: parseFloat(product.price),
-          size: selectedSize,
-          color: selectedColor,
-          gender: selectedGender || product.genders?.[0],
-          quantity: quantity,
-          image: getValidImageUrl(displayImages, 0),
-          sku: product.sku || '',
-        });
-        resolve();
-      });
+      const cartItem = {
+        productId: product.id,
+        productName: product.name,
+        price: parseFloat(product.price),
+        size: selectedSize,
+        color: selectedColor,
+        gender: selectedGender || product.genders?.[0],
+        quantity: quantity,
+        image: getValidImageUrl(displayImages, 0),
+        sku: product.sku || '',
+      };
+      
+      console.log('Adding item to cart:', cartItem);
+      addItem(cartItem);
+      
+      // Pequeña pausa para asegurar que el estado se actualice
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      return cartItem;
     },
-    onSuccess: () => {
+    onSuccess: (item) => {
+      console.log('Successfully added to cart:', item);
       toast({
         title: "Producto agregado",
         description: `${quantity} ${quantity === 1 ? 'producto agregado' : 'productos agregados'} al carrito.`,
       });
     },
     onError: (error: Error) => {
+      console.error('Error adding to cart:', error);
       toast({
         title: "Error",
         description: error.message,
