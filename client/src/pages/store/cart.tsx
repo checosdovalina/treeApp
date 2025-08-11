@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCart } from "@/lib/cart";
+import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import CustomerLayout from "@/components/layout/customer-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,16 +20,17 @@ import {
 } from "lucide-react";
 
 export default function CartPage() {
-  const { items, total, updateQuantity, removeItem, clearCart } = useCart();
+  const { items, getTotalPrice, updateQuantity, removeItem, clearCart } = useCart();
+  const total = getTotalPrice();
   const { user } = useAuth();
   const { toast } = useToast();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  const handleQuantityChange = (itemId: string, newQuantity: number) => {
+  const handleQuantityChange = (productId: number, size: string, color: string, newQuantity: number, gender?: string) => {
     if (newQuantity < 1) {
-      removeItem(itemId);
+      removeItem(productId, size, color, gender);
     } else {
-      updateQuantity(itemId, newQuantity);
+      updateQuantity(productId, size, color, newQuantity, gender);
     }
   };
 
@@ -69,7 +70,7 @@ export default function CartPage() {
 
   const handleWhatsAppOrder = () => {
     const orderDetails = items.map(item => 
-      `• ${item.name} (${item.size}, ${item.color}) - Cantidad: ${item.quantity} - $${item.price * item.quantity}`
+      `• ${item.productName} (${item.size}, ${item.color}) - Cantidad: ${item.quantity} - $${item.price * item.quantity}`
     ).join('\n');
     
     const message = `Hola, me gustaría hacer el siguiente pedido:
@@ -164,13 +165,13 @@ Gracias.`;
                 <CardContent>
                   <div className="space-y-4">
                     {items.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                      <div key={`${item.productId}-${item.size}-${item.color}-${item.gender}`} className="flex items-center space-x-4 p-4 border rounded-lg">
                         {/* Product Image */}
                         <div className="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
                           {item.image ? (
                             <img 
                               src={item.image} 
-                              alt={item.name}
+                              alt={item.productName}
                               className="w-full h-full object-cover rounded-lg"
                             />
                           ) : (
@@ -180,7 +181,7 @@ Gracias.`;
 
                         {/* Product Info */}
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{item.name}</h3>
+                          <h3 className="font-semibold text-gray-900">{item.productName}</h3>
                           <div className="flex items-center space-x-4 mt-1">
                             <span className="text-sm text-gray-600">
                               Talla: {item.size}
@@ -199,7 +200,7 @@ Gracias.`;
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                            onClick={() => handleQuantityChange(item.productId, item.size, item.color, item.quantity - 1, item.gender)}
                             disabled={item.quantity <= 1}
                           >
                             <Minus className="h-4 w-4" />
@@ -207,14 +208,14 @@ Gracias.`;
                           <Input
                             type="number"
                             value={item.quantity}
-                            onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 1)}
+                            onChange={(e) => handleQuantityChange(item.productId, item.size, item.color, parseInt(e.target.value) || 1, item.gender)}
                             className="w-16 text-center"
                             min="1"
                           />
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                            onClick={() => handleQuantityChange(item.productId, item.size, item.color, item.quantity + 1, item.gender)}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -228,7 +229,7 @@ Gracias.`;
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeItem(item.productId, item.size, item.color, item.gender)}
                             className="text-red-600 hover:text-red-700 mt-2"
                           >
                             <Trash2 className="h-4 w-4" />
