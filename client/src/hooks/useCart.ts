@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export interface CartItem {
   productId: number;
@@ -22,7 +22,8 @@ export function useCart() {
     const savedCart = localStorage.getItem(STORAGE_KEY);
     if (savedCart) {
       try {
-        setItems(JSON.parse(savedCart));
+        const parsedCart = JSON.parse(savedCart);
+        setItems(parsedCart);
       } catch (error) {
         console.error("Error loading cart from localStorage:", error);
       }
@@ -34,45 +35,39 @@ export function useCart() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const addItem = (newItem: Omit<CartItem, "quantity"> & { quantity?: number }) => {
-    console.log('[useCart] Adding item:', newItem);
-    console.log('[useCart] Current items before:', items);
+  const addItem = useCallback((newItem: Omit<CartItem, "quantity"> & { quantity?: number }) => {
+    const itemToAdd = { ...newItem, quantity: newItem.quantity || 1 };
     
     setItems(currentItems => {
-      console.log('[useCart] Current items in setter:', currentItems);
-      
       const existingItemIndex = currentItems.findIndex(
         item => 
-          item.productId === newItem.productId && 
-          item.size === newItem.size && 
-          item.color === newItem.color &&
-          item.gender === newItem.gender
+          item.productId === itemToAdd.productId && 
+          item.size === itemToAdd.size && 
+          item.color === itemToAdd.color &&
+          item.gender === itemToAdd.gender
       );
 
       if (existingItemIndex >= 0) {
         // Update existing item quantity
         const updatedItems = [...currentItems];
-        updatedItems[existingItemIndex].quantity += newItem.quantity || 1;
-        console.log('[useCart] Updated existing item. New items:', updatedItems);
+        updatedItems[existingItemIndex].quantity += itemToAdd.quantity;
         return updatedItems;
       } else {
         // Add new item
-        const newItems = [...currentItems, { ...newItem, quantity: newItem.quantity || 1 }];
-        console.log('[useCart] Added new item. New items:', newItems);
-        return newItems;
+        return [...currentItems, itemToAdd];
       }
     });
-  };
+  }, []);
 
-  const removeItem = (productId: number, size: string, color: string, gender?: string) => {
+  const removeItem = useCallback((productId: number, size: string, color: string, gender?: string) => {
     setItems(currentItems => 
       currentItems.filter(
         item => !(item.productId === productId && item.size === size && item.color === color && item.gender === gender)
       )
     );
-  };
+  }, []);
 
-  const updateQuantity = (productId: number, size: string, color: string, quantity: number, gender?: string) => {
+  const updateQuantity = useCallback((productId: number, size: string, color: string, quantity: number, gender?: string) => {
     if (quantity <= 0) {
       removeItem(productId, size, color, gender);
       return;
@@ -85,28 +80,26 @@ export function useCart() {
           : item
       )
     );
-  };
+  }, [removeItem]);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setItems([]);
-  };
+  }, []);
 
-  const getTotalItems = () => {
-    const total = items.reduce((total, item) => total + item.quantity, 0);
-    console.log('[useCart] getTotalItems called. Items:', items.length, 'Total:', total);
-    return total;
-  };
+  const getTotalItems = useCallback(() => {
+    return items.reduce((total, item) => total + item.quantity, 0);
+  }, [items]);
 
-  const getTotalPrice = () => {
+  const getTotalPrice = useCallback(() => {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+  }, [items]);
 
-  const getItemCount = (productId: number, size: string, color: string, gender?: string) => {
+  const getItemCount = useCallback((productId: number, size: string, color: string, gender?: string) => {
     const item = items.find(
       item => item.productId === productId && item.size === size && item.color === color && item.gender === gender
     );
     return item?.quantity || 0;
-  };
+  }, [items]);
 
   return {
     items,

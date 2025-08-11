@@ -1,0 +1,145 @@
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ === CALCULATING DISPLAY IMAGES ===
+ Selected color: 
+ Available color images: 0
+ Product images: undefined
+ All colors available: Array(0)
+ All color image sets: Array(0)
+ No color selected - using product images
+ Product images to use: 0
+ [useCart] getTotalItems called. Items: 0 Total: 0
+ [useCart] getTotalItems called. Items: 0 Total: 0
+ ProductDetail: selectedColor changed to ""
+ ProductDetail: displayImages length: 0
+ ProductDetail: product colors: undefined
+ === CALCULATING DISPLAY IMAGES ===
+ Selected color: 
+ Available color images: 0
+ Product images: undefined
+ All colors available: Array(0)
+ All color image sets: Array(0)
+ No color selected - using product images
+ Product images to use: 0
+ [useCart] getTotalItems called. Items: 0 Total: 0
+ [useCart] getTotalItems called. Items: 0 Total: 0
+ ProductDetail: selectedColor changed to ""
+ ProductDetail: displayImages length: 0
+ ProductDetail: product colors: undefined
+ === CALCULATING DISPLAY IMAGES ===
+ Selected color: 
+ Available color images: 0
+ Product images: undefined
+ All colors available: Array(0)
+ All color image sets: Array(0)
+ No color selected - using product images
+ Product images to use: 0
+ === CALCULATING DISPLAY IMAGES ===
+ Selected color: 
+ Available color images: 0
+ Product images: undefined
+ All colors available: Array(0)
+ All color image sets: Array(0)
+product-detail.tsx:89 No color selected - using product images
+product-detail.tsx:91 Product images to use: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+product-detail.tsx:141 ProductDetail: selectedColor changed to ""
+product-detail.tsx:142 ProductDetail: displayImages length: 0
+product-detail.tsx:143 ProductDetail: product colors: undefined
+product-detail.tsx:80 === CALCULATING DISPLAY IMAGES ===
+product-detail.tsx:81 Selected color: 
+product-detail.tsx:82 Available color images: 0
+product-detail.tsx:83 Product images: undefined
+product-detail.tsx:84 All colors available: Array(0)
+product-detail.tsx:85 All color image sets: Array(0)
+product-detail.tsx:89 No color selected - using product images
+product-detail.tsx:91 Product images to use: 0
+product-detail.tsx:80 === CALCULATING DISPLAY IMAGES ===
+product-detail.tsx:81 Selected color: 
+product-detail.tsx:82 Available color images: 0
+product-detail.tsx:83 Product images: undefined
+product-detail.tsx:84 All colors available: Array(0)
+product-detail.tsx:85 All color image sets: Array(0)
+product-detail.tsx:89 No color selected - using product images
+product-detail.tsx:91 Product images to use: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+product-detail.tsx:141 ProductDetail: selectedColor changed to ""
+product-detail.tsx:142 ProductDetail: displayImages length: 0
+product-detail.tsx:143 ProductDetail: product colors: undefined
+product-detail.tsx:80 === CALCULATING DISPLAY IMAGES ===
+product-detail.tsx:81 Selected color: 
+product-detail.tsx:82 Available color images: 0
+product-detail.tsx:83 Product images: undefined
+product-detail.tsx:84 All colors available: Array(0)
+product-detail.tsx:85 All color image sets: Array(0)
+product-detail.tsx:89 No color selected - using product images
+product-detail.tsx:91 Product images to use: 0
+product-detail.tsx:80 === CALCULATING DISPLAY IMAGES ===
+product-detail.tsx:81 Selected color: 
+product-detail.tsx:82 Available color images: 0
+product-detail.tsx:83 Product images: 1
+product-detail.tsx:84 All colors available: Array(0)
+product-detail.tsx:85 All color image sets: Array(0)
+product-detail.tsx:89 No color selected - using product images
+product-detail.tsx:91 Product images to use: 1
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+product-detail.tsx:141 ProductDetail: selectedColor changed to ""
+product-detail.tsx:142 ProductDetail: displayImages length: 1
+product-detail.tsx:143 ProductDetail: product colors: Array(1)
+product-detail.tsx:80 === CALCULATING DISPLAY IMAGES ===
+product-detail.tsx:81 Selected color: 
+product-detail.tsx:82 Available color images: 0
+product-detail.tsx:83 Product images: 1
+product-detail.tsx:84 All colors available: Array(0)
+product-detail.tsx:85 All color image sets: Array(0)
+product-detail.tsx:89 No color selected - using product images
+product-detail.tsx:91 Product images to use: 1
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+product-detail.tsx:80 === CALCULATING DISPLAY IMAGES ===
+product-detail.tsx:81 Selected color: 
+product-detail.tsx:82 Available color images: 0
+product-detail.tsx:83 Product images: 1
+product-detail.tsx:84 All colors available: Array(46)
+product-detail.tsx:85 All color image sets: Array(0)
+product-detail.tsx:89 No color selected - using product images
+product-detail.tsx:91 Product images to use: 1
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+product-detail.tsx:80 === CALCULATING DISPLAY IMAGES ===
+product-detail.tsx:81 Selected color: Negro
+product-detail.tsx:82 Available color images: 0
+product-detail.tsx:83 Product images: 1
+product-detail.tsx:84 All colors available: (46) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+product-detail.tsx:85 All color image sets: []
+product-detail.tsx:97 Selected color object: {id: 2, name: 'Negro', hexCode: '#000000', createdAt: '2025-07-28T23:09:49.248Z'}
+product-detail.tsx:116 Color image set for ID 2 : undefined
+product-detail.tsx:125 No specific images for color - using product images
+product-detail.tsx:127 Fallback images: 1
+product-detail.tsx:128 ================================
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+product-detail.tsx:141 ProductDetail: selectedColor changed to "Negro"
+product-detail.tsx:142 ProductDetail: displayImages length: 1
+product-detail.tsx:143 ProductDetail: product colors: ['Negro']
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+product-detail.tsx:284 Adding to cart with: {productId: 56, productName: 'Mandil Larry Largo', price: '500.00', size: '', color: 'Negro', …}
+product-detail.tsx:175 Adding item to cart: {productId: 56, productName: 'Mandil Larry Largo', price: 500, size: '', color: 'Negro', …}
+useCart.ts:38 [useCart] Adding item: {productId: 56, productName: 'Mandil Larry Largo', price: 500, size: '', color: 'Negro', …}
+useCart.ts:39 [useCart] Current items before: []
+useCart.ts:42 [useCart] Current items in setter: []
+useCart.ts:61 [useCart] Added new item. New items: [{…}]
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+product-detail.tsx:184 Successfully added to cart: {productId: 56, productName: 'Mandil Larry Largo', price: 500, size: '', color: 'Negro', …}
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
+useCart.ts:96 [useCart] getTotalItems called. Items: 0 Total: 0
