@@ -274,15 +274,47 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
       onSuccess?.();
     },
     onError: (error) => {
+      console.error("Product mutation error:", error);
       toast({
         title: "Error",
-        description: "No se pudo guardar el producto",
+        description: error?.message || "No se pudo guardar el producto",
         variant: "destructive",
       });
     },
   });
 
   const onSubmit = (data: any) => {
+    console.log("Product form submission data:", data);
+    console.log("Form errors:", form.formState.errors);
+    
+    // Validate required fields
+    if (!data.name || data.name.trim() === '') {
+      toast({
+        title: "Error de validación",
+        description: "El nombre del producto es requerido",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!data.price || data.price.trim() === '') {
+      toast({
+        title: "Error de validación",
+        description: "El precio del producto es requerido",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (data.categoryId === 0 || !data.categoryId) {
+      toast({
+        title: "Error de validación",
+        description: "Debe seleccionar una categoría",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     productMutation.mutate(data as ProductFormData);
   };
 
