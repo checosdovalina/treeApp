@@ -86,12 +86,35 @@ export function SeparatedGenderSizeSelector({
   };
 
   const getSizesForGender = (gender: string): string[] => {
+    let sizes: string[] = [];
     switch (gender) {
-      case "masculino": return masculineData?.sizes || [];
-      case "femenino": return feminineData?.sizes || [];
-      case "unisex": return unisexData?.sizes || [];
-      default: return [];
+      case "masculino": 
+        sizes = masculineData?.sizes || [];
+        break;
+      case "femenino": 
+        sizes = feminineData?.sizes || [];
+        break;
+      case "unisex": 
+        sizes = unisexData?.sizes || [];
+        break;
+      default: 
+        sizes = [];
     }
+    
+    // Ensure proper ordering of sizes including 3XL and 4XL
+    const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
+    return sizes.sort((a, b) => {
+      const aIndex = sizeOrder.indexOf(a);
+      const bIndex = sizeOrder.indexOf(b);
+      
+      if (aIndex === -1 && bIndex === -1) {
+        return a.localeCompare(b);
+      }
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      
+      return aIndex - bIndex;
+    });
   };
 
   const handleSizeToggle = (size: string) => {
