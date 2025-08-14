@@ -39,7 +39,7 @@ export function MultiGenderSizeSelector({
     enabled: !!garmentTypeId && genders.includes('masculino'),
     retry: false,
     staleTime: 0, // Force fresh data
-    cacheTime: 0, // Don't cache
+    gcTime: 0, // Don't cache
   });
 
   // Fetch sizes for feminine gender
@@ -48,7 +48,7 @@ export function MultiGenderSizeSelector({
     enabled: !!garmentTypeId && genders.includes('femenino'),
     retry: false,
     staleTime: 0, // Force fresh data
-    cacheTime: 0, // Don't cache
+    gcTime: 0, // Don't cache
   });
 
   // Fetch sizes for unisex gender
@@ -57,7 +57,7 @@ export function MultiGenderSizeSelector({
     enabled: !!garmentTypeId && genders.includes('unisex'),
     retry: false,
     staleTime: 0, // Force fresh data
-    cacheTime: 0, // Don't cache
+    gcTime: 0, // Don't cache
   });
 
   useEffect(() => {
@@ -67,17 +67,17 @@ export function MultiGenderSizeSelector({
     // Process each gender's data
     if (masculineData && genders.includes('masculino')) {
       newAvailableSizes['masculino'] = masculineData.sizes || [];
-      masculineData.sizes?.forEach(size => allSizes.add(size));
+      masculineData.sizes?.forEach((size: string) => allSizes.add(size));
     }
     
     if (feminineData && genders.includes('femenino')) {
       newAvailableSizes['femenino'] = feminineData.sizes || [];
-      feminineData.sizes?.forEach(size => allSizes.add(size));
+      feminineData.sizes?.forEach((size: string) => allSizes.add(size));
     }
     
     if (unisexData && genders.includes('unisex')) {
       newAvailableSizes['unisex'] = unisexData.sizes || [];
-      unisexData.sizes?.forEach(size => allSizes.add(size));
+      unisexData.sizes?.forEach((size: string) => allSizes.add(size));
     }
     
     setAvailableSizes(newAvailableSizes);
