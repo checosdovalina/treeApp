@@ -37,6 +37,8 @@ export function DynamicSizeSelector({
     queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, gender],
     enabled: !!garmentTypeId && !!gender,
     retry: false,
+    staleTime: 0, // Force fresh data
+    gcTime: 0, // Don't cache
   });
 
   useEffect(() => {
