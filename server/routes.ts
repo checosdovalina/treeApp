@@ -517,7 +517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Use default sizes based on type
         switch (sizeRange.sizeType) {
           case 'standard':
-            sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+            sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
             break;
           case 'waist':
             sizes = ['28', '30', '32', '34', '36', '38', '40', '42', '44'];
