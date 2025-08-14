@@ -76,12 +76,28 @@ export function MultiGenderSizeSelector({
     
     setAvailableSizes(newAvailableSizes);
     setCombinedSizes(Array.from(allSizes).sort((a, b) => {
-      // Sort sizes intelligently (numeric first, then alphabetic)
+      // Define size order for clothing sizes
+      const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
+      const aIndex = sizeOrder.indexOf(a);
+      const bIndex = sizeOrder.indexOf(b);
+      
+      // If both are clothing sizes, use predefined order
+      if (aIndex !== -1 && bIndex !== -1) {
+        return aIndex - bIndex;
+      }
+      
+      // If only one is a clothing size, prioritize it
+      if (aIndex !== -1) return -1;
+      if (bIndex !== -1) return 1;
+      
+      // For numeric sizes (waist, etc.)
       const aNum = parseInt(a);
       const bNum = parseInt(b);
       if (!isNaN(aNum) && !isNaN(bNum)) {
         return aNum - bNum;
       }
+      
+      // Default alphabetic sort
       return a.localeCompare(b);
     }));
   }, [masculineData, feminineData, unisexData, genders]);
