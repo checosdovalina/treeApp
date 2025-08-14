@@ -38,6 +38,8 @@ export function MultiGenderSizeSelector({
     queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'masculino'],
     enabled: !!garmentTypeId && genders.includes('masculino'),
     retry: false,
+    staleTime: 0, // Force fresh data
+    cacheTime: 0, // Don't cache
   });
 
   // Fetch sizes for feminine gender
@@ -45,6 +47,8 @@ export function MultiGenderSizeSelector({
     queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'femenino'],
     enabled: !!garmentTypeId && genders.includes('femenino'),
     retry: false,
+    staleTime: 0, // Force fresh data
+    cacheTime: 0, // Don't cache
   });
 
   // Fetch sizes for unisex gender
@@ -52,6 +56,8 @@ export function MultiGenderSizeSelector({
     queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'unisex'],
     enabled: !!garmentTypeId && genders.includes('unisex'),
     retry: false,
+    staleTime: 0, // Force fresh data
+    cacheTime: 0, // Don't cache
   });
 
   useEffect(() => {
