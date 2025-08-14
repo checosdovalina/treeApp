@@ -410,7 +410,7 @@ export default function CatalogPage() {
                 )}
                 {selectedCategory && selectedCategory !== "all" && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                    {categories?.find((c: any) => c.id.toString() === selectedCategory)?.name}
+                    {Array.isArray(categories) ? categories.find((c: any) => c.id.toString() === selectedCategory)?.name : ""}
                     <button onClick={() => setSelectedCategory("all")}>
                       <X className="h-3 w-3" />
                     </button>
@@ -418,7 +418,7 @@ export default function CatalogPage() {
                 )}
                 {selectedBrand && selectedBrand !== "all" && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">
-                    {brands?.find((b: any) => b.id.toString() === selectedBrand)?.name}
+                    {Array.isArray(brands) ? brands.find((b: any) => b.id.toString() === selectedBrand)?.name : ""}
                     <button onClick={() => setSelectedBrand("all")}>
                       <X className="h-3 w-3" />
                     </button>
@@ -434,7 +434,7 @@ export default function CatalogPage() {
                 )}
                 {selectedGarmentType && selectedGarmentType !== "all" && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
-                    {garmentTypes?.find((t: any) => t.id.toString() === selectedGarmentType)?.displayName}
+                    {Array.isArray(garmentTypes) ? garmentTypes.find((t: any) => t.id.toString() === selectedGarmentType)?.displayName : ""}
                     <button onClick={() => setSelectedGarmentType("all")}>
                       <X className="h-3 w-3" />
                     </button>

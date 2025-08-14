@@ -48,14 +48,7 @@ export function GarmentTypeSelector({ form }: GarmentTypeSelectorProps) {
 
   const createGarmentTypeMutation = useMutation({
     mutationFn: async (data: { name: string; displayName: string }) => {
-      const response = await apiRequest("/api/garment-types", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      return await response.json();
+      return await apiRequest("POST", "/api/garment-types", data);
     },
     onSuccess: (newGarmentType: GarmentType) => {
       queryClient.invalidateQueries({ queryKey: ["/api/garment-types"] });
