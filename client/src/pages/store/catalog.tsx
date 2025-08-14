@@ -54,6 +54,7 @@ export default function CatalogPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const garmentTypeParam = urlParams.get('garmentType');
+    const brandParam = urlParams.get('brand');
     
     if (garmentTypeParam) {
       // Map URL garment types to database IDs
@@ -66,6 +67,10 @@ export default function CatalogPage() {
       if (garmentTypeMap[garmentTypeParam]) {
         setSelectedGarmentType(garmentTypeMap[garmentTypeParam]);
       }
+    }
+    
+    if (brandParam) {
+      setSelectedBrand(brandParam);
     }
   }, [location]);
 
@@ -125,7 +130,7 @@ export default function CatalogPage() {
       product.categoryId?.toString() === selectedCategory;
     
     const matchesBrand = !selectedBrand || selectedBrand === "all" ||
-      product.brandId?.toString() === selectedBrand;
+      product.brand === (Array.isArray(brands) ? brands.find((b: any) => b.id.toString() === selectedBrand)?.name : "");
     
     const matchesGender = !selectedGender || selectedGender === "all" ||
       product.gender?.toLowerCase() === selectedGender.toLowerCase();
