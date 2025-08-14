@@ -510,12 +510,7 @@ export default function CatalogPage() {
                       alt={product.name}
                       className="w-full h-48 object-cover transition-transform duration-200 hover:scale-105"
                     />
-                    <Badge 
-                      className="absolute top-2 left-2 bg-uniform-primary"
-                      variant="secondary"
-                    >
-                      {product.sku}
-                    </Badge>
+                    {/* SKU Badge removido - ya no se muestra en las tarjetas de producto */}
                     {product.isActive === false && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                         <Badge variant="destructive">No disponible</Badge>
