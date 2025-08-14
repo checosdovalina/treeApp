@@ -33,7 +33,7 @@ export function SeparatedGenderSizeSelector({
 
   // Fetch sizes for masculine gender
   const { data: masculineData } = useQuery<SizeRangeData>({
-    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'masculino'],
+    queryKey: [`/api/size-ranges/available-sizes?garmentTypeId=${garmentTypeId}&gender=masculino`],
     enabled: !!garmentTypeId && genders.includes('masculino'),
     retry: false,
     staleTime: 0, // Force fresh data
@@ -42,7 +42,7 @@ export function SeparatedGenderSizeSelector({
 
   // Fetch sizes for feminine gender
   const { data: feminineData } = useQuery<SizeRangeData>({
-    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'femenino'],
+    queryKey: [`/api/size-ranges/available-sizes?garmentTypeId=${garmentTypeId}&gender=femenino`],
     enabled: !!garmentTypeId && genders.includes('femenino'),
     retry: false,
     staleTime: 0, // Force fresh data
@@ -51,7 +51,7 @@ export function SeparatedGenderSizeSelector({
 
   // Fetch sizes for unisex gender
   const { data: unisexData, isLoading } = useQuery<SizeRangeData>({
-    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, 'unisex'],
+    queryKey: [`/api/size-ranges/available-sizes?garmentTypeId=${garmentTypeId}&gender=unisex`],
     enabled: !!garmentTypeId && genders.includes('unisex'),
     retry: false,
     staleTime: 0, // Force fresh data

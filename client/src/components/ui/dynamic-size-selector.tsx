@@ -34,7 +34,7 @@ export function DynamicSizeSelector({
 
   // Fetch available sizes based on garment type and gender
   const { data: sizeRange, isLoading } = useQuery<SizeRange>({
-    queryKey: [`/api/size-ranges/available-sizes`, garmentTypeId, gender],
+    queryKey: [`/api/size-ranges/available-sizes?garmentTypeId=${garmentTypeId}&gender=${gender}`],
     enabled: !!garmentTypeId && !!gender,
     retry: false,
     staleTime: 0, // Force fresh data
