@@ -292,10 +292,11 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="hidden lg:flex items-center space-x-2 bg-uniform-primary text-white hover:bg-uniform-primary/90 border-uniform-primary"
+                    className="flex items-center space-x-2 bg-uniform-blue text-white hover:bg-uniform-blue/90 border-uniform-blue"
                   >
                     <Building className="h-4 w-4" />
-                    <span>Panel Admin</span>
+                    <span className="hidden sm:inline">Panel Admin</span>
+                    <span className="sm:hidden">Admin</span>
                   </Button>
                 </Link>
               )}
