@@ -26,6 +26,9 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
+// User role enum
+export const userRoleEnum = pgEnum("user_role", ["admin", "premium", "regular", "basic"]);
+
 // Local authentication table
 export const localUsers = pgTable("local_users", {
   id: serial("id").primaryKey(),
@@ -34,7 +37,7 @@ export const localUsers = pgTable("local_users", {
   email: varchar("email").unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
-  role: varchar("role").notNull().default("customer"), // admin, customer
+  role: userRoleEnum("role").notNull().default("basic"), // admin, premium, regular, basic
   phone: varchar("phone", { length: 20 }),
   company: varchar("company", { length: 200 }),
   address: text("address"),
@@ -54,7 +57,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
-  role: varchar("role").notNull().default("customer"), // admin, customer
+  role: userRoleEnum("role").notNull().default("basic"), // admin, premium, regular, basic
   phone: varchar("phone", { length: 20 }),
   company: varchar("company", { length: 200 }),
   address: text("address"),
@@ -268,6 +271,38 @@ export const industrySections = pgTable("industry_sections", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Customer discount settings table
+export const customerDiscounts = pgTable("customer_discounts", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  discountType: varchar("discount_type").notNull(), // "percentage" or "fixed"
+  discountValue: decimal("discount_value", { precision: 10, scale: 2 }).notNull(),
+  applicableToType: varchar("applicable_to_type").notNull(), // "all", "brand", "category", "product"
+  applicableToId: integer("applicable_to_id"), // ID of brand, category, or product if specific
+  minOrderAmount: decimal("min_order_amount", { precision: 10, scale: 2 }).default("0"),
+  maxDiscountAmount: decimal("max_discount_amount", { precision: 10, scale: 2 }),
+  isActive: boolean("is_active").default(true),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Default role discounts (for premium and regular customers)
+export const roleDiscounts = pgTable("role_discounts", {
+  id: serial("id").primaryKey(),
+  role: userRoleEnum("role").notNull(),
+  discountType: varchar("discount_type").notNull(), // "percentage" or "fixed"
+  discountValue: decimal("discount_value", { precision: 10, scale: 2 }).notNull(),
+  applicableToType: varchar("applicable_to_type").notNull(), // "all", "brand", "category"
+  applicableToId: integer("applicable_to_id"), // ID of brand or category if specific
+  minOrderAmount: decimal("min_order_amount", { precision: 10, scale: 2 }).default("0"),
+  maxDiscountAmount: decimal("max_discount_amount", { precision: 10, scale: 2 }),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
@@ -420,6 +455,18 @@ export const insertPromotionSchema = createInsertSchema(promotions).omit({
 });
 
 export const insertIndustrySectionSchema = createInsertSchema(industrySections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCustomerDiscountSchema = createInsertSchema(customerDiscounts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertRoleDiscountSchema = createInsertSchema(roleDiscounts).omit({
   id: true,
   createdAt: true,
   updatedAt: true,

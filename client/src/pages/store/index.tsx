@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Package, Users, Shield, TrendingUp, Star, MessageCircle, ChevronRight, ChevronLeft } from "lucide-react";
+import PriceDisplay from "@/components/store/price-display";
+import DiscountBadge from "@/components/store/discount-badge";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import useEmblaCarousel from 'embla-carousel-react';
@@ -230,7 +232,7 @@ export default function StoreIndex() {
       {/* Hero Section - Completely Hidden */}
 
       {/* Brands Carousel Section */}
-      <BrandsCarouselSection brands={brands} />
+      <BrandsCarouselSection brands={brands as any[] | undefined} />
 
       {/* Industry Sections - Dynamic */}
       <IndustrySection />
@@ -342,9 +344,11 @@ export default function StoreIndex() {
                     </div>
 
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-2xl font-poppins font-bold text-uniform-blue">
-                        ${product.price}
-                      </span>
+                      <PriceDisplay 
+                        price={parseFloat(product.price)} 
+                        size="md" 
+                        showDiscount={true}
+                      />
                     </div>
 
                     <div className="flex gap-2">

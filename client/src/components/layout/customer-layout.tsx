@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/useCart";
 import BreadcrumbNavigation from "@/components/navigation/breadcrumb-navigation";
 import ContextActions from "@/components/navigation/context-actions";
+import DiscountBadge from "@/components/store/discount-badge";
 // import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 const treeLogo = "/tree-logo.png";
 import { 
@@ -23,7 +24,8 @@ import {
   Building,
   Phone,
   Mail,
-  ChevronDown
+  ChevronDown,
+  Gift
 } from "lucide-react";
 
 interface CustomerLayoutProps {
@@ -59,6 +61,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
     { name: "Inicio", href: "/store", icon: Home },
     { name: "Catálogo", href: "/store/catalog", icon: Package },
     { name: "Marcas", href: "/store/brands", icon: Tag },
+    { name: "Beneficios", href: "/store/benefits", icon: Gift },
     { name: "Presupuesto", href: "/store/quote-request", icon: FileText },
     { name: "Mi Cuenta", href: "/customer/dashboard", icon: User },
     { name: "Favoritos", href: "/customer/favorites", icon: Heart },
@@ -305,9 +308,10 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                       {user.firstName || "Cliente"}
                     </p>
                     <p className="text-xs text-uniform-dark font-roboto">
-                      {(user as any)?.role === 'admin' ? 'Administrador' : user.email}
+                      {user.email}
                     </p>
                   </div>
+                  <DiscountBadge showLabel={true} />
                   <Button
                     variant="ghost"
                     size="sm"

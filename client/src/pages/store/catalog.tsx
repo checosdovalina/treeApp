@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/lib/cart";
+import PriceDisplay from "@/components/store/price-display";
+import DiscountBadge from "@/components/store/discount-badge";
 import CustomerLayout from "@/components/layout/customer-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -615,9 +617,11 @@ export default function CatalogPage() {
                     )}
                     
                     <div className="flex justify-between items-center">
-                      <div className="text-xl font-bold text-uniform-primary">
-                        ${product.price}
-                      </div>
+                      <PriceDisplay 
+                        price={parseFloat(product.price)} 
+                        size="sm" 
+                        showDiscount={true}
+                      />
                       <div className="flex gap-2">
                         <Button
                           size="sm"
