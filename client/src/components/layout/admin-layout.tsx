@@ -5,6 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import BreadcrumbNavigation from "@/components/navigation/breadcrumb-navigation";
+import ContextActions from "@/components/navigation/context-actions";
 // import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 const treeLogo = "/tree-logo.png";
 import { 
@@ -20,7 +22,8 @@ import {
   Menu,
   X,
   Shirt,
-  Building
+  Building,
+  ChevronDown
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -73,6 +76,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Configuración", href: "/admin/settings", icon: Settings },
   ];
 
+  // Store navigation links for quick access
+  const storeLinks = [
+    { name: "Ver Tienda", href: "/store", icon: Shirt, description: "Vista pública de la tienda" },
+    { name: "Catálogo", href: "/store/catalog", icon: Package, description: "Productos de la tienda" },
+    { name: "Marcas", href: "/store/brands", icon: Building, description: "Página de marcas" },
+  ];
+
   return (
     <div className="min-h-screen bg-uniform-neutral-50">
       {/* Top Navigation */}
@@ -94,16 +104,38 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
             {/* Admin Actions */}
             <div className="flex items-center space-x-4">
-              {/* View Store Button */}
-              <Button 
-                variant="outline"
-                size="sm"
-                className="hidden md:flex items-center space-x-2"
-                onClick={() => window.open('/store', '_blank')}
-              >
-                <ExternalLink className="h-4 w-4" />
-                <span>Ver Tienda</span>
-              </Button>
+              {/* Store Quick Access Dropdown */}
+              <div className="relative group hidden md:block">
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center space-x-2 group-hover:bg-uniform-primary group-hover:text-white transition-colors"
+                >
+                  <Shirt className="h-4 w-4" />
+                  <span>Tienda</span>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+                
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 top-full mt-1 w-64 bg-white rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-2">
+                    {storeLinks.map((link) => (
+                      <Link 
+                        key={link.href}
+                        href={link.href}
+                        className="flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-gray-50 transition-colors"
+                      >
+                        <link.icon className="h-4 w-4 text-uniform-primary" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">{link.name}</p>
+                          <p className="text-xs text-gray-500">{link.description}</p>
+                        </div>
+                        <ExternalLink className="h-3 w-3 text-gray-400" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
               
               {/* Notifications */}
               <Button variant="ghost" size="sm" className="relative">
@@ -192,6 +224,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Main Content Area */}
         <main className="flex-1 bg-uniform-neutral-50 min-h-[calc(100vh-4rem)]">
+          <BreadcrumbNavigation showStoreLink={true} userRole="admin" />
+          <ContextActions userRole="admin" />
           {children}
         </main>
       </div>

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/useCart";
+import BreadcrumbNavigation from "@/components/navigation/breadcrumb-navigation";
+import ContextActions from "@/components/navigation/context-actions";
 // import treeLogo from "@assets/TREE LOGO_1753399074765.png";
 const treeLogo = "/tree-logo.png";
 import { 
@@ -281,6 +283,20 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                 </Button>
               </Link>
 
+              {/* Admin Access */}
+              {isAuthenticated && (user as any)?.role === 'admin' && (
+                <Link href="/admin">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="hidden lg:flex items-center space-x-2 bg-uniform-primary text-white hover:bg-uniform-primary/90 border-uniform-primary"
+                  >
+                    <Building className="h-4 w-4" />
+                    <span>Panel Admin</span>
+                  </Button>
+                </Link>
+              )}
+
               {/* User Menu */}
               {isAuthenticated && user ? (
                 <div className="hidden lg:flex items-center space-x-3">
@@ -289,7 +305,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                       {user.firstName || "Cliente"}
                     </p>
                     <p className="text-xs text-uniform-dark font-roboto">
-                      {user.email}
+                      {(user as any)?.role === 'admin' ? 'Administrador' : user.email}
                     </p>
                   </div>
                   <Button
@@ -353,18 +369,32 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                     {/* User Info */}
                     {isAuthenticated && user && (
                       <div className="bg-uniform-gold/10 border border-uniform-gold/20 rounded-lg p-4 mb-6">
-                        <div className="flex items-center space-x-3">
-                          <div className="bg-uniform-blue text-white rounded-full p-2">
-                            <User className="h-5 w-5" />
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="bg-uniform-blue text-white rounded-full p-2">
+                              <User className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <p className="font-poppins font-medium text-uniform-blue">
+                                {user.firstName || "Cliente"}
+                              </p>
+                              <p className="text-sm text-uniform-dark font-roboto">
+                                {(user as any)?.role === 'admin' ? 'Administrador' : user.email}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-poppins font-medium text-uniform-blue">
-                              {user.firstName || "Cliente"}
-                            </p>
-                            <p className="text-sm text-uniform-dark font-roboto">
-                              {user.email}
-                            </p>
-                          </div>
+                          {/* Admin Button for Mobile */}
+                          {(user as any)?.role === 'admin' && (
+                            <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                              <Button 
+                                size="sm" 
+                                className="bg-uniform-primary text-white hover:bg-uniform-primary/90"
+                              >
+                                <Building className="h-4 w-4 mr-2" />
+                                Panel Admin
+                              </Button>
+                            </Link>
+                          )}
                         </div>
                       </div>
                     )}
@@ -567,6 +597,8 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
 
       {/* Main Content with proper spacing to avoid header overlap */}
       <main className="flex-1 pt-20">
+        <BreadcrumbNavigation showAdminLink={true} userRole={(user as any)?.role} />
+        <ContextActions userRole={(user as any)?.role} />
         {children}
       </main>
 
