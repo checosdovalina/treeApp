@@ -6,10 +6,11 @@ This is a full-stack e-commerce application for "TREE Uniformes & Kodiak Industr
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 User language: Spanish (communicate in Spanish)
-User role: Administrator seeking to access admin functions
+User role: Administrator with full access to admin panel (checodovalina@gmail.com)
 Design inspiration: lacasadelachamarra.com - modern e-commerce layout with hero sections, product grids, and clean navigation
 Priority: Mobile responsiveness is essential for customer experience
 Authentication: Role-based system with admin vs customer accounts and appropriate redirections
+Admin Access: Confirmed working - user has admin role and can access /admin dashboard
 
 ## System Architecture
 
