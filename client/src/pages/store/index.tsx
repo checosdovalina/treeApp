@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Package, Users, Shield, TrendingUp, Star, MessageCircle, ChevronRight, ChevronLeft } from "lucide-react";
 import PriceDisplay from "@/components/store/price-display";
 import DiscountBadge from "@/components/store/discount-badge";
+import LoginRegisterSection from "@/components/auth/login-register-section";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import useEmblaCarousel from 'embla-carousel-react';
@@ -229,7 +230,8 @@ export default function StoreIndex() {
       {/* Promotion Banner */}
       <PromotionBanner />
       
-      {/* Hero Section - Completely Hidden */}
+      {/* Login/Register Section - Only show if not authenticated */}
+      {!isAuthenticated && <LoginRegisterSection />}
 
       {/* Brands Carousel Section */}
       <BrandsCarouselSection brands={brands as any[] | undefined} />

@@ -46,7 +46,7 @@ import {
   type InsertIndustrySection,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";
+import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte, ne } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -605,11 +605,11 @@ export class DatabaseStorage implements IStorage {
       .from(products)
       .where(eq(products.isActive, true));
 
-    // Get total customers count
+    // Get total customers count (all non-admin users)
     const [customersResult] = await db
       .select({ count: count() })
       .from(users)
-      .where(eq(users.role, "customer"));
+      .where(ne(users.role, "admin"));
 
     return {
       totalSales: salesResult?.total || "0",

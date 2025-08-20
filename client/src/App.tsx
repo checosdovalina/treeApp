@@ -46,9 +46,9 @@ function Router() {
     return (
       <Switch>
         <Route path="/" component={StoreHome} />
+        <Route path="/store" component={StoreHome} />
         <Route path="/login" component={LoginPage} />
         <Route path="/auth/register" component={CustomerRegister} />
-        <Route path="/store" component={StoreHome} />
         <Route path="/store/catalog" component={StoreCatalog} />
         <Route path="/store/polos" component={StoreCatalog} />
         <Route path="/store/playeras" component={StoreCatalog} />
@@ -62,13 +62,28 @@ function Router() {
     );
   }
 
-  // Authenticated routes based on user role
+  // Authenticated routes with role-based redirection
+  // Auto-redirect based on user role
+  const userRole = (user as any)?.role;
+  
   return (
     <Switch>
+      {/* Root redirect based on role */}
+      <Route path="/">
+        {() => {
+          if (userRole === 'admin') {
+            window.location.href = '/admin';
+            return null;
+          } else {
+            window.location.href = '/store';
+            return null;
+          }
+        }}
+      </Route>
+      
       {/* Admin routes */}
-      {(user as any)?.role === 'admin' ? (
+      {userRole === 'admin' ? (
         <>
-          <Route path="/" component={StoreHome} />
           <Route path="/store" component={StoreHome} />
           <Route path="/store/catalog" component={StoreCatalog} />
           <Route path="/store/polos" component={StoreCatalog} />
@@ -77,6 +92,7 @@ function Router() {
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
           <Route path="/store/quote-request" component={QuoteRequest} />
+          <Route path="/store/benefits" component={CustomerBenefits} />
           <Route path="/admin" component={AdminDashboard} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route path="/admin/sales" component={AdminSales} />
@@ -91,7 +107,6 @@ function Router() {
       ) : (
         <>
           {/* Customer routes - All customer types (premium, regular, basic) */}
-          <Route path="/" component={StoreHome} />
           <Route path="/store" component={StoreHome} />
           <Route path="/store/catalog" component={StoreCatalog} />
           <Route path="/store/polos" component={StoreCatalog} />
