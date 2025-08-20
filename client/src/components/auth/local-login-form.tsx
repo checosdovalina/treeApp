@@ -31,16 +31,25 @@ export default function LocalLoginForm({ onSuccess }: LocalLoginFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
+        credentials: 'include' // Important for sessions
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage;
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || "Error de autenticación";
+        } catch {
+          errorMessage = "Error de autenticación";
+        }
+        throw new Error(errorMessage);
+      }
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Error de autenticación");
-      }
-
       // Redirect based on user role
-      if (data.user.role === 'admin') {
+      if (data.user && data.user.role === 'admin') {
         window.location.href = '/admin';
       } else {
         window.location.href = '/store';
@@ -50,6 +59,7 @@ export default function LocalLoginForm({ onSuccess }: LocalLoginFormProps) {
         onSuccess();
       }
     } catch (error: any) {
+      console.error("Login error:", error);
       setError(error.message || "Error de conexión");
     } finally {
       setIsLoading(false);
