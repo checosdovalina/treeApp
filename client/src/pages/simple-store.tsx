@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, ShoppingCart, User, Settings, LogOut } from "lucide-react";
 import PriceDisplay from "@/components/store/price-display";
+import SimplePromotionBanner from "@/components/store/simple-promotion-banner";
 import SimpleLoginForm from "@/components/auth/simple-login-form";
 import SimpleRegisterForm from "@/components/auth/simple-register-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -23,7 +24,7 @@ interface Product {
 }
 
 export default function SimpleStore() {
-  const { user, isLoading, isAuthenticated, logout } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   
   // Fetch products
@@ -114,6 +115,9 @@ export default function SimpleStore() {
           </div>
         </div>
       </header>
+
+      {/* Promotion Banner */}
+      <SimplePromotionBanner showDismiss={false} autoRotate={true} height="small" />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Auth Section for Non-authenticated Users */}
