@@ -68,16 +68,11 @@ function Router() {
   
   return (
     <Switch>
-      {/* Root redirect based on role */}
+      {/* Root redirect - always go to store for authenticated users */}
       <Route path="/">
         {() => {
-          if (userRole === 'admin') {
-            window.location.href = '/admin';
-            return null;
-          } else {
-            window.location.href = '/store';
-            return null;
-          }
+          window.location.href = '/store';
+          return null;
         }}
       </Route>
       

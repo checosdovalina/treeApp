@@ -39,14 +39,11 @@ export default function LocalLoginForm({ onSuccess }: LocalLoginFormProps) {
         throw new Error(data.message || "Error de autenticación");
       }
 
-      // Force refresh by reloading the page
-      window.location.reload();
-      
       // Redirect based on user role
       if (data.user.role === 'admin') {
-        navigate('/admin');
+        window.location.href = '/admin';
       } else {
-        navigate('/store');
+        window.location.href = '/store';
       }
 
       if (onSuccess) {
