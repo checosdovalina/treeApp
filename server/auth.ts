@@ -7,6 +7,7 @@ export interface AuthService {
   createUser(userData: InsertLocalUser): Promise<LocalUser>;
   hashPassword(password: string): Promise<string>;
   verifyPassword(password: string, hashedPassword: string): Promise<boolean>;
+  findUserByUsernameOrEmail(username: string, email: string): Promise<LocalUser | null>;
 }
 
 class LocalAuthService implements AuthService {
@@ -48,6 +49,25 @@ class LocalAuthService implements AuthService {
   
   async verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
     return await bcrypt.compare(password, hashedPassword);
+  }
+
+  async findUserByUsernameOrEmail(username: string, email: string): Promise<LocalUser | null> {
+    try {
+      const userByUsername = await storage.getLocalUserByUsername(username);
+      if (userByUsername) {
+        return userByUsername;
+      }
+      
+      const userByEmail = await storage.getLocalUserByEmail(email);
+      if (userByEmail) {
+        return userByEmail;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error finding user:", error);
+      return null;
+    }
   }
 }
 

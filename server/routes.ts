@@ -164,6 +164,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(401).json({ message: "No autenticado" });
   });
 
+  // Register route
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { username, email, password, firstName, lastName } = req.body;
+      
+      // Validate required fields
+      if (!username || !email || !password || !firstName || !lastName) {
+        return res.status(400).json({ message: "Todos los campos son requeridos" });
+      }
+
+      // Check if user already exists
+      const existingUser = await authService.findUserByUsernameOrEmail(username, email);
+      if (existingUser) {
+        return res.status(400).json({ message: "El usuario o email ya existe" });
+      }
+
+      // Create new user with basic role
+      const newUser = await authService.createUser({
+        username,
+        email,
+        password,
+        firstName,
+        lastName,
+        role: 'basic' // Default role for new registrations
+      });
+
+      if (!newUser) {
+        return res.status(500).json({ message: "Error al crear el usuario" });
+      }
+
+      // Store user session
+      req.session.user = newUser;
+
+      res.status(201).json({
+        message: "Usuario registrado exitosamente",
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          role: newUser.role
+        }
+      });
+    } catch (error) {
+      console.error("Error en registro:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
   // Auth endpoint - unified authentication check
   app.get('/api/auth/user', async (req: any, res) => {
     try {

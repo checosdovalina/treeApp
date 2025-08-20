@@ -11,6 +11,8 @@ import { ShoppingCart, Heart, Package, Users, Shield, TrendingUp, Star, MessageC
 import PriceDisplay from "@/components/store/price-display";
 import DiscountBadge from "@/components/store/discount-badge";
 import SimpleLoginForm from "@/components/auth/simple-login-form";
+import SimpleRegisterForm from "@/components/auth/simple-register-form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import useEmblaCarousel from 'embla-carousel-react';
@@ -245,7 +247,7 @@ export default function StoreIndex() {
                 </p>
               </div>
 
-              {/* Login Card */}
+              {/* Login/Register Card */}
               <Card className="bg-white/95 backdrop-blur border-0 shadow-xl">
                 <CardHeader className="text-center pb-4">
                   <div className="mx-auto mb-4 p-4 rounded-full bg-uniform-blue w-fit">
@@ -257,7 +259,20 @@ export default function StoreIndex() {
                 </CardHeader>
                 
                 <CardContent>
-                  <SimpleLoginForm />
+                  <Tabs defaultValue="login" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 mb-4">
+                      <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
+                      <TabsTrigger value="register">Registrarse</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="login">
+                      <SimpleLoginForm />
+                    </TabsContent>
+
+                    <TabsContent value="register">
+                      <SimpleRegisterForm />
+                    </TabsContent>
+                  </Tabs>
                 </CardContent>
               </Card>
             </div>

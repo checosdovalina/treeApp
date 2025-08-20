@@ -55,6 +55,7 @@ export interface IStorage {
   
   // Local authentication operations
   getLocalUserByUsername(username: string): Promise<LocalUser | undefined>;
+  getLocalUserByEmail(email: string): Promise<LocalUser | undefined>;
   getLocalUserById(id: number): Promise<LocalUser | undefined>;
   createLocalUser(user: InsertLocalUser): Promise<LocalUser>;
   updateLocalUserLastLogin(id: number): Promise<void>;
@@ -176,6 +177,11 @@ export class DatabaseStorage implements IStorage {
   // Local authentication operations
   async getLocalUserByUsername(username: string): Promise<LocalUser | undefined> {
     const [user] = await db.select().from(localUsers).where(eq(localUsers.username, username));
+    return user;
+  }
+
+  async getLocalUserByEmail(email: string): Promise<LocalUser | undefined> {
+    const [user] = await db.select().from(localUsers).where(eq(localUsers.email, email));
     return user;
   }
 
