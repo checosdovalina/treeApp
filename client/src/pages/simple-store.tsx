@@ -26,6 +26,7 @@ interface Product {
 export default function SimpleStore() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
   
   // Fetch products
   const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
@@ -107,10 +108,15 @@ export default function SimpleStore() {
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <User className="h-5 w-5 text-gray-500" />
-                <span className="text-sm text-gray-600">No autenticado</span>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowLoginModal(true)}
+                className="flex items-center gap-2"
+              >
+                <User className="h-4 w-4" />
+                Iniciar Sesión
+              </Button>
             )}
           </div>
         </div>
@@ -120,35 +126,53 @@ export default function SimpleStore() {
       <SimplePromotionBanner showDismiss={false} autoRotate={true} height="small" />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Auth Section for Non-authenticated Users */}
-        {!isAuthenticated && (
-          <div className="mb-12">
-            <div className="max-w-md mx-auto">
-              <Card className="bg-white">
-                <CardContent className="p-6">
-                  <div className="text-center mb-4">
-                    <h2 className="text-xl font-semibold mb-2">Iniciar Sesión</h2>
-                    <p className="text-sm text-gray-600">
-                      Accede a tu cuenta para ver descuentos y gestionar pedidos
-                    </p>
-                  </div>
-                  
-                  <Tabs defaultValue="login">
-                    <TabsList className="grid w-full grid-cols-2 mb-4">
-                      <TabsTrigger value="login">Entrar</TabsTrigger>
-                      <TabsTrigger value="register">Registro</TabsTrigger>
-                    </TabsList>
+        {/* Login Modal */}
+        {showLoginModal && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShowLoginModal(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') setShowLoginModal(false);
+            }}
+          >
+            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Iniciar Sesión</h2>
+                <button 
+                  onClick={() => setShowLoginModal(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl leading-none w-8 h-8 flex items-center justify-center"
+                  aria-label="Cerrar"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <p className="text-sm text-gray-600 mb-4">
+                Accede a tu cuenta para ver descuentos y gestionar pedidos
+              </p>
+              
+              <Tabs defaultValue="login">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="login">Entrar</TabsTrigger>
+                  <TabsTrigger value="register">Registro</TabsTrigger>
+                </TabsList>
 
-                    <TabsContent value="login">
-                      <SimpleLoginForm />
-                    </TabsContent>
+                <TabsContent value="login">
+                  <SimpleLoginForm onSuccess={() => {
+                    setShowLoginModal(false);
+                    // Window reload will happen from the form component
+                  }} />
+                </TabsContent>
 
-                    <TabsContent value="register">
-                      <SimpleRegisterForm />
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-              </Card>
+                <TabsContent value="register">
+                  <SimpleRegisterForm onSuccess={() => {
+                    setShowLoginModal(false);
+                    // Window reload will happen from the form component
+                  }} />
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
         )}
