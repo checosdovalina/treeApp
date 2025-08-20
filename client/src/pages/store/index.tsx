@@ -5,12 +5,12 @@ import CustomerLayout from "@/components/layout/customer-layout";
 import PromotionBanner from "@/components/store/promotion-banner";
 import IndustrySection from "@/components/IndustrySection";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Package, Users, Shield, TrendingUp, Star, MessageCircle, ChevronRight, ChevronLeft } from "lucide-react";
+import { ShoppingCart, Heart, Package, Users, Shield, TrendingUp, Star, MessageCircle, ChevronRight, ChevronLeft, LogIn } from "lucide-react";
 import PriceDisplay from "@/components/store/price-display";
 import DiscountBadge from "@/components/store/discount-badge";
-import LoginRegisterSection from "@/components/auth/login-register-section";
+import SimpleLoginForm from "@/components/auth/simple-login-form";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import useEmblaCarousel from 'embla-carousel-react';
@@ -231,7 +231,39 @@ export default function StoreIndex() {
       <PromotionBanner />
       
       {/* Login/Register Section - Only show if not authenticated */}
-      {!isAuthenticated && <LoginRegisterSection />}
+      {!isAuthenticated && (
+        <section className="py-12 bg-gradient-to-br from-uniform-blue via-blue-700 to-slate-800">
+          <div className="container mx-auto px-4">
+            <div className="max-w-md mx-auto">
+              {/* Header */}
+              <div className="text-center mb-8">
+                <h2 className="text-3xl md:text-4xl font-poppins font-bold text-white mb-4 drop-shadow-lg">
+                  Iniciar Sesión
+                </h2>
+                <p className="text-gray-200 text-lg font-roboto drop-shadow-sm">
+                  Accede a tu cuenta para gestionar tus pedidos y descuentos
+                </p>
+              </div>
+
+              {/* Login Card */}
+              <Card className="bg-white/95 backdrop-blur border-0 shadow-xl">
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto mb-4 p-4 rounded-full bg-uniform-blue w-fit">
+                    <LogIn className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-2xl font-bold text-gray-900">
+                    Bienvenido
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent>
+                  <SimpleLoginForm />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Brands Carousel Section */}
       <BrandsCarouselSection brands={brands as any[] | undefined} />

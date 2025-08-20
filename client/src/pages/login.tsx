@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Shield, Users, ArrowRight, Building, User } from "lucide-react";
 import { useLocation } from "wouter";
 import treeLogo from "@assets/TREE LOGO_1753399074765.png";
-import LocalLoginForm from "@/components/auth/local-login-form";
+import SimpleLoginForm from "@/components/auth/simple-login-form";
 
 export default function LoginPage() {
   const { user, isLoading, isAuthenticated } = useAuth();
