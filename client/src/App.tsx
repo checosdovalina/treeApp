@@ -16,6 +16,7 @@ import AdminReports from "@/pages/admin/reports";
 import AdminPromotions from "@/pages/admin/promotions";
 import AdminIndustrySections from "@/pages/admin/industry-sections";
 import StoreHome from "@/pages/store/index";
+import SimpleStore from "@/pages/simple-store";
 import StoreCatalog from "@/pages/store/catalog";
 import StoreBrands from "@/pages/store/brands";
 import ProductDetail from "@/pages/store/product-detail";
@@ -45,8 +46,9 @@ function Router() {
   if (!isAuthenticated) {
     return (
       <Switch>
-        <Route path="/" component={StoreHome} />
-        <Route path="/store" component={StoreHome} />
+        <Route path="/" component={SimpleStore} />
+        <Route path="/store" component={SimpleStore} />
+        <Route path="/store-old" component={StoreHome} />
         <Route path="/login" component={LoginPage} />
         <Route path="/auth/register" component={CustomerRegister} />
         <Route path="/store/catalog" component={StoreCatalog} />
@@ -79,7 +81,8 @@ function Router() {
       {/* Admin routes */}
       {userRole === 'admin' ? (
         <>
-          <Route path="/store" component={StoreHome} />
+          <Route path="/store" component={SimpleStore} />
+          <Route path="/store-old" component={StoreHome} />
           <Route path="/store/catalog" component={StoreCatalog} />
           <Route path="/store/polos" component={StoreCatalog} />
           <Route path="/store/playeras" component={StoreCatalog} />
@@ -102,7 +105,8 @@ function Router() {
       ) : (
         <>
           {/* Customer routes - All customer types (premium, regular, basic) */}
-          <Route path="/store" component={StoreHome} />
+          <Route path="/store" component={SimpleStore} />
+          <Route path="/store-old" component={StoreHome} />
           <Route path="/store/catalog" component={StoreCatalog} />
           <Route path="/store/polos" component={StoreCatalog} />
           <Route path="/store/playeras" component={StoreCatalog} />
