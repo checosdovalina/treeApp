@@ -123,7 +123,7 @@ export default function SimpleStore() {
       </header>
 
       {/* Promotion Banner */}
-      <SimplePromotionBanner showDismiss={false} autoRotate={true} height="small" />
+      <SimplePromotionBanner showDismiss={false} autoRotate={true} height="large" />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Login Modal */}
