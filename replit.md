@@ -17,7 +17,7 @@ Admin Access: Confirmed working - user has admin role and can access /admin dash
 ### Frontend Architecture
 - **Framework**: React with TypeScript
 - **Build Tool**: Vite
-- **Routing**: Wouter - **UPDATED**: Store (`/store`) is now the main landing page for all users, with role-based redirection after authentication
+- **Routing**: Wouter - **UPDATED**: Store (`/store`) is now the main landing page with integrated login/register module and smart role-based redirection
 - **State Management**: TanStack Query for server state management
 - **UI Components**: Radix UI with shadcn/ui
 - **Styling**: Tailwind CSS with custom design tokens for uniform branding. Incorporates brand colors (azul profundo #1F4287, amarillo dorado #FFCC00), Poppins and Roboto fonts, and professional styling elements throughout.
@@ -39,7 +39,7 @@ Admin Access: Confirmed working - user has admin role and can access /admin dash
 - **UPDATED**: Role system with enum: admin, premium (15% discount), regular (8% discount), basic (no discount). Discount system with percentage-based calculations and role-specific benefits.
 
 ### Key Features & Technical Implementations
-- **Authentication System**: Replit Auth, role-based access, protected routes, PostgreSQL-backed sessions. **NEW**: Tiered customer role system with admin, premium, regular, and basic levels.
+- **Authentication System**: Dual authentication (Replit Auth + Local Auth), role-based access, smart redirection (admin→/admin, customers→/store), integrated login module on store homepage. **COMPLETED**: Store as main landing page with seamless authentication flow.
 - **Product Management**: Hierarchical categorization, inventory tracking (size/color variants), multiple image support (URL/file upload with base64 conversion), active/inactive states, dynamic brand/size/color/category creation. Gender-specific size configurations based on garment type. SKU implementation with validation. **COMPLETED**: Color-specific product images system fully functional - customers can preview garments in selected colors with proper image switching. **RESOLVED**: Size system now includes 3XL and 4XL sizes in all components - cache issues fixed in both product creation and editing forms.
 - **Order Management**: Manual quote creation (B2B) with PDF export and email, full order lifecycle management, customer database with purchase history.
 - **Shopping Cart**: Client-side localStorage persistence, real-time updates, variant support.

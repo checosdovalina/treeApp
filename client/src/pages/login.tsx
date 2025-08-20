@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Shield, Users, ArrowRight, Building, User } from "lucide-react";
 import { useLocation } from "wouter";
 import treeLogo from "@assets/TREE LOGO_1753399074765.png";
+import LocalLoginForm from "@/components/auth/local-login-form";
 
 export default function LoginPage() {
   const { user, isLoading, isAuthenticated } = useAuth();

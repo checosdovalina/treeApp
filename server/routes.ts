@@ -164,7 +164,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(401).json({ message: "No autenticado" });
   });
 
-  // Temporary auth bypass for testing
+  // Auth endpoint - unified authentication check
   app.get('/api/auth/user', async (req: any, res) => {
     try {
       // First check if user is authenticated locally
@@ -185,7 +185,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
         const userId = req.user.claims.sub;
         const user = await storage.getUser(userId);
-        return res.json(user);
+        if (user) {
+          return res.json({
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+            profileImageUrl: user.profileImageUrl
+          });
+        }
       }
       
       // No authenticated user found
