@@ -31,27 +31,49 @@ export default function LocalLoginForm({ onSuccess }: LocalLoginFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-        credentials: 'include' // Important for sessions
+        credentials: 'include'
       });
 
+      // Check if response is valid
+      if (!response) {
+        throw new Error("No se pudo conectar al servidor");
+      }
+
+      // Read response text first
+      const responseText = await response.text();
+      console.log("Response status:", response.status);
+      console.log("Response text:", responseText);
+
       if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage;
-        try {
-          const errorData = JSON.parse(errorText);
-          errorMessage = errorData.message || "Error de autenticación";
-        } catch {
-          errorMessage = "Error de autenticación";
+        let errorMessage = "Error de autenticación";
+        if (responseText) {
+          try {
+            const errorData = JSON.parse(responseText);
+            errorMessage = errorData.message || errorMessage;
+          } catch {
+            errorMessage = "Error del servidor";
+          }
         }
         throw new Error(errorMessage);
       }
 
-      const data = await response.json();
+      // Parse JSON response
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("Error parsing JSON:", parseError);
+        throw new Error("Respuesta del servidor inválida");
+      }
 
-      // Redirect based on user role
+      // Success - redirect based on role
+      console.log("Login successful, user:", data.user);
+      
       if (data.user && data.user.role === 'admin') {
+        console.log("Redirecting to admin panel");
         window.location.href = '/admin';
       } else {
+        console.log("Redirecting to store");
         window.location.href = '/store';
       }
 
@@ -59,7 +81,7 @@ export default function LocalLoginForm({ onSuccess }: LocalLoginFormProps) {
         onSuccess();
       }
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Login error details:", error);
       setError(error.message || "Error de conexión");
     } finally {
       setIsLoading(false);
