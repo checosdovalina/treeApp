@@ -77,7 +77,7 @@ export default function SimplePromotionBanner({
   const heightClasses = {
     small: 'h-32',
     medium: 'h-48', 
-    large: 'h-80'
+    large: 'h-96'
   };
 
   return (
@@ -97,18 +97,18 @@ export default function SimplePromotionBanner({
         
         {/* Content */}
         <div className="relative z-10 text-center text-white px-4">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6">
             {currentPromotion.title}
           </h2>
           {currentPromotion.description && (
-            <p className="text-base md:text-xl lg:text-2xl opacity-90 max-w-4xl mx-auto mb-6">
+            <p className="text-lg md:text-2xl lg:text-3xl xl:text-4xl opacity-90 max-w-5xl mx-auto mb-8">
               {currentPromotion.description}
             </p>
           )}
           {currentPromotion.linkUrl && (
             <Button 
               size="lg" 
-              className="mt-6 bg-white text-blue-700 hover:bg-gray-100 text-lg px-8 py-3"
+              className="mt-8 bg-white text-blue-700 hover:bg-gray-100 text-xl px-12 py-4 font-semibold"
               onClick={(e) => {
                 e.stopPropagation();
                 handleBannerClick();
