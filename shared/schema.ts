@@ -180,11 +180,11 @@ export const orderStatusEnum = pgEnum("order_status", [
   "cancelled",
 ]);
 
-// Orders table
+// Orders table (updated to support local users)
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
   orderNumber: varchar("order_number", { length: 50 }).notNull().unique(),
-  customerId: varchar("customer_id").references(() => users.id),
+  customerId: integer("customer_id").references(() => localUsers.id),
   customerEmail: varchar("customer_email"),
   customerName: varchar("customer_name"),
   customerPhone: varchar("customer_phone"),
@@ -303,6 +303,30 @@ export const roleDiscounts = pgTable("role_discounts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Shopping cart table
+export const shoppingCarts = pgTable("shopping_carts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => localUsers.id, { onDelete: "cascade" }),
+  sessionId: varchar("session_id"), // For guest users
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Shopping cart items
+export const cartItems = pgTable("cart_items", {
+  id: serial("id").primaryKey(),
+  cartId: integer("cart_id").references(() => shoppingCarts.id, { onDelete: "cascade" }).notNull(),
+  productId: integer("product_id").references(() => products.id, { onDelete: "cascade" }).notNull(),
+  sizeId: integer("size_id").references(() => sizes.id),
+  colorId: integer("color_id").references(() => colors.id),
+  quantity: integer("quantity").notNull().default(1),
+  unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+
+
 // Relations
 export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
@@ -366,11 +390,38 @@ export const inventoryRelations = relations(inventory, ({ one }) => ({
 }));
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
-  customer: one(users, {
+  customer: one(localUsers, {
     fields: [orders.customerId],
-    references: [users.id],
+    references: [localUsers.id],
   }),
   items: many(orderItems),
+}));
+
+export const shoppingCartsRelations = relations(shoppingCarts, ({ one, many }) => ({
+  user: one(localUsers, {
+    fields: [shoppingCarts.userId],
+    references: [localUsers.id],
+  }),
+  items: many(cartItems),
+}));
+
+export const cartItemsRelations = relations(cartItems, ({ one }) => ({
+  cart: one(shoppingCarts, {
+    fields: [cartItems.cartId],
+    references: [shoppingCarts.id],
+  }),
+  product: one(products, {
+    fields: [cartItems.productId],
+    references: [products.id],
+  }),
+  size: one(sizes, {
+    fields: [cartItems.sizeId],
+    references: [sizes.id],
+  }),
+  color: one(colors, {
+    fields: [cartItems.colorId],
+    references: [colors.id],
+  }),
 }));
 
 export const orderItemsRelations = relations(orderItems, ({ one }) => ({
@@ -572,3 +623,9 @@ export type QuoteRequest = z.infer<typeof quoteRequestSchema>;
 
 export type InsertIndustrySection = z.infer<typeof insertIndustrySectionSchema>;
 export type IndustrySection = typeof industrySections.$inferSelect;
+
+export type InsertShoppingCart = typeof shoppingCarts.$inferInsert;
+export type ShoppingCart = typeof shoppingCarts.$inferSelect;
+
+export type InsertCartItem = typeof cartItems.$inferInsert;
+export type CartItem = typeof cartItems.$inferSelect;

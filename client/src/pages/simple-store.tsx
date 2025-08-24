@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, ShoppingCart, User, Settings, LogOut } from "lucide-react";
+import { Search, ShoppingCart, User, Settings, LogOut, UserCircle } from "lucide-react";
 import PriceDisplay from "@/components/store/price-display";
 import SimplePromotionBanner from "@/components/store/simple-promotion-banner";
 import SimpleBrandsSection from "@/components/store/simple-brands-section";
 import SimpleCategoriesSection from "@/components/store/simple-categories-section";
 import SimpleLoginForm from "@/components/auth/simple-login-form";
 import SimpleRegisterForm from "@/components/auth/simple-register-form";
+import { ShoppingCartDrawer } from "@/components/store/shopping-cart";
+import { AddToCartButton } from "@/components/store/add-to-cart-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
@@ -18,10 +20,13 @@ import { Link } from "wouter";
 interface Product {
   id: number;
   name: string;
+  sku?: string;
   price: string;
   images: string[];
   brand: string;
   category: string;
+  sizes?: string[];
+  colors?: string[];
   isActive: boolean;
 }
 
@@ -94,9 +99,13 @@ export default function SimpleStore() {
             
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-600">
-                  Hola, {user?.firstName || user?.username}
-                </span>
+                <ShoppingCartDrawer />
+                <Link href="/account">
+                  <Button variant="outline" size="sm">
+                    <UserCircle className="h-4 w-4 mr-1" />
+                    Mi Cuenta
+                  </Button>
+                </Link>
                 {user?.role === 'admin' && (
                   <Link href="/admin">
                     <Button variant="outline" size="sm">
@@ -265,11 +274,29 @@ export default function SimpleStore() {
                       />
                     </div>
                     
-                    <Link href={`/store/product/${product.id}`}>
-                      <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
-                        Ver Detalles
+                    {isAuthenticated ? (
+                      <AddToCartButton 
+                        product={{
+                          id: product.id,
+                          name: product.name,
+                          sku: product.sku || '',
+                          price: product.price,
+                          images: product.images,
+                          sizes: product.sizes || [],
+                          colors: product.colors || []
+                        }}
+                        size="sm"
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      />
+                    ) : (
+                      <Button 
+                        size="sm" 
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        onClick={() => setShowLoginModal(true)}
+                      >
+                        Iniciar Sesión para Comprar
                       </Button>
-                    </Link>
+                    )}
                   </CardContent>
                 </Card>
               ))}

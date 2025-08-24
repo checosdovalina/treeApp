@@ -1141,6 +1141,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Shopping cart routes
+  app.get('/api/cart', isLocallyAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.user.id;
+      const cart = await storage.getOrCreateCart(userId);
+      const items = await storage.getCartItems(cart.id);
+      res.json({ cart, items });
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+      res.status(500).json({ message: "Failed to fetch cart" });
+    }
+  });
+
+  app.post('/api/cart/add', isLocallyAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.user.id;
+      const { productId, sizeId, colorId, quantity, unitPrice } = req.body;
+      
+      if (!productId || !quantity || !unitPrice) {
+        return res.status(400).json({ message: "Product ID, quantity, and unit price are required" });
+      }
+
+      const cart = await storage.getOrCreateCart(userId);
+      const cartItem = await storage.addToCart({
+        cartId: cart.id,
+        productId,
+        sizeId: sizeId || null,
+        colorId: colorId || null,
+        quantity,
+        unitPrice
+      });
+
+      res.json(cartItem);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      res.status(500).json({ message: "Failed to add item to cart" });
+    }
+  });
+
+  app.put('/api/cart/item/:id', isLocallyAuthenticated, async (req, res) => {
+    try {
+      const itemId = parseInt(req.params.id);
+      const { quantity } = req.body;
+
+      if (!quantity || quantity < 1) {
+        return res.status(400).json({ message: "Valid quantity is required" });
+      }
+
+      const updatedItem = await storage.updateCartItem(itemId, quantity);
+      res.json(updatedItem);
+    } catch (error) {
+      console.error("Error updating cart item:", error);
+      res.status(500).json({ message: "Failed to update cart item" });
+    }
+  });
+
+  app.delete('/api/cart/item/:id', isLocallyAuthenticated, async (req, res) => {
+    try {
+      const itemId = parseInt(req.params.id);
+      await storage.removeFromCart(itemId);
+      res.json({ message: "Item removed from cart" });
+    } catch (error) {
+      console.error("Error removing cart item:", error);
+      res.status(500).json({ message: "Failed to remove cart item" });
+    }
+  });
+
+  app.delete('/api/cart/clear', isLocallyAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.user.id;
+      const cart = await storage.getCartByUserId(userId);
+      
+      if (cart) {
+        await storage.clearCart(cart.id);
+      }
+      
+      res.json({ message: "Cart cleared" });
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      res.status(500).json({ message: "Failed to clear cart" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

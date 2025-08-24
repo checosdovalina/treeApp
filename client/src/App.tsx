@@ -23,6 +23,7 @@ import ProductDetail from "@/pages/store/product-detail";
 import Cart from "@/pages/store/cart";
 import CustomerDashboard from "@/pages/customer/dashboard";
 import CustomerRegister from "@/pages/auth/customer-register";
+import CustomerAccount from "@/pages/customer-account";
 import QuoteRequest from "@/pages/store/quote-request";
 import CustomerBenefits from "@/pages/store/customer-benefits";
 import { useAuth } from "@/hooks/useAuth";
@@ -101,6 +102,7 @@ function Router() {
           <Route path="/admin/reports" component={AdminReports} />
           <Route path="/admin/promotions" component={AdminPromotions} />
           <Route path="/admin/industry-sections" component={AdminIndustrySections} />
+          <Route path="/account" component={CustomerAccount} />
         </>
       ) : (
         <>
@@ -123,6 +125,7 @@ function Router() {
           <Route path="/customer/favorites" component={CustomerDashboard} />
           <Route path="/customer/quotes" component={CustomerDashboard} />
           <Route path="/customer/profile" component={CustomerDashboard} />
+          <Route path="/account" component={CustomerAccount} />
         </>
       )}
       
