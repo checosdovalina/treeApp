@@ -8,6 +8,7 @@ import { Search, ShoppingCart, User, Settings, LogOut } from "lucide-react";
 import PriceDisplay from "@/components/store/price-display";
 import SimplePromotionBanner from "@/components/store/simple-promotion-banner";
 import SimpleBrandsSection from "@/components/store/simple-brands-section";
+import SimpleCategoriesSection from "@/components/store/simple-categories-section";
 import SimpleLoginForm from "@/components/auth/simple-login-form";
 import SimpleRegisterForm from "@/components/auth/simple-register-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -180,6 +181,9 @@ export default function SimpleStore() {
 
         {/* Brands Section */}
         <SimpleBrandsSection />
+
+        {/* Categories Section */}
+        <SimpleCategoriesSection />
 
         {/* Search Bar */}
         <div className="mb-8">
