@@ -8,7 +8,8 @@ interface Category {
   id: number;
   name: string;
   description?: string;
-  isActive: boolean;
+  isActive?: boolean;
+  createdAt?: string;
 }
 
 export default function SimpleCategoriesSection() {
@@ -17,7 +18,10 @@ export default function SimpleCategoriesSection() {
     retry: false,
   });
 
-  const activeCategories = categories.filter((category: Category) => category.isActive);
+  // Remove debug logging for production
+
+  // Since categories don't have isActive field, show all categories
+  const activeCategories = categories;
 
   if (isLoading) {
     return (
@@ -41,7 +45,22 @@ export default function SimpleCategoriesSection() {
     );
   }
 
-  if (!activeCategories.length) return null;
+  if (!activeCategories.length) {
+    return (
+      <section className="py-12 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              Categorías
+            </h2>
+            <p className="text-gray-600">
+              No hay categorías disponibles en este momento
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // Categorías con iconos temáticos
   const getCategoryIcon = (categoryName: string) => {
