@@ -26,9 +26,6 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User role enum
-export const userRoleEnum = pgEnum("user_role", ["admin", "premium", "regular", "basic"]);
-
 // Local authentication table
 export const localUsers = pgTable("local_users", {
   id: serial("id").primaryKey(),
@@ -37,7 +34,7 @@ export const localUsers = pgTable("local_users", {
   email: varchar("email").unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
-  role: userRoleEnum("role").notNull().default("basic"), // admin, premium, regular, basic
+  role: varchar("role").notNull().default("customer"), // admin, customer
   phone: varchar("phone", { length: 20 }),
   company: varchar("company", { length: 200 }),
   address: text("address"),
@@ -57,7 +54,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
-  role: userRoleEnum("role").notNull().default("basic"), // admin, premium, regular, basic
+  role: varchar("role").notNull().default("customer"), // admin, customer
   phone: varchar("phone", { length: 20 }),
   company: varchar("company", { length: 200 }),
   address: text("address"),
@@ -180,11 +177,11 @@ export const orderStatusEnum = pgEnum("order_status", [
   "cancelled",
 ]);
 
-// Orders table (updated to support local users)
+// Orders table
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
   orderNumber: varchar("order_number", { length: 50 }).notNull().unique(),
-  customerId: integer("customer_id").references(() => localUsers.id),
+  customerId: varchar("customer_id").references(() => users.id),
   customerEmail: varchar("customer_email"),
   customerName: varchar("customer_name"),
   customerPhone: varchar("customer_phone"),
@@ -271,62 +268,6 @@ export const industrySections = pgTable("industry_sections", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Customer discount settings table
-export const customerDiscounts = pgTable("customer_discounts", {
-  id: serial("id").primaryKey(),
-  userId: varchar("user_id").notNull(),
-  discountType: varchar("discount_type").notNull(), // "percentage" or "fixed"
-  discountValue: decimal("discount_value", { precision: 10, scale: 2 }).notNull(),
-  applicableToType: varchar("applicable_to_type").notNull(), // "all", "brand", "category", "product"
-  applicableToId: integer("applicable_to_id"), // ID of brand, category, or product if specific
-  minOrderAmount: decimal("min_order_amount", { precision: 10, scale: 2 }).default("0"),
-  maxDiscountAmount: decimal("max_discount_amount", { precision: 10, scale: 2 }),
-  isActive: boolean("is_active").default(true),
-  startDate: timestamp("start_date"),
-  endDate: timestamp("end_date"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Default role discounts (for premium and regular customers)
-export const roleDiscounts = pgTable("role_discounts", {
-  id: serial("id").primaryKey(),
-  role: userRoleEnum("role").notNull(),
-  discountType: varchar("discount_type").notNull(), // "percentage" or "fixed"
-  discountValue: decimal("discount_value", { precision: 10, scale: 2 }).notNull(),
-  applicableToType: varchar("applicable_to_type").notNull(), // "all", "brand", "category"
-  applicableToId: integer("applicable_to_id"), // ID of brand or category if specific
-  minOrderAmount: decimal("min_order_amount", { precision: 10, scale: 2 }).default("0"),
-  maxDiscountAmount: decimal("max_discount_amount", { precision: 10, scale: 2 }),
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Shopping cart table
-export const shoppingCarts = pgTable("shopping_carts", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => localUsers.id, { onDelete: "cascade" }),
-  sessionId: varchar("session_id"), // For guest users
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Shopping cart items
-export const cartItems = pgTable("cart_items", {
-  id: serial("id").primaryKey(),
-  cartId: integer("cart_id").references(() => shoppingCarts.id, { onDelete: "cascade" }).notNull(),
-  productId: integer("product_id").references(() => products.id, { onDelete: "cascade" }).notNull(),
-  sizeId: integer("size_id").references(() => sizes.id),
-  colorId: integer("color_id").references(() => colors.id),
-  quantity: integer("quantity").notNull().default(1),
-  unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-
-
 // Relations
 export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
@@ -390,38 +331,11 @@ export const inventoryRelations = relations(inventory, ({ one }) => ({
 }));
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
-  customer: one(localUsers, {
+  customer: one(users, {
     fields: [orders.customerId],
-    references: [localUsers.id],
+    references: [users.id],
   }),
   items: many(orderItems),
-}));
-
-export const shoppingCartsRelations = relations(shoppingCarts, ({ one, many }) => ({
-  user: one(localUsers, {
-    fields: [shoppingCarts.userId],
-    references: [localUsers.id],
-  }),
-  items: many(cartItems),
-}));
-
-export const cartItemsRelations = relations(cartItems, ({ one }) => ({
-  cart: one(shoppingCarts, {
-    fields: [cartItems.cartId],
-    references: [shoppingCarts.id],
-  }),
-  product: one(products, {
-    fields: [cartItems.productId],
-    references: [products.id],
-  }),
-  size: one(sizes, {
-    fields: [cartItems.sizeId],
-    references: [sizes.id],
-  }),
-  color: one(colors, {
-    fields: [cartItems.colorId],
-    references: [colors.id],
-  }),
 }));
 
 export const orderItemsRelations = relations(orderItems, ({ one }) => ({
@@ -506,18 +420,6 @@ export const insertPromotionSchema = createInsertSchema(promotions).omit({
 });
 
 export const insertIndustrySectionSchema = createInsertSchema(industrySections).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertCustomerDiscountSchema = createInsertSchema(customerDiscounts).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertRoleDiscountSchema = createInsertSchema(roleDiscounts).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -623,9 +525,3 @@ export type QuoteRequest = z.infer<typeof quoteRequestSchema>;
 
 export type InsertIndustrySection = z.infer<typeof insertIndustrySectionSchema>;
 export type IndustrySection = typeof industrySections.$inferSelect;
-
-export type InsertShoppingCart = typeof shoppingCarts.$inferInsert;
-export type ShoppingCart = typeof shoppingCarts.$inferSelect;
-
-export type InsertCartItem = typeof cartItems.$inferInsert;
-export type CartItem = typeof cartItems.$inferSelect;

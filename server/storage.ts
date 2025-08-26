@@ -14,8 +14,6 @@ import {
   productColorImages,
   promotions,
   industrySections,
-  shoppingCarts,
-  cartItems,
   type User,
   type UpsertUser,
   type LocalUser,
@@ -46,13 +44,9 @@ import {
   type InsertPromotion,
   type IndustrySection,
   type InsertIndustrySection,
-  type ShoppingCart,
-  type InsertShoppingCart,
-  type CartItem,
-  type InsertCartItem,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte, ne } from "drizzle-orm";
+import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -61,7 +55,6 @@ export interface IStorage {
   
   // Local authentication operations
   getLocalUserByUsername(username: string): Promise<LocalUser | undefined>;
-  getLocalUserByEmail(email: string): Promise<LocalUser | undefined>;
   getLocalUserById(id: number): Promise<LocalUser | undefined>;
   createLocalUser(user: InsertLocalUser): Promise<LocalUser>;
   updateLocalUserLastLogin(id: number): Promise<void>;
@@ -147,15 +140,6 @@ export interface IStorage {
   updateIndustrySection(id: number, updates: Partial<InsertIndustrySection>): Promise<IndustrySection>;
   deleteIndustrySection(id: number): Promise<void>;
   
-  // Shopping cart operations
-  getOrCreateCart(userId: number): Promise<ShoppingCart>;
-  getCartItems(cartId: number): Promise<CartItem[]>;
-  getCartByUserId(userId: number): Promise<ShoppingCart | undefined>;
-  addToCart(cartItem: InsertCartItem): Promise<CartItem>;
-  updateCartItem(id: number, quantity: number): Promise<CartItem>;
-  removeFromCart(id: number): Promise<void>;
-  clearCart(cartId: number): Promise<void>;
-
   // Analytics
   getDashboardStats(): Promise<{
     totalSales: string;
@@ -192,11 +176,6 @@ export class DatabaseStorage implements IStorage {
   // Local authentication operations
   async getLocalUserByUsername(username: string): Promise<LocalUser | undefined> {
     const [user] = await db.select().from(localUsers).where(eq(localUsers.username, username));
-    return user;
-  }
-
-  async getLocalUserByEmail(email: string): Promise<LocalUser | undefined> {
-    const [user] = await db.select().from(localUsers).where(eq(localUsers.email, email));
     return user;
   }
 
@@ -626,11 +605,11 @@ export class DatabaseStorage implements IStorage {
       .from(products)
       .where(eq(products.isActive, true));
 
-    // Get total customers count (all non-admin users)
+    // Get total customers count
     const [customersResult] = await db
       .select({ count: count() })
       .from(users)
-      .where(ne(users.role, "admin"));
+      .where(eq(users.role, "customer"));
 
     return {
       totalSales: salesResult?.total || "0",
@@ -924,106 +903,6 @@ export class DatabaseStorage implements IStorage {
 
   async deleteIndustrySection(id: number): Promise<void> {
     await db.delete(industrySections).where(eq(industrySections.id, id));
-  }
-
-  // Shopping cart operations
-  async getOrCreateCart(userId: number): Promise<ShoppingCart> {
-    let [cart] = await db.select().from(shoppingCarts).where(eq(shoppingCarts.userId, userId));
-    
-    if (!cart) {
-      [cart] = await db
-        .insert(shoppingCarts)
-        .values({ userId })
-        .returning();
-    }
-    
-    return cart;
-  }
-
-  async getCartByUserId(userId: number): Promise<ShoppingCart | undefined> {
-    const [cart] = await db.select().from(shoppingCarts).where(eq(shoppingCarts.userId, userId));
-    return cart;
-  }
-
-  async getCartItems(cartId: number): Promise<CartItem[]> {
-    return await db
-      .select({
-        id: cartItems.id,
-        cartId: cartItems.cartId,
-        productId: cartItems.productId,
-        sizeId: cartItems.sizeId,
-        colorId: cartItems.colorId,
-        quantity: cartItems.quantity,
-        unitPrice: cartItems.unitPrice,
-        createdAt: cartItems.createdAt,
-        updatedAt: cartItems.updatedAt,
-        product: {
-          id: products.id,
-          name: products.name,
-          sku: products.sku,
-          price: products.price,
-          images: products.images,
-        },
-        size: {
-          id: sizes.id,
-          name: sizes.name,
-        },
-        color: {
-          id: colors.id,
-          name: colors.name,
-          hexCode: colors.hexCode,
-        }
-      })
-      .from(cartItems)
-      .leftJoin(products, eq(cartItems.productId, products.id))
-      .leftJoin(sizes, eq(cartItems.sizeId, sizes.id))
-      .leftJoin(colors, eq(cartItems.colorId, colors.id))
-      .where(eq(cartItems.cartId, cartId));
-  }
-
-  async addToCart(cartItem: InsertCartItem): Promise<CartItem> {
-    // Check if item already exists in cart with same product, size, and color
-    const [existingItem] = await db
-      .select()
-      .from(cartItems)
-      .where(
-        and(
-          eq(cartItems.cartId, cartItem.cartId),
-          eq(cartItems.productId, cartItem.productId),
-          cartItem.sizeId ? eq(cartItems.sizeId, cartItem.sizeId) : eq(cartItems.sizeId, null),
-          cartItem.colorId ? eq(cartItems.colorId, cartItem.colorId) : eq(cartItems.colorId, null)
-        )
-      );
-
-    if (existingItem) {
-      // Update quantity if item exists
-      const newQuantity = existingItem.quantity + cartItem.quantity;
-      return await this.updateCartItem(existingItem.id, newQuantity);
-    } else {
-      // Add new item
-      const [newItem] = await db
-        .insert(cartItems)
-        .values(cartItem)
-        .returning();
-      return newItem;
-    }
-  }
-
-  async updateCartItem(id: number, quantity: number): Promise<CartItem> {
-    const [updated] = await db
-      .update(cartItems)
-      .set({ quantity, updatedAt: new Date() })
-      .where(eq(cartItems.id, id))
-      .returning();
-    return updated;
-  }
-
-  async removeFromCart(id: number): Promise<void> {
-    await db.delete(cartItems).where(eq(cartItems.id, id));
-  }
-
-  async clearCart(cartId: number): Promise<void> {
-    await db.delete(cartItems).where(eq(cartItems.cartId, cartId));
   }
 }
 

@@ -5,14 +5,9 @@ import CustomerLayout from "@/components/layout/customer-layout";
 import PromotionBanner from "@/components/store/promotion-banner";
 import IndustrySection from "@/components/IndustrySection";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Package, Users, Shield, TrendingUp, Star, MessageCircle, ChevronRight, ChevronLeft, LogIn } from "lucide-react";
-import PriceDisplay from "@/components/store/price-display";
-import DiscountBadge from "@/components/store/discount-badge";
-import SimpleLoginForm from "@/components/auth/simple-login-form";
-import SimpleRegisterForm from "@/components/auth/simple-register-form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ShoppingCart, Heart, Package, Users, Shield, TrendingUp, Star, MessageCircle, ChevronRight, ChevronLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import useEmblaCarousel from 'embla-carousel-react';
@@ -232,56 +227,10 @@ export default function StoreIndex() {
       {/* Promotion Banner */}
       <PromotionBanner />
       
-      {/* Login/Register Section - Only show if not authenticated */}
-      {!isAuthenticated && (
-        <section className="py-12 bg-gradient-to-br from-uniform-blue via-blue-700 to-slate-800">
-          <div className="container mx-auto px-4">
-            <div className="max-w-md mx-auto">
-              {/* Header */}
-              <div className="text-center mb-8">
-                <h2 className="text-3xl md:text-4xl font-poppins font-bold text-white mb-4 drop-shadow-lg">
-                  Iniciar Sesión
-                </h2>
-                <p className="text-gray-200 text-lg font-roboto drop-shadow-sm">
-                  Accede a tu cuenta para gestionar tus pedidos y descuentos
-                </p>
-              </div>
-
-              {/* Login/Register Card */}
-              <Card className="bg-white/95 backdrop-blur border-0 shadow-xl">
-                <CardHeader className="text-center pb-4">
-                  <div className="mx-auto mb-4 p-4 rounded-full bg-uniform-blue w-fit">
-                    <LogIn className="h-8 w-8 text-white" />
-                  </div>
-                  <CardTitle className="text-2xl font-bold text-gray-900">
-                    Bienvenido
-                  </CardTitle>
-                </CardHeader>
-                
-                <CardContent>
-                  <Tabs defaultValue="login" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-4">
-                      <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
-                      <TabsTrigger value="register">Registrarse</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="login">
-                      <SimpleLoginForm />
-                    </TabsContent>
-
-                    <TabsContent value="register">
-                      <SimpleRegisterForm />
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Hero Section - Completely Hidden */}
 
       {/* Brands Carousel Section */}
-      <BrandsCarouselSection brands={brands as any[] | undefined} />
+      <BrandsCarouselSection brands={brands} />
 
       {/* Industry Sections - Dynamic */}
       <IndustrySection />
@@ -393,11 +342,9 @@ export default function StoreIndex() {
                     </div>
 
                     <div className="flex items-center justify-between mb-4">
-                      <PriceDisplay 
-                        price={parseFloat(product.price)} 
-                        size="md" 
-                        showDiscount={true}
-                      />
+                      <span className="text-2xl font-poppins font-bold text-uniform-blue">
+                        ${product.price}
+                      </span>
                     </div>
 
                     <div className="flex gap-2">

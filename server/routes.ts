@@ -164,57 +164,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(401).json({ message: "No autenticado" });
   });
 
-  // Register route
-  app.post('/api/auth/register', async (req, res) => {
-    try {
-      const { username, email, password, firstName, lastName } = req.body;
-      
-      // Validate required fields
-      if (!username || !email || !password || !firstName || !lastName) {
-        return res.status(400).json({ message: "Todos los campos son requeridos" });
-      }
-
-      // Check if user already exists
-      const existingUser = await authService.findUserByUsernameOrEmail(username, email);
-      if (existingUser) {
-        return res.status(400).json({ message: "El usuario o email ya existe" });
-      }
-
-      // Create new user with basic role
-      const newUser = await authService.createUser({
-        username,
-        email,
-        password,
-        firstName,
-        lastName,
-        role: 'basic' // Default role for new registrations
-      });
-
-      if (!newUser) {
-        return res.status(500).json({ message: "Error al crear el usuario" });
-      }
-
-      // Store user session
-      req.session.user = newUser;
-
-      res.status(201).json({
-        message: "Usuario registrado exitosamente",
-        user: {
-          id: newUser.id,
-          username: newUser.username,
-          email: newUser.email,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          role: newUser.role
-        }
-      });
-    } catch (error) {
-      console.error("Error en registro:", error);
-      res.status(500).json({ message: "Error interno del servidor" });
-    }
-  });
-
-  // Auth endpoint - unified authentication check
+  // Temporary auth bypass for testing
   app.get('/api/auth/user', async (req: any, res) => {
     try {
       // First check if user is authenticated locally
@@ -235,16 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
         const userId = req.user.claims.sub;
         const user = await storage.getUser(userId);
-        if (user) {
-          return res.json({
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            role: user.role,
-            profileImageUrl: user.profileImageUrl
-          });
-        }
+        return res.json(user);
       }
       
       // No authenticated user found
@@ -1138,89 +1079,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating industry section image:", error);
       res.status(500).json({ error: "Failed to update image" });
-    }
-  });
-
-  // Shopping cart routes
-  app.get('/api/cart', isLocallyAuthenticated, async (req, res) => {
-    try {
-      const userId = req.session.user.id;
-      const cart = await storage.getOrCreateCart(userId);
-      const items = await storage.getCartItems(cart.id);
-      res.json({ cart, items });
-    } catch (error) {
-      console.error("Error fetching cart:", error);
-      res.status(500).json({ message: "Failed to fetch cart" });
-    }
-  });
-
-  app.post('/api/cart/add', isLocallyAuthenticated, async (req, res) => {
-    try {
-      const userId = req.session.user.id;
-      const { productId, sizeId, colorId, quantity, unitPrice } = req.body;
-      
-      if (!productId || !quantity || !unitPrice) {
-        return res.status(400).json({ message: "Product ID, quantity, and unit price are required" });
-      }
-
-      const cart = await storage.getOrCreateCart(userId);
-      const cartItem = await storage.addToCart({
-        cartId: cart.id,
-        productId,
-        sizeId: sizeId || null,
-        colorId: colorId || null,
-        quantity,
-        unitPrice
-      });
-
-      res.json(cartItem);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      res.status(500).json({ message: "Failed to add item to cart" });
-    }
-  });
-
-  app.put('/api/cart/item/:id', isLocallyAuthenticated, async (req, res) => {
-    try {
-      const itemId = parseInt(req.params.id);
-      const { quantity } = req.body;
-
-      if (!quantity || quantity < 1) {
-        return res.status(400).json({ message: "Valid quantity is required" });
-      }
-
-      const updatedItem = await storage.updateCartItem(itemId, quantity);
-      res.json(updatedItem);
-    } catch (error) {
-      console.error("Error updating cart item:", error);
-      res.status(500).json({ message: "Failed to update cart item" });
-    }
-  });
-
-  app.delete('/api/cart/item/:id', isLocallyAuthenticated, async (req, res) => {
-    try {
-      const itemId = parseInt(req.params.id);
-      await storage.removeFromCart(itemId);
-      res.json({ message: "Item removed from cart" });
-    } catch (error) {
-      console.error("Error removing cart item:", error);
-      res.status(500).json({ message: "Failed to remove cart item" });
-    }
-  });
-
-  app.delete('/api/cart/clear', isLocallyAuthenticated, async (req, res) => {
-    try {
-      const userId = req.session.user.id;
-      const cart = await storage.getCartByUserId(userId);
-      
-      if (cart) {
-        await storage.clearCart(cart.id);
-      }
-      
-      res.json({ message: "Cart cleared" });
-    } catch (error) {
-      console.error("Error clearing cart:", error);
-      res.status(500).json({ message: "Failed to clear cart" });
     }
   });
 

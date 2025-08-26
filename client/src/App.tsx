@@ -16,16 +16,13 @@ import AdminReports from "@/pages/admin/reports";
 import AdminPromotions from "@/pages/admin/promotions";
 import AdminIndustrySections from "@/pages/admin/industry-sections";
 import StoreHome from "@/pages/store/index";
-import SimpleStore from "@/pages/simple-store";
 import StoreCatalog from "@/pages/store/catalog";
 import StoreBrands from "@/pages/store/brands";
 import ProductDetail from "@/pages/store/product-detail";
 import Cart from "@/pages/store/cart";
 import CustomerDashboard from "@/pages/customer/dashboard";
 import CustomerRegister from "@/pages/auth/customer-register";
-import CustomerAccount from "@/pages/customer-account";
 import QuoteRequest from "@/pages/store/quote-request";
-import CustomerBenefits from "@/pages/store/customer-benefits";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -43,15 +40,14 @@ function Router() {
     );
   }
 
-  // Show routes for non-authenticated users - Store is the main landing page
+  // Show routes for non-authenticated users
   if (!isAuthenticated) {
     return (
       <Switch>
-        <Route path="/" component={SimpleStore} />
-        <Route path="/store" component={SimpleStore} />
-        <Route path="/store-old" component={StoreHome} />
+        <Route path="/" component={Landing} />
         <Route path="/login" component={LoginPage} />
         <Route path="/auth/register" component={CustomerRegister} />
+        <Route path="/store" component={StoreHome} />
         <Route path="/store/catalog" component={StoreCatalog} />
         <Route path="/store/polos" component={StoreCatalog} />
         <Route path="/store/playeras" component={StoreCatalog} />
@@ -59,39 +55,18 @@ function Router() {
         <Route path="/store/product/:id" component={ProductDetail} />
         <Route path="/store/cart" component={Cart} />
         <Route path="/store/quote-request" component={QuoteRequest} />
-        <Route path="/store/benefits" component={CustomerBenefits} />
         <Route component={NotFound} />
       </Switch>
     );
   }
 
-  // Authenticated routes with role-based redirection
-  // Auto-redirect based on user role
-  const userRole = (user as any)?.role;
-  
+  // Authenticated routes based on user role
   return (
     <Switch>
-      {/* Root redirect - always go to store for authenticated users */}
-      <Route path="/">
-        {() => {
-          window.location.href = '/store';
-          return null;
-        }}
-      </Route>
-      
       {/* Admin routes */}
-      {userRole === 'admin' ? (
+      {(user as any)?.role === 'admin' ? (
         <>
-          <Route path="/store" component={SimpleStore} />
-          <Route path="/store-old" component={StoreHome} />
-          <Route path="/store/catalog" component={StoreCatalog} />
-          <Route path="/store/polos" component={StoreCatalog} />
-          <Route path="/store/playeras" component={StoreCatalog} />
-          <Route path="/store/brands" component={StoreBrands} />
-          <Route path="/store/product/:id" component={ProductDetail} />
-          <Route path="/store/cart" component={Cart} />
-          <Route path="/store/quote-request" component={QuoteRequest} />
-          <Route path="/store/benefits" component={CustomerBenefits} />
+          <Route path="/" component={AdminDashboard} />
           <Route path="/admin" component={AdminDashboard} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route path="/admin/sales" component={AdminSales} />
@@ -102,13 +77,9 @@ function Router() {
           <Route path="/admin/reports" component={AdminReports} />
           <Route path="/admin/promotions" component={AdminPromotions} />
           <Route path="/admin/industry-sections" component={AdminIndustrySections} />
-          <Route path="/account" component={CustomerAccount} />
-        </>
-      ) : (
-        <>
-          {/* Customer routes - All customer types (premium, regular, basic) */}
-          <Route path="/store" component={SimpleStore} />
-          <Route path="/store-old" component={StoreHome} />
+          
+          {/* Admin can also access store routes */}
+          <Route path="/store" component={StoreHome} />
           <Route path="/store/catalog" component={StoreCatalog} />
           <Route path="/store/polos" component={StoreCatalog} />
           <Route path="/store/playeras" component={StoreCatalog} />
@@ -116,7 +87,19 @@ function Router() {
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
           <Route path="/store/quote-request" component={QuoteRequest} />
-          <Route path="/store/benefits" component={CustomerBenefits} />
+        </>
+      ) : (
+        <>
+          {/* Customer routes */}
+          <Route path="/" component={StoreHome} />
+          <Route path="/store" component={StoreHome} />
+          <Route path="/store/catalog" component={StoreCatalog} />
+          <Route path="/store/polos" component={StoreCatalog} />
+          <Route path="/store/playeras" component={StoreCatalog} />
+          <Route path="/store/brands" component={StoreBrands} />
+          <Route path="/store/product/:id" component={ProductDetail} />
+          <Route path="/store/cart" component={Cart} />
+          <Route path="/store/quote-request" component={QuoteRequest} />
           
           {/* Customer dashboard and account routes */}
           <Route path="/customer" component={CustomerDashboard} />
@@ -125,7 +108,6 @@ function Router() {
           <Route path="/customer/favorites" component={CustomerDashboard} />
           <Route path="/customer/quotes" component={CustomerDashboard} />
           <Route path="/customer/profile" component={CustomerDashboard} />
-          <Route path="/account" component={CustomerAccount} />
         </>
       )}
       

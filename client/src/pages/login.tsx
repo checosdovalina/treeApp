@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Shield, Users, ArrowRight, Building, User } from "lucide-react";
 import { useLocation } from "wouter";
 import treeLogo from "@assets/TREE LOGO_1753399074765.png";
-import SimpleLoginForm from "@/components/auth/simple-login-form";
-import SimpleRegisterForm from "@/components/auth/simple-register-form";
 
 export default function LoginPage() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -87,7 +88,7 @@ export default function LoginPage() {
                   className="flex items-center gap-2"
                 >
                   <Shield className="h-4 w-4" />
-                  Cuenta Local
+                  Administrador
                 </TabsTrigger>
               </TabsList>
 
@@ -133,42 +134,51 @@ export default function LoginPage() {
               </TabsContent>
 
               <TabsContent value="admin" className="space-y-4">
-                <Tabs value="login" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
-                    <TabsTrigger value="register">Registrarse</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="login" className="space-y-4 mt-4">
-                    <div className="text-center py-2">
-                      <div className="bg-red-100 rounded-full p-3 w-12 h-12 mx-auto mb-3">
-                        <Shield className="h-6 w-6 text-red-600" />
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">
-                        Iniciar Sesión
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Accede a tu cuenta existente
-                      </p>
+                <div className="text-center py-4">
+                  <div className="bg-red-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+                    <Shield className="h-8 w-8 text-red-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Panel de Administración
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Acceso completo para gestionar productos, pedidos, clientes y reportes del negocio
+                  </p>
+                  
+                  <div className="space-y-3 text-left">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <ArrowRight className="h-4 w-4 mr-2 text-blue-600" />
+                      Gestión de productos e inventario
                     </div>
-                    <SimpleLoginForm />
-                  </TabsContent>
-
-                  <TabsContent value="register" className="space-y-4 mt-4">
-                    <div className="text-center py-2">
-                      <div className="bg-blue-100 rounded-full p-3 w-12 h-12 mx-auto mb-3">
-                        <User className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">
-                        Crear Cuenta
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Regístrate para acceder a beneficios exclusivos
-                      </p>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <ArrowRight className="h-4 w-4 mr-2 text-blue-600" />
+                      Procesamiento de pedidos
                     </div>
-                    <SimpleRegisterForm />
-                  </TabsContent>
-                </Tabs>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <ArrowRight className="h-4 w-4 mr-2 text-blue-600" />
+                      Generación de cotizaciones
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <ArrowRight className="h-4 w-4 mr-2 text-blue-600" />
+                      Reportes de ventas y analytics
+                    </div>
+                  </div>
+                </div>
+
+                <Alert>
+                  <Shield className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>Acceso Restringido:</strong> Solo usuarios con permisos de administrador pueden acceder a esta sección.
+                  </AlertDescription>
+                </Alert>
+
+                <Button
+                  onClick={handleReplicAuth}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                  size="lg"
+                >
+                  Iniciar Sesión como Administrador
+                </Button>
               </TabsContent>
             </Tabs>
 
