@@ -586,6 +586,18 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                           </Button>
                         </Link>
                       )}
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <Link href="/auth/admin-register">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full border-uniform-primary text-uniform-primary hover:bg-uniform-primary hover:text-white"
+                          >
+                            <Building className="h-4 w-4 mr-2" />
+                            Registrarse como Admin
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </SheetContent>

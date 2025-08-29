@@ -479,6 +479,21 @@ export type LocalUser = typeof localUsers.$inferSelect;
 export type InsertLocalUser = z.infer<typeof insertLocalUserSchema>;
 export type LoginRequest = z.infer<typeof loginSchema>;
 
+export const adminRegistrationSchema = z.object({
+  email: z.string().email("Email inválido"),
+  firstName: z.string().min(1, "El nombre es requerido"),
+  lastName: z.string().optional(),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  confirmPassword: z.string(),
+  adminCode: z.string().min(1, "El código de administrador es requerido"),
+  role: z.literal("admin"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
+});
+
+export type AdminRegistrationRequest = z.infer<typeof adminRegistrationSchema>;
+
 // Size range types
 export type SizeRange = typeof sizeRanges.$inferSelect;
 export type InsertSizeRange = typeof sizeRanges.$inferInsert;

@@ -22,6 +22,7 @@ import ProductDetail from "@/pages/store/product-detail";
 import Cart from "@/pages/store/cart";
 import CustomerDashboard from "@/pages/customer/dashboard";
 import CustomerRegister from "@/pages/auth/customer-register";
+import AdminRegister from "@/pages/auth/admin-register";
 import QuoteRequest from "@/pages/store/quote-request";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -44,9 +45,11 @@ function Router() {
   if (!isAuthenticated) {
     return (
       <Switch>
-        <Route path="/" component={Landing} />
+        <Route path="/" component={StoreHome} />
+        <Route path="/landing" component={Landing} />
         <Route path="/login" component={LoginPage} />
         <Route path="/auth/register" component={CustomerRegister} />
+        <Route path="/auth/admin-register" component={AdminRegister} />
         <Route path="/store" component={StoreHome} />
         <Route path="/store/catalog" component={StoreCatalog} />
         <Route path="/store/polos" component={StoreCatalog} />
@@ -66,7 +69,7 @@ function Router() {
       {/* Admin routes */}
       {(user as any)?.role === 'admin' ? (
         <>
-          <Route path="/" component={AdminDashboard} />
+          <Route path="/" component={StoreHome} />
           <Route path="/admin" component={AdminDashboard} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route path="/admin/sales" component={AdminSales} />
@@ -113,6 +116,7 @@ function Router() {
       
       {/* Common routes */}
       <Route path="/login" component={LoginPage} />
+      <Route path="/auth/admin-register" component={AdminRegister} />
       
       {/* Fallback */}
       <Route component={NotFound} />

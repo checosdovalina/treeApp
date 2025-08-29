@@ -52,7 +52,8 @@ import {
   customerRegistrationSchema,
   quoteRequestSchema,
   sizeRanges,
-  loginSchema
+  loginSchema,
+  adminRegistrationSchema
 } from "@shared/schema";
 import { z } from "zod";
 import { db } from "./db";
@@ -238,6 +239,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "El email ya está registrado" });
       }
       res.status(400).json({ message: "Error al registrar el cliente" });
+    }
+  });
+
+  // Admin registration route
+  app.post('/api/auth/register-admin', async (req, res) => {
+    try {
+      const adminData = adminRegistrationSchema.parse(req.body);
+      
+      // Verify admin code
+      if (adminData.adminCode !== "TREE2024ADMIN") {
+        return res.status(400).json({ message: "Código de administrador inválido" });
+      }
+
+      // Check if email already exists
+      const existingUser = await storage.getUserByEmail(adminData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "El email ya está registrado" });
+      }
+
+      // Generate a unique admin ID
+      const adminId = `admin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      // Create admin user
+      const adminUser = {
+        id: adminId,
+        email: adminData.email,
+        firstName: adminData.firstName,
+        lastName: adminData.lastName,
+        role: 'admin' as const,
+        phone: null,
+        company: null,
+        address: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        isActive: true,
+        profileImageUrl: null
+      };
+
+      const user = await storage.upsertUser(adminUser);
+      res.json({ 
+        message: "Administrador registrado exitosamente", 
+        user: { 
+          id: user.id, 
+          email: user.email, 
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role 
+        } 
+      });
+    } catch (error) {
+      console.error("Admin registration error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos de registro inválidos", errors: error.errors });
+      }
+      if (error.code === '23505') { // Unique constraint violation
+        return res.status(400).json({ message: "El email ya está registrado" });
+      }
+      res.status(500).json({ message: "Error interno del servidor" });
     }
   });
 

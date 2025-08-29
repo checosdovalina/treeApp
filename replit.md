@@ -11,6 +11,8 @@ Design inspiration: lacasadelachamarra.com - modern e-commerce layout with hero 
 Priority: Mobile responsiveness is essential for customer experience
 Authentication: Role-based system with admin vs customer accounts and appropriate redirections
 Admin Access: Confirmed working - user has admin role and can access /admin dashboard
+Navigation Updates: Store is now the default home page for all users, improved breadcrumb navigation and context actions between admin/store
+Registration System: Added admin registration capability with secure admin code validation
 
 ## System Architecture
 
