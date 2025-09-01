@@ -136,6 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Logout POST route for API calls
   app.post('/api/auth/logout', (req: any, res) => {
     if (req.session) {
       req.session.destroy((err: any) => {
@@ -147,6 +148,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } else {
       res.json({ message: "No hay sesión activa" });
+    }
+  });
+
+  // Logout GET route for direct navigation
+  app.get('/api/logout', (req: any, res) => {
+    if (req.session) {
+      req.session.destroy((err: any) => {
+        if (err) {
+          console.error("Error destroying session:", err);
+          return res.redirect('/');
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/');
+      });
+    } else {
+      res.redirect('/');
     }
   });
 

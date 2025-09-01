@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -25,13 +28,41 @@ interface StoreLayoutProps {
 }
 
 export default function StoreLayout({ children }: StoreLayoutProps) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { isAuthenticated, user } = useAuth();
   const { getTotalItems } = useCart();
   const itemCount = getTotalItems();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", "/api/auth/logout");
+    },
+    onSuccess: () => {
+      // Clear all auth-related cache
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/current"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      toast({
+        title: "Sesión cerrada",
+        description: "Has cerrado sesión exitosamente",
+      });
+      
+      // Redirect to store page
+      setLocation("/");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Error al cerrar sesión",
+        variant: "destructive",
+      });
+    },
+  });
 
   const navigation = [
     { name: "Inicio", href: "/store" },
@@ -149,9 +180,10 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
                           variant="outline" 
                           size="sm" 
                           className="w-full"
-                          onClick={() => window.location.href = '/api/logout'}
+                          onClick={() => logoutMutation.mutate()}
+                          disabled={logoutMutation.isPending}
                         >
-                          Cerrar Sesión
+                          {logoutMutation.isPending ? "Cerrando..." : "Cerrar Sesión"}
                         </Button>
                       </div>
                     ) : (
