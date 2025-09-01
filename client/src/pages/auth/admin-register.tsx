@@ -4,19 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Building, User, Mail, Lock, AlertCircle } from "lucide-react";
-
-// import treeLogo from "@assets/TREE LOGO_1753399074765.png";
-const treeLogo = "/tree-logo.png";
+import { Building, User, Mail, Lock, AlertCircle, Shield, Eye, EyeOff } from "lucide-react";
 
 export default function AdminRegister() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     firstName: "",
@@ -36,7 +34,7 @@ export default function AdminRegister() {
         title: "Registro exitoso",
         description: "Tu cuenta de administrador ha sido creada. Ya puedes iniciar sesión.",
       });
-      setLocation("/api/login");
+      setLocation("/auth/login");
     },
     onError: (error: any) => {
       toast({
@@ -85,187 +83,183 @@ export default function AdminRegister() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-uniform-blue to-uniform-primary flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <img 
-            src={treeLogo} 
-            alt="TREE Uniformes & Kodiak Industrial"
-            className="h-16 w-auto mx-auto mb-4"
-          />
-          <h1 className="text-2xl font-bold text-white mb-2">TREE UNIFORMES</h1>
-          <p className="text-uniform-gold font-medium">Panel de Administración</p>
-        </div>
-
-        <Card className="shadow-2xl border-0">
-          <CardHeader className="space-y-2 text-center">
-            <div className="w-12 h-12 bg-uniform-primary rounded-full flex items-center justify-center mx-auto">
-              <Building className="h-6 w-6 text-white" />
-            </div>
-            <CardTitle className="text-2xl text-uniform-primary">Registro de Administrador</CardTitle>
-            <CardDescription>
-              Crea tu cuenta de administrador para gestionar la plataforma
+    <div className="min-h-screen bg-gradient-to-br from-uniform-primary/5 via-white to-uniform-accent/5 flex items-center justify-center p-4">
+      <Card className="w-full max-w-lg mx-auto shadow-xl border-0 bg-white/95 backdrop-blur">
+        <CardHeader className="space-y-4 text-center">
+          <div className="mx-auto w-16 h-16 bg-uniform-primary rounded-full flex items-center justify-center">
+            <Shield className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <CardTitle className="text-2xl font-bold text-uniform-neutral-900">
+              Registro de Administrador
+            </CardTitle>
+            <CardDescription className="text-uniform-secondary">
+              Crea una nueva cuenta de administrador con código de acceso
             </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Código de Admin */}
-              <div className="space-y-2">
-                <Label htmlFor="adminCode" className="text-sm font-medium">
-                  Código de Administrador *
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="adminCode"
-                    type="password"
-                    placeholder="Ingresa el código de administrador"
-                    value={formData.adminCode}
-                    onChange={(e) => handleInputChange("adminCode", e.target.value)}
-                    className="pl-10"
-                    required
-                    data-testid="input-admin-code"
-                  />
-                </div>
-                <p className="text-xs text-gray-500">
-                  Contacta al administrador principal para obtener este código
-                </p>
-              </div>
+          </div>
+        </CardHeader>
 
-              {/* Email */}
+        <CardContent className="space-y-6">
+          <Alert className="border-amber-200 bg-amber-50">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              Necesitas un código de administrador válido para crear esta cuenta.
+            </AlertDescription>
+          </Alert>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">Email *</Label>
+                <Label htmlFor="firstName">Nombre *</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="tu@email.com"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    id="firstName"
+                    type="text"
+                    placeholder="Tu nombre"
+                    value={formData.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
                     className="pl-10"
                     required
-                    data-testid="input-email"
                   />
                 </div>
               </div>
-
-              {/* Nombre y Apellido */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-sm font-medium">Nombre *</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="firstName"
-                      type="text"
-                      placeholder="Nombre"
-                      value={formData.firstName}
-                      onChange={(e) => handleInputChange("firstName", e.target.value)}
-                      className="pl-10"
-                      required
-                      data-testid="input-first-name"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-sm font-medium">Apellido</Label>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Apellido</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="lastName"
                     type="text"
-                    placeholder="Apellido"
+                    placeholder="Tu apellido"
                     value={formData.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
-                    data-testid="input-last-name"
-                  />
-                </div>
-              </div>
-
-              {/* Contraseña */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">Contraseña *</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Mínimo 6 caracteres"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
                     className="pl-10"
-                    required
-                    minLength={6}
-                    data-testid="input-password"
                   />
                 </div>
               </div>
-
-              {/* Confirmar Contraseña */}
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirmar Contraseña *</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Repite la contraseña"
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                    className="pl-10"
-                    required
-                    data-testid="input-confirm-password"
-                  />
-                </div>
-              </div>
-
-              {/* Información de seguridad */}
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="text-sm">
-                  Las cuentas de administrador tienen acceso completo al sistema. 
-                  Asegúrate de usar una contraseña segura y mantener tus credenciales protegidas.
-                </AlertDescription>
-              </Alert>
-
-              <Button
-                type="submit"
-                className="w-full bg-uniform-primary hover:bg-uniform-primary/90"
-                disabled={registerMutation.isPending}
-                data-testid="button-register"
-              >
-                {registerMutation.isPending ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                    <span>Creando cuenta...</span>
-                  </div>
-                ) : (
-                  "Crear Cuenta de Administrador"
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center space-y-2">
-              <p className="text-sm text-gray-600">
-                ¿Ya tienes una cuenta?{" "}
-                <Button variant="link" className="p-0 h-auto text-uniform-primary" asChild>
-                  <Link href="/api/login" data-testid="link-login">
-                    Iniciar Sesión
-                  </Link>
-                </Button>
-              </p>
-              <p className="text-sm text-gray-600">
-                <Button variant="link" className="p-0 h-auto text-uniform-primary" asChild>
-                  <Link href="/" data-testid="link-store">
-                    Volver a la Tienda
-                  </Link>
-                </Button>
-              </p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email *</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@empresa.com"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Contraseña *</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Mínimo 6 caracteres"
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  className="pl-10 pr-10"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirmar Contraseña *</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Repite tu contraseña"
+                  value={formData.confirmPassword}
+                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                  className="pl-10 pr-10"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="adminCode">Código de Administrador *</Label>
+              <div className="relative">
+                <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="adminCode"
+                  type="password"
+                  placeholder="Código secreto de acceso"
+                  value={formData.adminCode}
+                  onChange={(e) => handleInputChange('adminCode', e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-uniform-primary hover:bg-uniform-primary/90"
+              disabled={registerMutation.isPending}
+            >
+              {registerMutation.isPending ? "Creando cuenta..." : "Crear Cuenta de Admin"}
+            </Button>
+          </form>
+
+          <div className="text-center pt-4 border-t border-gray-200">
+            <p className="text-sm text-gray-600">
+              ¿Ya tienes una cuenta?{" "}
+              <Link
+                href="/auth/login"
+                className="text-uniform-primary hover:text-uniform-primary/80 font-medium"
+              >
+                Iniciar sesión
+              </Link>
+            </p>
+            <p className="text-sm text-gray-600 mt-2">
+              <Link
+                href="/"
+                className="text-uniform-secondary hover:text-uniform-secondary/80"
+              >
+                ← Volver a la tienda
+              </Link>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
