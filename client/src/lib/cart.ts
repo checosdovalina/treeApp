@@ -10,7 +10,7 @@ export interface CartItem {
   color?: string;
 }
 
-const CART_STORAGE_KEY = 'uniformes-laguna-cart';
+const CART_STORAGE_KEY = 'shopping-cart';
 
 // Get cart from localStorage
 const getStoredCart = (): CartItem[] => {
