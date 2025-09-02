@@ -37,7 +37,7 @@ export default function LoginPage() {
       
       // Redirect based on user role
       if (response.user.role === 'admin') {
-        setLocation("/admin/dashboard");
+        setLocation("/admin");
       } else {
         setLocation("/");
       }
