@@ -563,12 +563,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createQuote(quote: InsertQuote): Promise<Quote> {
-    // Generate quote number
-    const quoteNumber = `QT-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
-    
     const [newQuote] = await db
       .insert(quotes)
-      .values({ ...quote, quoteNumber })
+      .values(quote)
       .returning();
     return newQuote;
   }

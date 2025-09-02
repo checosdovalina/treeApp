@@ -430,11 +430,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      // Generate quote number
+      const quoteNumber = `QT-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+      
       // Create quote
       const quote = {
+        quoteNumber,
         customerId: finalCustomerId,
         items: JSON.stringify(items),
-        totalAmount: totalAmount.toString(),
+        subtotal: totalAmount.toString(),
+        total: totalAmount.toString(),
         urgency: quoteData.urgency,
         notes: quoteData.notes || '',
         preferredDeliveryDate: quoteData.preferredDeliveryDate ? new Date(quoteData.preferredDeliveryDate) : null,
