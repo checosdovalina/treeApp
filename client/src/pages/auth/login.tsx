@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { loginSchema, type LoginRequest } from "@shared/schema";
-import { Eye, EyeOff, LogIn, Shield } from "lucide-react";
+import { Eye, EyeOff, LogIn, Shield, User } from "lucide-react";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
@@ -149,6 +149,32 @@ export default function LoginPage() {
               </Button>
             </form>
           </Form>
+
+          {/* Registration Options */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-center text-sm text-gray-600 mb-4">¿No tienes una cuenta?</p>
+            <div className="space-y-3">
+              <Link href="/auth/register">
+                <Button
+                  variant="outline"
+                  className="w-full border-uniform-primary text-uniform-primary hover:bg-uniform-primary hover:text-white"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Registrarse como Cliente
+                </Button>
+              </Link>
+              <Link href="/auth/admin-register">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-uniform-secondary text-uniform-secondary hover:bg-uniform-secondary hover:text-white"
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  Registrarse como Administrador
+                </Button>
+              </Link>
+            </div>
+          </div>
 
           {/* Demo credentials */}
           <div className="mt-6 p-4 bg-uniform-primary/5 rounded-lg border border-uniform-primary/20">

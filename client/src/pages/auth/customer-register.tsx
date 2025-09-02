@@ -35,11 +35,7 @@ export default function CustomerRegisterPage() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: CustomerRegistration) => {
-      return await apiRequest("/api/register/customer", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+      return await apiRequest("POST", "/api/register/customer", data);
     },
     onSuccess: () => {
       setIsSubmitted(true);
@@ -297,7 +293,7 @@ export default function CustomerRegisterPage() {
         <div className="text-center mt-6">
           <p className="text-gray-600">
             ¿Ya tienes cuenta?{" "}
-            <Link href="/api/login" className="text-uniform-primary hover:underline">
+            <Link href="/auth/login" className="text-uniform-primary hover:underline">
               Inicia sesión aquí
             </Link>
           </p>

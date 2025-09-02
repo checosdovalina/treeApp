@@ -610,7 +610,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                           Cerrar Sesión
                         </Button>
                       ) : (
-                        <Link href="/login">
+                        <Link href="/auth/login">
                           <Button className="w-full bg-uniform-blue hover:bg-uniform-blue-light text-white font-poppins">
                             Iniciar Sesión
                           </Button>
