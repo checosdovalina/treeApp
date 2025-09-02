@@ -83,11 +83,7 @@ export default function QuoteRequestPage() {
         customerInfo: !isAuthenticated ? data.customerInfo : undefined,
       };
 
-      return await apiRequest("/api/quotes/request", {
-        method: "POST",
-        body: JSON.stringify(requestData),
-        headers: { "Content-Type": "application/json" },
-      });
+      return await apiRequest("POST", "/api/quotes/request", requestData);
     },
     onSuccess: (response) => {
       setIsSubmitted(true);
