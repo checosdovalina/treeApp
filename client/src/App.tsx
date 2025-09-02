@@ -29,9 +29,6 @@ import { useAuth } from "@/hooks/useAuth";
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
   
-  // Debug logging
-  console.log("Router Debug:", { isAuthenticated, isLoading, user, userRole: (user as any)?.role });
-
   // Show loading state
   if (isLoading) {
     return (
@@ -67,48 +64,41 @@ function Router() {
     );
   }
 
-  // Check user role
-  const userRole = (user as any)?.role;
-  const isAdmin = userRole === 'admin';
-  
-  console.log("Role Check:", { userRole, isAdmin, condition: userRole === 'admin' });
-
-  // Authenticated routes based on user role
-  if (isAdmin) {
-    return (
-      <Switch>
-        <Route path="/" component={StoreHome} />
-        <Route path="/admin" component={AdminDashboard} />
-        <Route path="/admin/dashboard" component={AdminDashboard} />
-        <Route path="/admin/sales" component={AdminSales} />
-        <Route path="/admin/products" component={AdminProducts} />
-        <Route path="/admin/orders" component={AdminOrders} />
-        <Route path="/admin/customers" component={AdminCustomers} />
-        <Route path="/admin/quotes" component={AdminQuotes} />
-        <Route path="/admin/reports" component={AdminReports} />
-        <Route path="/admin/promotions" component={AdminPromotions} />
-        <Route path="/admin/industry-sections" component={AdminIndustrySections} />
-        
-        {/* Admin can also access store routes */}
-        <Route path="/store" component={StoreHome} />
-        <Route path="/store/catalog" component={StoreCatalog} />
-        <Route path="/store/polos" component={StoreCatalog} />
-        <Route path="/store/playeras" component={StoreCatalog} />
-        <Route path="/store/brands" component={StoreBrands} />
-        <Route path="/store/product/:id" component={ProductDetail} />
-        <Route path="/store/cart" component={Cart} />
-        <Route path="/store/quote-request" component={QuoteRequest} />
-        
-        {/* Admin NotFound */}
-        <Route component={NotFound} />
-      </Switch>
-    );
-  }
-
-  // Customer routes  
+  // Authenticated routes - unified approach
   return (
     <Switch>
+      {/* Home route */}
       <Route path="/" component={StoreHome} />
+      
+      {/* Admin routes - only show if user is admin */}
+      {(user as any)?.role === 'admin' && (
+        <>
+          <Route path="/admin" component={AdminDashboard} />
+          <Route path="/admin/dashboard" component={AdminDashboard} />
+          <Route path="/admin/sales" component={AdminSales} />
+          <Route path="/admin/products" component={AdminProducts} />
+          <Route path="/admin/orders" component={AdminOrders} />
+          <Route path="/admin/customers" component={AdminCustomers} />
+          <Route path="/admin/quotes" component={AdminQuotes} />
+          <Route path="/admin/reports" component={AdminReports} />
+          <Route path="/admin/promotions" component={AdminPromotions} />
+          <Route path="/admin/industry-sections" component={AdminIndustrySections} />
+        </>
+      )}
+      
+      {/* Customer routes - only show if user is customer */}
+      {(user as any)?.role === 'customer' && (
+        <>
+          <Route path="/customer" component={CustomerDashboard} />
+          <Route path="/customer/dashboard" component={CustomerDashboard} />
+          <Route path="/customer/orders" component={CustomerDashboard} />
+          <Route path="/customer/favorites" component={CustomerDashboard} />
+          <Route path="/customer/quotes" component={CustomerDashboard} />
+          <Route path="/customer/profile" component={CustomerDashboard} />
+        </>
+      )}
+      
+      {/* Store routes - available to all authenticated users */}
       <Route path="/store" component={StoreHome} />
       <Route path="/store/catalog" component={StoreCatalog} />
       <Route path="/store/polos" component={StoreCatalog} />
@@ -118,15 +108,11 @@ function Router() {
       <Route path="/store/cart" component={Cart} />
       <Route path="/store/quote-request" component={QuoteRequest} />
       
-      {/* Customer dashboard and account routes */}
-      <Route path="/customer" component={CustomerDashboard} />
-      <Route path="/customer/dashboard" component={CustomerDashboard} />
-      <Route path="/customer/orders" component={CustomerDashboard} />
-      <Route path="/customer/favorites" component={CustomerDashboard} />
-      <Route path="/customer/quotes" component={CustomerDashboard} />
-      <Route path="/customer/profile" component={CustomerDashboard} />
+      {/* Auth routes for authenticated users */}
+      <Route path="/login" component={LoginPage} />
+      <Route path="/auth/login" component={LoginPage} />
       
-      {/* Customer NotFound */}
+      {/* Fallback */}
       <Route component={NotFound} />
     </Switch>
   );
