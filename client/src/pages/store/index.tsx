@@ -227,7 +227,40 @@ export default function StoreIndex() {
       {/* Promotion Banner */}
       <PromotionBanner />
       
-      {/* Hero Section - Completely Hidden */}
+      {/* Hero Section */}
+      <section className="relative h-[60vh] min-h-[400px] bg-gradient-to-br from-uniform-blue via-blue-700 to-slate-800 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="container mx-auto px-4 h-full flex items-center relative z-10">
+          <div className="max-w-2xl">
+            <h1 className="text-4xl md:text-6xl font-poppins font-bold mb-6 leading-tight">
+              UNIFORMES <span className="text-uniform-yellow">PROFESIONALES</span>
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 text-gray-200 font-roboto">
+              Calidad, estilo y durabilidad para tu empresa
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button 
+                size="lg" 
+                className="bg-uniform-yellow hover:bg-yellow-500 text-uniform-blue font-semibold px-8 py-4 text-lg"
+                asChild
+              >
+                <Link href="/store/catalog">Ver Catálogo</Link>
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-uniform-blue px-8 py-4 text-lg"
+                asChild
+              >
+                <Link href="/store/quote-request">Solicitar Cotización</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="absolute right-0 top-0 w-1/2 h-full opacity-10">
+          <div className="w-full h-full bg-gradient-to-l from-white/20 to-transparent"></div>
+        </div>
+      </section>
 
       {/* Brands Carousel Section */}
       <BrandsCarouselSection brands={brands} />
