@@ -386,9 +386,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const quoteData = quoteRequestSchema.parse(req.body);
       const { customerId, customerInfo } = req.body;
       
-      // If customer is not logged in, create a temporary customer
+      // Handle customer ID for both authenticated and non-authenticated users
       let finalCustomerId = customerId;
-      if (!customerId && customerInfo) {
+      
+      if (customerId) {
+        // For authenticated users, ensure they exist in the users table
+        const existingUser = await storage.getUserById(customerId.toString());
+        if (!existingUser) {
+          // Create user entry if it doesn't exist
+          const localUser = await storage.getLocalUser(parseInt(customerId));
+          if (localUser) {
+            const userForQuotes = {
+              id: customerId.toString(),
+              email: localUser.email,
+              firstName: localUser.firstName,
+              lastName: localUser.lastName,
+              role: localUser.role,
+              phone: localUser.phone,
+              company: localUser.company,
+              address: localUser.address,
+              city: localUser.city,
+              state: localUser.state,
+              zipCode: localUser.zipCode,
+              isActive: localUser.isActive,
+              profileImageUrl: null
+            };
+            await storage.upsertUser(userForQuotes);
+          }
+        }
+        finalCustomerId = customerId.toString();
+      } else if (customerInfo) {
+        // For non-authenticated users, create a temporary customer
         const tempCustomerId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const tempCustomer = {
           id: tempCustomerId,
