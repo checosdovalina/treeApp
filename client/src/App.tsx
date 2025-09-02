@@ -24,6 +24,7 @@ import ProductDetail from "@/pages/store/product-detail";
 import Cart from "@/pages/store/cart";
 import Checkout from "@/pages/store/checkout";
 import CustomerDashboard from "@/pages/customer/dashboard";
+import CustomerQuotes from "@/pages/customer/quotes";
 import CustomerRegister from "@/pages/auth/customer-register";
 import AdminRegister from "@/pages/auth/admin-register";
 import QuoteRequest from "@/pages/store/quote-request";
@@ -98,7 +99,7 @@ function Router() {
           <Route path="/customer/dashboard" component={CustomerDashboard} />
           <Route path="/customer/orders" component={CustomerDashboard} />
           <Route path="/customer/favorites" component={CustomerDashboard} />
-          <Route path="/customer/quotes" component={CustomerDashboard} />
+          <Route path="/customer/quotes" component={CustomerQuotes} />
           <Route path="/customer/profile" component={CustomerDashboard} />
         </>
       )}
