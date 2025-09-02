@@ -56,6 +56,7 @@ export interface IStorage {
   
   // Local authentication operations
   getLocalUserByUsername(username: string): Promise<LocalUser | undefined>;
+  getLocalUserByEmail(email: string): Promise<LocalUser | undefined>;
   getLocalUserById(id: number): Promise<LocalUser | undefined>;
   createLocalUser(user: InsertLocalUser): Promise<LocalUser>;
   updateLocalUserLastLogin(id: number): Promise<void>;

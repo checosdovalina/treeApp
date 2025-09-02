@@ -11,26 +11,41 @@ export interface AuthService {
 
 class LocalAuthService implements AuthService {
   async login(usernameOrEmail: string, password: string): Promise<{ user: LocalUser; success: boolean }> {
+    console.log("AuthService: attempting to find user:", usernameOrEmail);
+    
     // Try to find user by username first, then by email
     let user = await storage.getLocalUserByUsername(usernameOrEmail);
+    console.log("User found by username:", user ? "Yes" : "No");
     
     if (!user) {
       user = await storage.getLocalUserByEmail(usernameOrEmail);
+      console.log("User found by email:", user ? "Yes" : "No");
     }
     
-    if (!user || !user.isActive) {
+    if (!user) {
+      console.log("No user found with identifier:", usernameOrEmail);
       return { user: null as any, success: false };
     }
     
+    if (!user.isActive) {
+      console.log("User found but inactive:", usernameOrEmail);
+      return { user: null as any, success: false };
+    }
+    
+    console.log("Found user:", { id: user.id, email: user.email, username: user.username });
+    
     const isValidPassword = await this.verifyPassword(password, user.password);
+    console.log("Password verification result:", isValidPassword);
     
     if (!isValidPassword) {
+      console.log("Invalid password for user:", usernameOrEmail);
       return { user: null as any, success: false };
     }
     
     // Update last login
     await storage.updateLocalUserLastLogin(user.id);
     
+    console.log("Login successful for:", user.email);
     return { user, success: true };
   }
   
