@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { z } from "zod";
-import { useCart } from "@/hooks/useCart";
+import { useCart } from "@/lib/cart";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -40,7 +40,7 @@ const quoteFormSchema = z.object({
 type QuoteFormData = z.infer<typeof quoteFormSchema>;
 
 // Import CartItem from the hook
-import type { CartItem } from "@/hooks/useCart";
+import type { CartItem } from "@/lib/cart";
 
 export default function QuoteRequestPage() {
   const { user, isAuthenticated } = useAuth();
@@ -67,10 +67,10 @@ export default function QuoteRequestPage() {
   const quoteRequestMutation = useMutation({
     mutationFn: async (data: QuoteFormData) => {
       const products = cartItems.map(item => ({
-        productId: item.productId,
+        productId: parseInt(item.id),
         quantity: item.quantity,
-        size: item.size,
-        color: item.color,
+        size: item.size || "",
+        color: item.color || "",
         notes: "",
       }));
 
