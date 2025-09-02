@@ -28,6 +28,9 @@ import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
+  
+  // Debug logging
+  console.log("Router Debug:", { isAuthenticated, isLoading, user, userRole: (user as any)?.role });
 
   // Show loading state
   if (isLoading) {
@@ -91,6 +94,9 @@ function Router() {
           <Route path="/store/product/:id" component={ProductDetail} />
           <Route path="/store/cart" component={Cart} />
           <Route path="/store/quote-request" component={QuoteRequest} />
+          
+          {/* Admin NotFound */}
+          <Route component={NotFound} />
         </>
       ) : (
         <>
@@ -112,15 +118,11 @@ function Router() {
           <Route path="/customer/favorites" component={CustomerDashboard} />
           <Route path="/customer/quotes" component={CustomerDashboard} />
           <Route path="/customer/profile" component={CustomerDashboard} />
+          
+          {/* Customer NotFound */}
+          <Route component={NotFound} />
         </>
       )}
-      
-      {/* Common routes */}
-      <Route path="/login" component={LoginPage} />
-      <Route path="/auth/admin-register" component={AdminRegister} />
-      
-      {/* Fallback */}
-      <Route component={NotFound} />
     </Switch>
   );
 }
