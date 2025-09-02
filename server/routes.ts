@@ -984,12 +984,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Quotes
-  app.get('/api/quotes', isAuthenticated, async (req: any, res) => {
+  app.get('/api/quotes', isLocallyAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.session.user;
       
-      const customerId = user?.role === 'admin' ? undefined : userId;
+      // If admin, show all quotes; if customer, show only their quotes
+      const customerId = user?.role === 'admin' ? undefined : user.id.toString();
       const quotes = await storage.getQuotes(customerId);
       res.json(quotes);
     } catch (error) {
