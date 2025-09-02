@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { loginSchema, type LoginRequest } from "@shared/schema";
 import { Eye, EyeOff, LogIn, Shield, User } from "lucide-react";
 
@@ -29,18 +29,23 @@ export default function LoginPage() {
     mutationFn: async (data: LoginRequest) => {
       return await apiRequest("POST", "/api/auth/login", data);
     },
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       toast({
         title: "Login exitoso",
         description: `Bienvenido ${response.user.firstName}`,
       });
       
-      // Redirect based on user role
-      if (response.user.role === 'admin') {
-        setLocation("/admin");
-      } else {
-        setLocation("/");
-      }
+      // Invalidate auth queries to refetch user data
+      await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      
+      // Wait a moment for auth state to update, then redirect
+      setTimeout(() => {
+        if (response.user.role === 'admin') {
+          setLocation("/admin");
+        } else {
+          setLocation("/");
+        }
+      }, 200);
     },
     onError: (error: any) => {
       toast({
