@@ -65,7 +65,7 @@ export default function AdminCustomers() {
   };
 
   const getCustomerTypeBadge = (customer: any) => {
-    if (!customer.isActive) {
+    if (!customer || customer.isActive === false) {
       return <Badge variant="secondary" className="bg-gray-500">Inactivo</Badge>;
     }
     if (customer.company) {
@@ -129,7 +129,7 @@ export default function AdminCustomers() {
             <CardContent className="p-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-uniform-neutral-900">
-                  {customers?.filter((c: any) => c.isActive).length || 0}
+                  {customers?.filter((c: any) => c && c.isActive !== false).length || 0}
                 </div>
                 <div className="text-sm text-uniform-secondary">Clientes Activos</div>
               </div>
@@ -139,7 +139,7 @@ export default function AdminCustomers() {
             <CardContent className="p-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-uniform-neutral-900">
-                  {customers?.filter((c: any) => c.createdAt && new Date(c.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length || 0}
+                  {customers?.filter((c: any) => c && c.createdAt && new Date(c.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length || 0}
                 </div>
                 <div className="text-sm text-uniform-secondary">Nuevos (30 días)</div>
               </div>
@@ -149,7 +149,7 @@ export default function AdminCustomers() {
             <CardContent className="p-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-uniform-neutral-900">
-                  {customers?.filter((c: any) => c.company).length || 0}
+                  {customers?.filter((c: any) => c && c.company).length || 0}
                 </div>
                 <div className="text-sm text-uniform-secondary">Con Empresa</div>
               </div>
