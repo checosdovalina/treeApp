@@ -34,43 +34,20 @@ export default function AdminCustomers() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  // For now, we'll simulate customer data since we need to query users with role 'customer'
-  // In a real app, this would be a proper API call to get customers
-  const customers = [
-    {
-      id: "1",
-      firstName: "María",
-      lastName: "Contreras",
-      email: "maria.contreras@empresa.com",
-      role: "customer",
-      createdAt: new Date().toISOString(),
-      totalOrders: 5,
-      totalSpent: "2,450.00"
-    },
-    {
-      id: "2", 
-      firstName: "Juan",
-      lastName: "Rodríguez",
-      email: "juan.rodriguez@corporativo.com",
-      role: "customer",
-      createdAt: new Date().toISOString(),
-      totalOrders: 3,
-      totalSpent: "1,890.00"
-    },
-    {
-      id: "3",
-      firstName: "Laura",
-      lastName: "Fernández",
-      email: "laura.fernandez@hotel.com",
-      role: "customer", 
-      createdAt: new Date().toISOString(),
-      totalOrders: 8,
-      totalSpent: "4,200.00"
-    }
-  ];
+  const { data: customers, isLoading: customersLoading } = useQuery({
+    queryKey: ["/api/customers"],
+    retry: false,
+  });
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (isLoading || customersLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-uniform-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando clientes...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated || user?.role !== 'admin') {
@@ -78,23 +55,23 @@ export default function AdminCustomers() {
   }
 
   const filteredCustomers = customers?.filter((customer: any) => 
-    `${customer.firstName} ${customer.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
-    customer.email.toLowerCase().includes(search.toLowerCase())
-  );
+    `${customer.firstName || ''} ${customer.lastName || ''}`.toLowerCase().includes(search.toLowerCase()) ||
+    (customer.email || '').toLowerCase().includes(search.toLowerCase())
+  ) || [];
 
   const handleViewCustomer = (customer: any) => {
     setSelectedCustomer(customer);
     setIsDetailOpen(true);
   };
 
-  const getCustomerTypeBadge = (totalSpent: string) => {
-    const amount = parseFloat(totalSpent);
-    if (amount >= 3000) {
-      return <Badge variant="default" className="bg-yellow-500">VIP</Badge>;
-    } else if (amount >= 1500) {
-      return <Badge variant="default" className="bg-blue-500">Premium</Badge>;
+  const getCustomerTypeBadge = (customer: any) => {
+    if (!customer.isActive) {
+      return <Badge variant="secondary" className="bg-gray-500">Inactivo</Badge>;
     }
-    return <Badge variant="secondary">Regular</Badge>;
+    if (customer.company) {
+      return <Badge variant="default" className="bg-blue-500">Corporativo</Badge>;
+    }
+    return <Badge variant="default" className="bg-green-500">Individual</Badge>;
   };
 
   return (
@@ -143,7 +120,7 @@ export default function AdminCustomers() {
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
-                <div className="text-2xl font-bold text-uniform-neutral-900">{customers.length}</div>
+                <div className="text-2xl font-bold text-uniform-neutral-900">{customers?.length || 0}</div>
                 <div className="text-sm text-uniform-secondary">Total Clientes</div>
               </div>
             </CardContent>
@@ -152,9 +129,9 @@ export default function AdminCustomers() {
             <CardContent className="p-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-uniform-neutral-900">
-                  {customers.filter(c => parseFloat(c.totalSpent) >= 3000).length}
+                  {customers?.filter((c: any) => c.isActive).length || 0}
                 </div>
-                <div className="text-sm text-uniform-secondary">Clientes VIP</div>
+                <div className="text-sm text-uniform-secondary">Clientes Activos</div>
               </div>
             </CardContent>
           </Card>
@@ -162,9 +139,9 @@ export default function AdminCustomers() {
             <CardContent className="p-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-uniform-neutral-900">
-                  ${customers.reduce((sum, c) => sum + parseFloat(c.totalSpent), 0).toLocaleString()}
+                  {customers?.filter((c: any) => c.createdAt && new Date(c.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length || 0}
                 </div>
-                <div className="text-sm text-uniform-secondary">Ingresos Totales</div>
+                <div className="text-sm text-uniform-secondary">Nuevos (30 días)</div>
               </div>
             </CardContent>
           </Card>
@@ -172,9 +149,9 @@ export default function AdminCustomers() {
             <CardContent className="p-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-uniform-neutral-900">
-                  ${(customers.reduce((sum, c) => sum + parseFloat(c.totalSpent), 0) / customers.length).toFixed(0)}
+                  {customers?.filter((c: any) => c.company).length || 0}
                 </div>
-                <div className="text-sm text-uniform-secondary">Ticket Promedio</div>
+                <div className="text-sm text-uniform-secondary">Con Empresa</div>
               </div>
             </CardContent>
           </Card>
@@ -184,7 +161,7 @@ export default function AdminCustomers() {
         <Card>
           <CardHeader>
             <CardTitle>
-              Clientes ({filteredCustomers?.length || 0})
+              Clientes ({filteredCustomers.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -195,21 +172,21 @@ export default function AdminCustomers() {
                     <TableHead>Cliente</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Tipo</TableHead>
-                    <TableHead>Pedidos</TableHead>
-                    <TableHead>Total Gastado</TableHead>
+                    <TableHead>Empresa</TableHead>
+                    <TableHead>Teléfono</TableHead>
                     <TableHead>Registro</TableHead>
                     <TableHead>Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredCustomers?.length === 0 ? (
+                  {filteredCustomers.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center text-uniform-secondary py-8">
                         No hay clientes que coincidan con la búsqueda
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredCustomers?.map((customer: any) => (
+                    filteredCustomers.map((customer: any) => (
                       <TableRow key={customer.id}>
                         <TableCell>
                           <div className="flex items-center">
@@ -225,11 +202,11 @@ export default function AdminCustomers() {
                           </div>
                         </TableCell>
                         <TableCell>{customer.email}</TableCell>
-                        <TableCell>{getCustomerTypeBadge(customer.totalSpent)}</TableCell>
-                        <TableCell>{customer.totalOrders}</TableCell>
-                        <TableCell className="font-medium">${customer.totalSpent}</TableCell>
+                        <TableCell>{getCustomerTypeBadge(customer)}</TableCell>
+                        <TableCell>{customer.company || 'N/A'}</TableCell>
+                        <TableCell className="font-medium">{customer.phone || 'N/A'}</TableCell>
                         <TableCell className="text-uniform-secondary">
-                          {new Date(customer.createdAt).toLocaleDateString()}
+                          {customer.createdAt ? new Date(customer.createdAt).toLocaleDateString() : 'N/A'}
                         </TableCell>
                         <TableCell>
                           <div className="flex space-x-2">

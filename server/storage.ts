@@ -142,6 +142,9 @@ export interface IStorage {
   updateIndustrySection(id: number, updates: Partial<InsertIndustrySection>): Promise<IndustrySection>;
   deleteIndustrySection(id: number): Promise<void>;
   
+  // Customer management
+  getCustomers(): Promise<LocalUser[]>;
+
   // Analytics
   getDashboardStats(): Promise<{
     totalSales: string;
@@ -168,6 +171,10 @@ export class DatabaseStorage implements IStorage {
   async getLocalUser(id: number): Promise<LocalUser | undefined> {
     const [user] = await db.select().from(localUsers).where(eq(localUsers.id, id));
     return user;
+  }
+
+  async getCustomers(): Promise<LocalUser[]> {
+    return await db.select().from(localUsers).where(eq(localUsers.role, 'customer'));
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {

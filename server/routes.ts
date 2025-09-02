@@ -1009,8 +1009,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Customers management
+  app.get('/api/customers', isLocalAdmin, async (req, res) => {
+    try {
+      const customers = await storage.getCustomers();
+      res.json(customers);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      res.status(500).json({ message: "Failed to fetch customers" });
+    }
+  });
+
   // Dashboard analytics
-  app.get('/api/dashboard/stats', isAdmin, async (req, res) => {
+  app.get('/api/dashboard/stats', isLocalAdmin, async (req, res) => {
     try {
       const stats = await storage.getDashboardStats();
       res.json(stats);
