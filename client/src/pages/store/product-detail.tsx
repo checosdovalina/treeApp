@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw, Shirt } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useCart } from "@/hooks/useCart";
+import { useCart } from "@/lib/cart";
 import ImageModal from "@/components/ui/image-modal";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { GenderSelector } from "@/components/ui/gender-selector";
@@ -161,15 +161,13 @@ export default function ProductDetail() {
       if (!product) throw new Error('Product not found');
       
       const cartItem = {
-        productId: product.id,
-        productName: product.name,
+        id: product.id.toString(),
+        name: product.name,
         price: parseFloat(product.price),
         size: selectedSize,
         color: selectedColor,
-        gender: selectedGender || product.genders?.[0],
         quantity: quantity,
         image: getValidImageUrl(displayImages, 0),
-        sku: product.sku || '',
       };
       
       console.log('Adding item to cart:', cartItem);

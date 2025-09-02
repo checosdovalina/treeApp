@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useCart } from "@/hooks/useCart";
+import { useCart } from "@/lib/cart";
 import BreadcrumbNavigation from "@/components/navigation/breadcrumb-navigation";
 import ContextActions from "@/components/navigation/context-actions";
 // import treeLogo from "@assets/TREE LOGO_1753399074765.png";
@@ -39,12 +39,12 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
   const [showBrandsSubmenu, setShowBrandsSubmenu] = useState(false);
   const [showMobileBrandsSubmenu, setShowMobileBrandsSubmenu] = useState(false);
   const { user, isAuthenticated } = useAuth() as { user: any; isAuthenticated: boolean };
-  const { items } = useCart();
+  const { items, itemCount } = useCart();
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = itemCount;
 
   // Obtener datos para submenús
   const { data: categories = [] } = useQuery<any[]>({
