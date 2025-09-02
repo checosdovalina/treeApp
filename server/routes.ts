@@ -253,7 +253,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const customerUser = {
           username: uniqueUsername,
           email: customerData.email,
-          password: customerData.password, // This will be hashed by storage
+          password: customerData.password,
           firstName: customerData.firstName,
           lastName: customerData.lastName,
           role: 'customer' as const,
@@ -267,7 +267,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           profileImageUrl: null
         };
 
-        const user = await storage.createLocalUser(customerUser);
+        const user = await authService.createUser(customerUser);
         res.json({ 
           message: 'Cliente registrado exitosamente',
           user: {
@@ -284,7 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const customerUser = {
           username: username,
           email: customerData.email,
-          password: customerData.password, // This will be hashed by storage
+          password: customerData.password,
           firstName: customerData.firstName,
           lastName: customerData.lastName,
           role: 'customer' as const,
@@ -298,7 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           profileImageUrl: null
         };
 
-        const user = await storage.createLocalUser(customerUser);
+        const user = await authService.createUser(customerUser);
         res.json({ 
           message: 'Cliente registrado exitosamente',
           user: {
