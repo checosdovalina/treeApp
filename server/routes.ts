@@ -219,37 +219,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const customerData = customerRegistrationSchema.parse(req.body);
       
-      // Generate a unique customer ID
-      const customerId = `customer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // Generate a username from email (before @)
+      const username = customerData.email.split('@')[0];
       
-      // Create customer user
-      const customerUser = {
-        id: customerId,
-        email: customerData.email,
-        firstName: customerData.firstName,
-        lastName: customerData.lastName,
-        role: 'customer' as const,
-        phone: customerData.phone,
-        company: customerData.company || null,
-        address: customerData.address,
-        city: customerData.city,
-        state: customerData.state,
-        zipCode: customerData.zipCode,
-        isActive: true,
-        profileImageUrl: null
-      };
+      // Check if email already exists in local_users
+      const existingUser = await storage.getLocalUserByEmail(customerData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "El email ya está registrado" });
+      }
+      
+      // Check if username exists
+      const existingUsername = await storage.getLocalUserByUsername(username);
+      if (existingUsername) {
+        // Add a number to make username unique
+        const timestamp = Date.now().toString().slice(-4);
+        const uniqueUsername = `${username}${timestamp}`;
+        
+        // Create customer user in local_users table
+        const customerUser = {
+          username: uniqueUsername,
+          email: customerData.email,
+          password: customerData.password, // This will be hashed by storage
+          firstName: customerData.firstName,
+          lastName: customerData.lastName,
+          role: 'customer' as const,
+          phone: customerData.phone,
+          company: customerData.company || null,
+          address: customerData.address,
+          city: customerData.city,
+          state: customerData.state,
+          zipCode: customerData.zipCode,
+          isActive: true,
+          profileImageUrl: null
+        };
 
-      const user = await storage.upsertUser(customerUser);
-      res.json({ 
-        message: 'Cliente registrado exitosamente',
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          company: user.company
-        }
-      });
+        const user = await storage.createLocalUser(customerUser);
+        res.json({ 
+          message: 'Cliente registrado exitosamente',
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            company: user.company
+          }
+        });
+      } else {
+        // Create customer user in local_users table
+        const customerUser = {
+          username: username,
+          email: customerData.email,
+          password: customerData.password, // This will be hashed by storage
+          firstName: customerData.firstName,
+          lastName: customerData.lastName,
+          role: 'customer' as const,
+          phone: customerData.phone,
+          company: customerData.company || null,
+          address: customerData.address,
+          city: customerData.city,
+          state: customerData.state,
+          zipCode: customerData.zipCode,
+          isActive: true,
+          profileImageUrl: null
+        };
+
+        const user = await storage.createLocalUser(customerUser);
+        res.json({ 
+          message: 'Cliente registrado exitosamente',
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            company: user.company
+          }
+        });
+      }
     } catch (error) {
       console.error("Error registering customer:", error);
       if (error.code === '23505') { // Unique constraint violation

@@ -7,6 +7,8 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import LoginPage from "@/pages/auth/login";
 import AdminDashboard from "@/pages/admin/dashboard-simple";
+import CustomerRegisterPage from "@/pages/auth/customer-register";
+import AdminRegisterPage from "@/pages/auth/admin-register";
 import AdminProducts from "@/pages/admin/products";
 import AdminOrders from "@/pages/admin/orders";
 import AdminCustomers from "@/pages/admin/customers";
@@ -49,8 +51,8 @@ function Router() {
         <Route path="/landing" component={Landing} />
         <Route path="/login" component={LoginPage} />
         <Route path="/auth/login" component={LoginPage} />
-        <Route path="/auth/register" component={CustomerRegister} />
-        <Route path="/auth/admin-register" component={AdminRegister} />
+        <Route path="/auth/customer-register" component={CustomerRegisterPage} />
+        <Route path="/auth/admin-register" component={AdminRegisterPage} />
         <Route path="/store" component={StoreHome} />
         <Route path="/store/catalog" component={StoreCatalog} />
         <Route path="/store/polos" component={StoreCatalog} />
@@ -108,9 +110,11 @@ function Router() {
       <Route path="/store/cart" component={Cart} />
       <Route path="/store/quote-request" component={QuoteRequest} />
       
-      {/* Auth routes for authenticated users */}
+      {/* Auth routes - available to all users */}
       <Route path="/login" component={LoginPage} />
       <Route path="/auth/login" component={LoginPage} />
+      <Route path="/auth/customer-register" component={CustomerRegisterPage} />
+      <Route path="/auth/admin-register" component={AdminRegisterPage} />
       
       {/* Fallback */}
       <Route component={NotFound} />
