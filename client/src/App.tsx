@@ -67,62 +67,67 @@ function Router() {
     );
   }
 
+  // Check user role
+  const userRole = (user as any)?.role;
+  const isAdmin = userRole === 'admin';
+  
+  console.log("Role Check:", { userRole, isAdmin, condition: userRole === 'admin' });
+
   // Authenticated routes based on user role
+  if (isAdmin) {
+    return (
+      <Switch>
+        <Route path="/" component={StoreHome} />
+        <Route path="/admin" component={AdminDashboard} />
+        <Route path="/admin/dashboard" component={AdminDashboard} />
+        <Route path="/admin/sales" component={AdminSales} />
+        <Route path="/admin/products" component={AdminProducts} />
+        <Route path="/admin/orders" component={AdminOrders} />
+        <Route path="/admin/customers" component={AdminCustomers} />
+        <Route path="/admin/quotes" component={AdminQuotes} />
+        <Route path="/admin/reports" component={AdminReports} />
+        <Route path="/admin/promotions" component={AdminPromotions} />
+        <Route path="/admin/industry-sections" component={AdminIndustrySections} />
+        
+        {/* Admin can also access store routes */}
+        <Route path="/store" component={StoreHome} />
+        <Route path="/store/catalog" component={StoreCatalog} />
+        <Route path="/store/polos" component={StoreCatalog} />
+        <Route path="/store/playeras" component={StoreCatalog} />
+        <Route path="/store/brands" component={StoreBrands} />
+        <Route path="/store/product/:id" component={ProductDetail} />
+        <Route path="/store/cart" component={Cart} />
+        <Route path="/store/quote-request" component={QuoteRequest} />
+        
+        {/* Admin NotFound */}
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
+  // Customer routes  
   return (
     <Switch>
-      {/* Admin routes */}
-      {(user as any)?.role === 'admin' ? (
-        <>
-          <Route path="/" component={StoreHome} />
-          <Route path="/admin" component={AdminDashboard} />
-          <Route path="/admin/dashboard" component={AdminDashboard} />
-          <Route path="/admin/sales" component={AdminSales} />
-          <Route path="/admin/products" component={AdminProducts} />
-          <Route path="/admin/orders" component={AdminOrders} />
-          <Route path="/admin/customers" component={AdminCustomers} />
-          <Route path="/admin/quotes" component={AdminQuotes} />
-          <Route path="/admin/reports" component={AdminReports} />
-          <Route path="/admin/promotions" component={AdminPromotions} />
-          <Route path="/admin/industry-sections" component={AdminIndustrySections} />
-          
-          {/* Admin can also access store routes */}
-          <Route path="/store" component={StoreHome} />
-          <Route path="/store/catalog" component={StoreCatalog} />
-          <Route path="/store/polos" component={StoreCatalog} />
-          <Route path="/store/playeras" component={StoreCatalog} />
-          <Route path="/store/brands" component={StoreBrands} />
-          <Route path="/store/product/:id" component={ProductDetail} />
-          <Route path="/store/cart" component={Cart} />
-          <Route path="/store/quote-request" component={QuoteRequest} />
-          
-          {/* Admin NotFound */}
-          <Route component={NotFound} />
-        </>
-      ) : (
-        <>
-          {/* Customer routes */}
-          <Route path="/" component={StoreHome} />
-          <Route path="/store" component={StoreHome} />
-          <Route path="/store/catalog" component={StoreCatalog} />
-          <Route path="/store/polos" component={StoreCatalog} />
-          <Route path="/store/playeras" component={StoreCatalog} />
-          <Route path="/store/brands" component={StoreBrands} />
-          <Route path="/store/product/:id" component={ProductDetail} />
-          <Route path="/store/cart" component={Cart} />
-          <Route path="/store/quote-request" component={QuoteRequest} />
-          
-          {/* Customer dashboard and account routes */}
-          <Route path="/customer" component={CustomerDashboard} />
-          <Route path="/customer/dashboard" component={CustomerDashboard} />
-          <Route path="/customer/orders" component={CustomerDashboard} />
-          <Route path="/customer/favorites" component={CustomerDashboard} />
-          <Route path="/customer/quotes" component={CustomerDashboard} />
-          <Route path="/customer/profile" component={CustomerDashboard} />
-          
-          {/* Customer NotFound */}
-          <Route component={NotFound} />
-        </>
-      )}
+      <Route path="/" component={StoreHome} />
+      <Route path="/store" component={StoreHome} />
+      <Route path="/store/catalog" component={StoreCatalog} />
+      <Route path="/store/polos" component={StoreCatalog} />
+      <Route path="/store/playeras" component={StoreCatalog} />
+      <Route path="/store/brands" component={StoreBrands} />
+      <Route path="/store/product/:id" component={ProductDetail} />
+      <Route path="/store/cart" component={Cart} />
+      <Route path="/store/quote-request" component={QuoteRequest} />
+      
+      {/* Customer dashboard and account routes */}
+      <Route path="/customer" component={CustomerDashboard} />
+      <Route path="/customer/dashboard" component={CustomerDashboard} />
+      <Route path="/customer/orders" component={CustomerDashboard} />
+      <Route path="/customer/favorites" component={CustomerDashboard} />
+      <Route path="/customer/quotes" component={CustomerDashboard} />
+      <Route path="/customer/profile" component={CustomerDashboard} />
+      
+      {/* Customer NotFound */}
+      <Route component={NotFound} />
     </Switch>
   );
 }
