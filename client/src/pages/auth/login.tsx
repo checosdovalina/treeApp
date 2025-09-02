@@ -80,11 +80,11 @@ export default function LoginPage() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-uniform-neutral-900">Usuario</FormLabel>
+                    <FormLabel className="text-uniform-neutral-900">Usuario o Email</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="Ingresa tu usuario"
+                        placeholder="Ingresa tu usuario o email"
                         className="h-11"
                         disabled={loginMutation.isPending}
                       />

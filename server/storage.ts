@@ -185,6 +185,11 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async getLocalUserByEmail(email: string): Promise<LocalUser | undefined> {
+    const [user] = await db.select().from(localUsers).where(eq(localUsers.email, email));
+    return user;
+  }
+
   async getLocalUserById(id: number): Promise<LocalUser | undefined> {
     const [user] = await db.select().from(localUsers).where(eq(localUsers.id, id));
     return user;

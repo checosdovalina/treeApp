@@ -10,8 +10,13 @@ export interface AuthService {
 }
 
 class LocalAuthService implements AuthService {
-  async login(username: string, password: string): Promise<{ user: LocalUser; success: boolean }> {
-    const user = await storage.getLocalUserByUsername(username);
+  async login(usernameOrEmail: string, password: string): Promise<{ user: LocalUser; success: boolean }> {
+    // Try to find user by username first, then by email
+    let user = await storage.getLocalUserByUsername(usernameOrEmail);
+    
+    if (!user) {
+      user = await storage.getLocalUserByEmail(usernameOrEmail);
+    }
     
     if (!user || !user.isActive) {
       return { user: null as any, success: false };
