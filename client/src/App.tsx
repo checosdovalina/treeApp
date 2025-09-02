@@ -22,6 +22,7 @@ import StoreCatalog from "@/pages/store/catalog";
 import StoreBrands from "@/pages/store/brands";
 import ProductDetail from "@/pages/store/product-detail";
 import Cart from "@/pages/store/cart";
+import Checkout from "@/pages/store/checkout";
 import CustomerDashboard from "@/pages/customer/dashboard";
 import CustomerRegister from "@/pages/auth/customer-register";
 import AdminRegister from "@/pages/auth/admin-register";
@@ -61,6 +62,7 @@ function Router() {
         <Route path="/store/brands" component={StoreBrands} />
         <Route path="/store/product/:id" component={ProductDetail} />
         <Route path="/store/cart" component={Cart} />
+        <Route path="/store/checkout" component={Checkout} />
         <Route path="/store/quote-request" component={QuoteRequest} />
         <Route component={NotFound} />
       </Switch>
@@ -109,6 +111,7 @@ function Router() {
       <Route path="/store/brands" component={StoreBrands} />
       <Route path="/store/product/:id" component={ProductDetail} />
       <Route path="/store/cart" component={Cart} />
+      <Route path="/store/checkout" component={Checkout} />
       <Route path="/store/quote-request" component={QuoteRequest} />
       
       {/* Auth routes - available to all users */}
