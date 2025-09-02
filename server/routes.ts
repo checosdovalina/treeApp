@@ -269,37 +269,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Código de administrador inválido" });
       }
 
-      // Check if email already exists
-      const existingUser = await storage.getUserByEmail(adminData.email);
-      if (existingUser) {
+      // Check if email already exists in local_users
+      const existingLocalUser = await storage.getLocalUserByEmail(adminData.email);
+      if (existingLocalUser) {
         return res.status(400).json({ message: "El email ya está registrado" });
       }
 
-      // Generate a unique admin ID
-      const adminId = `admin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // Create a username from email (before @)
+      const username = adminData.email.split('@')[0];
+      
+      // Check if username exists
+      const existingUsername = await storage.getLocalUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ message: "El nombre de usuario ya está en uso" });
+      }
 
-      // Create admin user
-      const adminUser = {
-        id: adminId,
+      // Create admin user in local_users table for login
+      const adminUser: InsertLocalUser = {
+        username: username,
+        password: adminData.password, // Will be hashed by authService
         email: adminData.email,
         firstName: adminData.firstName,
-        lastName: adminData.lastName,
-        role: 'admin' as const,
-        phone: null,
-        company: null,
-        address: '',
-        city: '',
-        state: '',
-        zipCode: '',
+        lastName: adminData.lastName || '',
+        role: 'admin',
         isActive: true,
-        profileImageUrl: null
       };
 
-      const user = await storage.upsertUser(adminUser);
+      const user = await authService.createUser(adminUser);
       res.json({ 
         message: "Administrador registrado exitosamente", 
         user: { 
           id: user.id, 
+          username: user.username,
           email: user.email, 
           firstName: user.firstName,
           lastName: user.lastName,
