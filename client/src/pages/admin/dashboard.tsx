@@ -24,7 +24,7 @@ export default function AdminDashboard() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/auth/login";
       }, 500);
       return;
     }
@@ -38,7 +38,7 @@ export default function AdminDashboard() {
 
   const { data: topProducts, isLoading: topProductsLoading } = useQuery({
     queryKey: ['/api/dashboard/top-products'],
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
 
