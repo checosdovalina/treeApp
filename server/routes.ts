@@ -108,16 +108,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Local authentication routes
   app.post('/api/auth/login', async (req, res) => {
     try {
-      const { username, password } = loginSchema.parse(req.body);
+      console.log("Login request body:", req.body);
+      
+      // Accept both usernameOrEmail and username fields
+      const loginData = req.body.usernameOrEmail ? 
+        { username: req.body.usernameOrEmail, password: req.body.password } :
+        req.body;
+        
+      const { username, password } = loginSchema.parse(loginData);
+      
+      console.log("Attempting login for:", username);
       
       const { user, success } = await authService.login(username, password);
       
+      console.log("Login result:", { success, userId: user?.id, role: user?.role });
+      
       if (!success) {
+        console.log("Login failed for:", username);
         return res.status(401).json({ message: "Credenciales inválidas" });
       }
       
       // Store user session
       req.session.user = user;
+      
+      console.log("Login successful, session stored for:", user.email);
       
       res.json({ 
         message: "Login exitoso",
