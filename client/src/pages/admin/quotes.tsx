@@ -198,8 +198,8 @@ export default function AdminQuotes() {
                           <TableCell className="font-medium">{quote.quoteNumber}</TableCell>
                           <TableCell>
                             <div>
-                              <div className="font-medium">{quote.customerName}</div>
-                              <div className="text-sm text-uniform-secondary">{quote.customerEmail}</div>
+                              <div className="font-medium">{quote.customerName || `Cliente ID: ${quote.customerId}`}</div>
+                              <div className="text-sm text-uniform-secondary">{quote.customerEmail || 'Email no disponible'}</div>
                             </div>
                           </TableCell>
                           <TableCell>{getStatusBadge(quote.status)}</TableCell>
@@ -257,8 +257,8 @@ export default function AdminQuotes() {
                   <div>
                     <h3 className="font-semibold mb-3">Información del Cliente</h3>
                     <div className="space-y-2">
-                      <p><strong>Empresa:</strong> {selectedQuote.customerName}</p>
-                      <p><strong>Email:</strong> {selectedQuote.customerEmail}</p>
+                      <p><strong>Cliente:</strong> {selectedQuote.customerName || `Cliente ID: ${selectedQuote.customerId}`}</p>
+                      <p><strong>Email:</strong> {selectedQuote.customerEmail || 'Email no disponible'}</p>
                       <p><strong>Estado:</strong> {getStatusBadge(selectedQuote.status)}</p>
                     </div>
                   </div>

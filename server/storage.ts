@@ -565,7 +565,26 @@ export class DatabaseStorage implements IStorage {
 
   // Quote operations
   async getQuotes(customerId?: string): Promise<Quote[]> {
-    let query = db.select().from(quotes);
+    let query = db
+      .select({
+        id: quotes.id,
+        quoteNumber: quotes.quoteNumber,
+        customerId: quotes.customerId,
+        customerEmail: localUsers.email,
+        customerName: sql<string>`CONCAT(COALESCE(${localUsers.firstName}, ''), ' ', COALESCE(${localUsers.lastName}, ''))`,
+        customerCompany: localUsers.company,
+        items: quotes.items,
+        subtotal: quotes.subtotal,
+        tax: quotes.tax,
+        total: quotes.total,
+        validUntil: quotes.validUntil,
+        notes: quotes.notes,
+        status: quotes.status,
+        createdAt: quotes.createdAt,
+        updatedAt: quotes.updatedAt,
+      })
+      .from(quotes)
+      .leftJoin(localUsers, sql`${quotes.customerId}::integer = ${localUsers.id}`);
     
     if (customerId) {
       query = query.where(eq(quotes.customerId, customerId));
