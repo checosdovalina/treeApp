@@ -564,33 +564,53 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Quote operations
-  async getQuotes(customerId?: string): Promise<Quote[]> {
-    let query = db
-      .select({
-        id: quotes.id,
-        quoteNumber: quotes.quoteNumber,
-        customerId: quotes.customerId,
-        customerEmail: localUsers.email,
-        customerName: sql<string>`CONCAT(COALESCE(${localUsers.firstName}, ''), ' ', COALESCE(${localUsers.lastName}, ''))`,
-        customerCompany: localUsers.company,
-        items: quotes.items,
-        subtotal: quotes.subtotal,
-        tax: quotes.tax,
-        total: quotes.total,
-        validUntil: quotes.validUntil,
-        notes: quotes.notes,
-        status: quotes.status,
-        createdAt: quotes.createdAt,
-        updatedAt: quotes.updatedAt,
-      })
-      .from(quotes)
-      .leftJoin(localUsers, sql`${quotes.customerId}::integer = ${localUsers.id}`);
+  async getQuotes(customerId?: string): Promise<any[]> {
+    // First get the quotes
+    let quotesQuery = db.select().from(quotes);
     
     if (customerId) {
-      query = query.where(eq(quotes.customerId, customerId));
+      quotesQuery = quotesQuery.where(eq(quotes.customerId, customerId));
     }
     
-    return await query.orderBy(desc(quotes.createdAt));
+    const quotesResult = await quotesQuery.orderBy(desc(quotes.createdAt));
+    
+    // Then get customer info for each quote
+    const enrichedQuotes = await Promise.all(
+      quotesResult.map(async (quote) => {
+        let customerInfo = {
+          customerName: null,
+          customerEmail: null,
+          customerCompany: null,
+        };
+        
+        if (quote.customerId) {
+          const [customer] = await db
+            .select({
+              email: localUsers.email,
+              firstName: localUsers.firstName,
+              lastName: localUsers.lastName,
+              company: localUsers.company,
+            })
+            .from(localUsers)
+            .where(eq(localUsers.id, parseInt(quote.customerId)));
+            
+          if (customer) {
+            customerInfo = {
+              customerName: `${customer.firstName || ''} ${customer.lastName || ''}`.trim(),
+              customerEmail: customer.email,
+              customerCompany: customer.company,
+            };
+          }
+        }
+        
+        return {
+          ...quote,
+          ...customerInfo,
+        };
+      })
+    );
+    
+    return enrichedQuotes;
   }
 
   async getQuote(id: number): Promise<Quote | undefined> {

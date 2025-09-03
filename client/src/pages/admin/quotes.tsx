@@ -200,6 +200,9 @@ export default function AdminQuotes() {
                             <div>
                               <div className="font-medium">{quote.customerName || `Cliente ID: ${quote.customerId}`}</div>
                               <div className="text-sm text-uniform-secondary">{quote.customerEmail || 'Email no disponible'}</div>
+                              {quote.customerCompany && (
+                                <div className="text-xs text-uniform-secondary">{quote.customerCompany}</div>
+                              )}
                             </div>
                           </TableCell>
                           <TableCell>{getStatusBadge(quote.status)}</TableCell>
@@ -259,6 +262,9 @@ export default function AdminQuotes() {
                     <div className="space-y-2">
                       <p><strong>Cliente:</strong> {selectedQuote.customerName || `Cliente ID: ${selectedQuote.customerId}`}</p>
                       <p><strong>Email:</strong> {selectedQuote.customerEmail || 'Email no disponible'}</p>
+                      {selectedQuote.customerCompany && (
+                        <p><strong>Empresa:</strong> {selectedQuote.customerCompany}</p>
+                      )}
                       <p><strong>Estado:</strong> {getStatusBadge(selectedQuote.status)}</p>
                     </div>
                   </div>
