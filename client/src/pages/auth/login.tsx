@@ -182,15 +182,7 @@ export default function LoginPage() {
           </div>
 
           {/* Demo credentials */}
-          <div className="mt-6 p-4 bg-uniform-primary/5 rounded-lg border border-uniform-primary/20">
-            <p className="text-sm font-medium text-uniform-neutral-900 mb-2">
-              Credenciales de prueba:
-            </p>
-            <div className="text-sm text-uniform-secondary space-y-1">
-              <p><strong>Usuario:</strong> admin</p>
-              <p><strong>Contraseña:</strong> admin123</p>
-            </div>
-          </div>
+
 
           <div className="mt-4 text-center">
             <Button
