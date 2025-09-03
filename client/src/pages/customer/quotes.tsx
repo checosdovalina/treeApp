@@ -226,13 +226,24 @@ export default function CustomerQuotes() {
                           {formatCurrency(quote.total || 0)}
                         </TableCell>
                         <TableCell>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewQuote(quote)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          <div className="flex space-x-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewQuote(quote)}
+                              data-testid={`button-view-quote-${quote.id}`}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => window.open(`/api/quotes/${quote.id}/pdf`, '_blank')}
+                              data-testid={`button-download-quote-${quote.id}`}
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -333,7 +344,12 @@ export default function CustomerQuotes() {
                 </div>
 
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline">
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.open(`/api/quotes/${selectedQuote.id}/pdf`, '_blank')}
+                    data-testid="button-download-pdf-modal"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
                     Descargar PDF
                   </Button>
                   <Button className="bg-uniform-primary hover:bg-blue-700">

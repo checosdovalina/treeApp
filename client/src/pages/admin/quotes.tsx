@@ -289,6 +289,7 @@ export default function AdminQuotes() {
                               <Button
                                 variant="outline"
                                 size="sm"
+                                onClick={() => window.open(`/api/quotes/${quote.id}/pdf`, '_blank')}
                                 data-testid={`button-download-quote-${quote.id}`}
                               >
                                 <Download className="h-4 w-4" />
@@ -382,7 +383,11 @@ export default function AdminQuotes() {
                 </div>
 
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline">
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.open(`/api/quotes/${selectedQuote.id}/pdf`, '_blank')}
+                    data-testid="button-download-pdf"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Descargar PDF
                   </Button>

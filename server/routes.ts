@@ -76,6 +76,140 @@ const isLocalAdmin = (req: any, res: any, next: any) => {
   return res.status(403).json({ message: "Admin access required" });
 };
 
+// PDF HTML generator function
+function generateQuotePDFHTML(quote: any): string {
+  const items = Array.isArray(quote.items) ? quote.items : JSON.parse(quote.items || '[]');
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Presupuesto ${quote.quoteNumber}</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 20px;
+          color: #333;
+        }
+        .header {
+          border-bottom: 3px solid #1F4287;
+          padding-bottom: 20px;
+          margin-bottom: 30px;
+        }
+        .company-name {
+          font-size: 28px;
+          font-weight: bold;
+          color: #1F4287;
+          margin-bottom: 5px;
+        }
+        .quote-info {
+          background: #f8f9fa;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 30px;
+        }
+        .quote-title {
+          font-size: 24px;
+          font-weight: bold;
+          margin-bottom: 15px;
+          color: #1F4287;
+        }
+        .products-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 30px;
+        }
+        .products-table th,
+        .products-table td {
+          border: 1px solid #ddd;
+          padding: 12px;
+          text-align: left;
+        }
+        .products-table th {
+          background-color: #1F4287;
+          color: white;
+          font-weight: bold;
+        }
+        .products-table tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
+        .total-section {
+          text-align: right;
+          margin-top: 20px;
+        }
+        .total-final {
+          font-size: 20px;
+          font-weight: bold;
+          border-top: 2px solid #1F4287;
+          padding-top: 10px;
+          color: #1F4287;
+        }
+        .notes-section {
+          background: #fff3cd;
+          border: 1px solid #ffeaa7;
+          border-radius: 8px;
+          padding: 15px;
+          margin: 20px 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="company-name">TREE Uniformes & Kodiak Industrial</div>
+      </div>
+
+      <div class="quote-info">
+        <div class="quote-title">Presupuesto ${quote.quoteNumber}</div>
+        <p><strong>Cliente:</strong> ${quote.customerName || 'Cliente ' + quote.customerId}</p>
+        <p><strong>Email:</strong> ${quote.customerEmail || 'No disponible'}</p>
+        <p><strong>Fecha:</strong> ${new Date(quote.createdAt).toLocaleDateString('es-ES')}</p>
+      </div>
+
+      <h3>Productos Cotizados</h3>
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Talla</th>
+            <th>Color</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map((item: any) => `
+            <tr>
+              <td>${item.productName}</td>
+              <td>${item.size || 'N/A'}</td>
+              <td>${item.color || 'N/A'}</td>
+              <td>${item.quantity}</td>
+              <td>$${item.unitPrice}</td>
+              <td>$${item.total}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      ${quote.notes ? `
+        <div class="notes-section">
+          <strong>Notas del Administrador:</strong><br>
+          ${quote.notes}
+        </div>
+      ` : ''}
+
+      <div class="total-section">
+        <p>Subtotal: $${quote.subtotal}</p>
+        <p>IVA: $${quote.tax}</p>
+        <div class="total-final">Total: $${quote.total}</div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup local session management
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
@@ -1028,6 +1162,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating quote:", error);
       res.status(400).json({ message: "Failed to update quote" });
+    }
+  });
+
+  app.get('/api/quotes/:id/pdf', isLocallyAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const user = req.session.user;
+      
+      // Get quote with customer information
+      const quotes = await storage.getQuotes();
+      const quote = quotes.find(q => q.id === id);
+      
+      if (!quote) {
+        return res.status(404).json({ message: "Quote not found" });
+      }
+
+      // Check permissions: admin can access all quotes, customers only their own
+      if (user?.role !== 'admin' && quote.customerId !== user?.id?.toString()) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Generate PDF HTML content
+      const pdfHtml = generateQuotePDFHTML(quote);
+      
+      // Set response headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="Presupuesto-${quote.quoteNumber}.pdf"`);
+      
+      // For now, return HTML content (we'll implement actual PDF generation)
+      res.setHeader('Content-Type', 'text/html');
+      res.send(pdfHtml);
+      
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      res.status(500).json({ message: "Failed to generate PDF" });
     }
   });
 
