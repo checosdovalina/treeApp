@@ -6,8 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Eye, Download, Send } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Eye, Download, Send, Edit, Save, X } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +22,8 @@ export default function AdminQuotes() {
   const [selectedQuote, setSelectedQuote] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingQuote, setEditingQuote] = useState<any>(null);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -64,6 +68,60 @@ export default function AdminQuotes() {
   const handleViewQuote = (quote: any) => {
     setSelectedQuote(quote);
     setIsDetailOpen(true);
+  };
+
+  const handleEditQuote = (quote: any) => {
+    setEditingQuote({ ...quote });
+    setIsEditing(true);
+  };
+
+  const updateQuoteMutation = useMutation({
+    mutationFn: async (data: { id: number; updates: any }) => {
+      return await apiRequest(`/api/quotes/${data.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data.updates),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/quotes'] });
+      setIsEditing(false);
+      setEditingQuote(null);
+      toast({
+        title: "Presupuesto actualizado",
+        description: "Los cambios se han guardado correctamente.",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el presupuesto.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSaveQuote = () => {
+    if (!editingQuote) return;
+    
+    updateQuoteMutation.mutate({
+      id: editingQuote.id,
+      updates: {
+        status: editingQuote.status,
+        notes: editingQuote.notes,
+        validUntil: editingQuote.validUntil,
+      },
+    });
   };
 
   // Mock quotes data for demonstration
@@ -219,18 +277,29 @@ export default function AdminQuotes() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleViewQuote(quote)}
+                                data-testid={`button-view-quote-${quote.id}`}
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
+                                onClick={() => handleEditQuote(quote)}
+                                data-testid={`button-edit-quote-${quote.id}`}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                data-testid={`button-download-quote-${quote.id}`}
                               >
                                 <Download className="h-4 w-4" />
                               </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
+                                data-testid={`button-send-quote-${quote.id}`}
                               >
                                 <Send className="h-4 w-4" />
                               </Button>
@@ -273,7 +342,7 @@ export default function AdminQuotes() {
                     <div className="space-y-2">
                       <p><strong>Número:</strong> {selectedQuote.quoteNumber}</p>
                       <p><strong>Fecha:</strong> {new Date(selectedQuote.createdAt).toLocaleDateString()}</p>
-                      <p><strong>Válido hasta:</strong> {new Date(selectedQuote.validUntil).toLocaleDateString()}</p>
+                      <p><strong>Válido hasta:</strong> {selectedQuote.validUntil ? new Date(selectedQuote.validUntil).toLocaleDateString() : 'No definido'}</p>
                     </div>
                   </div>
                 </div>
@@ -324,8 +393,96 @@ export default function AdminQuotes() {
                     <Send className="h-4 w-4 mr-2" />
                     Enviar por Email
                   </Button>
-                  <Button className="bg-uniform-primary hover:bg-blue-700">
+                  <Button 
+                    className="bg-uniform-primary hover:bg-blue-700"
+                    onClick={() => handleEditQuote(selectedQuote)}
+                    data-testid="button-edit-quote-modal"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
                     Editar Presupuesto
+                  </Button>
+                </div>
+
+                {selectedQuote.notes && (
+                  <div>
+                    <h3 className="font-semibold mb-3">Notas del Administrador</h3>
+                    <p className="text-sm text-uniform-secondary bg-gray-50 p-3 rounded-md">{selectedQuote.notes}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Quote Edit Modal */}
+        <Dialog open={isEditing} onOpenChange={setIsEditing}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Editar Presupuesto {editingQuote?.quoteNumber}</DialogTitle>
+            </DialogHeader>
+            {editingQuote && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Estado</label>
+                    <Select 
+                      value={editingQuote.status} 
+                      onValueChange={(value) => setEditingQuote({...editingQuote, status: value})}
+                    >
+                      <SelectTrigger data-testid="select-quote-status">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="sent">Enviado</SelectItem>
+                        <SelectItem value="approved">Aprobado</SelectItem>
+                        <SelectItem value="rejected">Rechazado</SelectItem>
+                        <SelectItem value="expired">Expirado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Válido hasta</label>
+                    <Input
+                      type="date"
+                      value={editingQuote.validUntil ? new Date(editingQuote.validUntil).toISOString().split('T')[0] : ''}
+                      onChange={(e) => setEditingQuote({...editingQuote, validUntil: e.target.value})}
+                      data-testid="input-valid-until"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium">Notas para el cliente</label>
+                  <Textarea
+                    placeholder="Agregar notas que el cliente podrá ver..."
+                    value={editingQuote.notes || ''}
+                    onChange={(e) => setEditingQuote({...editingQuote, notes: e.target.value})}
+                    className="mt-1"
+                    rows={4}
+                    data-testid="textarea-customer-notes"
+                  />
+                  <p className="text-xs text-uniform-secondary mt-1">
+                    Estas notas serán visibles para el cliente cuando vea el presupuesto
+                  </p>
+                </div>
+
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsEditing(false)}
+                    data-testid="button-cancel-edit"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancelar
+                  </Button>
+                  <Button 
+                    onClick={handleSaveQuote}
+                    disabled={updateQuoteMutation.isPending}
+                    data-testid="button-save-quote"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {updateQuoteMutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
                   </Button>
                 </div>
               </div>

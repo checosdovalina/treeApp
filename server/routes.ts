@@ -1009,6 +1009,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put('/api/quotes/:id', isLocalAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      // Validate the update data
+      const allowedFields = ['status', 'notes', 'validUntil', 'subtotal', 'tax', 'total'];
+      const filteredData = Object.keys(updateData)
+        .filter(key => allowedFields.includes(key))
+        .reduce((obj, key) => {
+          obj[key] = updateData[key];
+          return obj;
+        }, {} as any);
+
+      const updatedQuote = await storage.updateQuote(id, filteredData);
+      res.json(updatedQuote);
+    } catch (error) {
+      console.error("Error updating quote:", error);
+      res.status(400).json({ message: "Failed to update quote" });
+    }
+  });
+
   // Customers management
   app.get('/api/customers', isLocalAdmin, async (req, res) => {
     try {
