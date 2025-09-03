@@ -77,10 +77,7 @@ export default function AdminQuotes() {
 
   const updateQuoteMutation = useMutation({
     mutationFn: async (data: { id: number; updates: any }) => {
-      return await apiRequest(`/api/quotes/${data.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data.updates),
-      });
+      return await apiRequest('PUT', `/api/quotes/${data.id}`, data.updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/quotes'] });
