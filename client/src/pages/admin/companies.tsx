@@ -531,14 +531,14 @@ function CompanyForm({ form, onSubmit, isLoading, onCancel, companyTypes }: Comp
                   <FormLabel>Categoría de cliente</FormLabel>
                   <FormControl>
                     <Select
-                      value={field.value ? field.value.toString() : ""}
-                      onValueChange={(value) => field.onChange(value && value !== "" ? parseInt(value) : null)}
+                      value={field.value ? field.value.toString() : "none"}
+                      onValueChange={(value) => field.onChange(value === "none" ? null : parseInt(value))}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona categoría de cliente" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Ninguna</SelectItem>
+                        <SelectItem value="none">Ninguna</SelectItem>
                         {companyTypes.map((type) => (
                           <SelectItem key={type.id} value={type.id.toString()}>
                             {type.name}
