@@ -50,6 +50,8 @@ import {
   insertPromotionSchema,
   insertIndustrySectionSchema,
   insertCompanySchema,
+  insertCompanyTypeSchema,
+  insertProductPricingSchema,
   customerRegistrationSchema,
   quoteRequestSchema,
   sizeRanges,
@@ -790,6 +792,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting company:", error);
       res.status(500).json({ message: "Failed to delete company" });
+    }
+  });
+
+  // Company Types endpoints
+  app.get('/api/company-types', async (req, res) => {
+    try {
+      const activeOnly = req.query.activeOnly === 'true';
+      const companyTypes = await storage.getCompanyTypes(activeOnly);
+      res.json(companyTypes);
+    } catch (error) {
+      console.error("Error fetching company types:", error);
+      res.status(500).json({ message: "Failed to fetch company types" });
+    }
+  });
+
+  app.get('/api/company-types/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const companyType = await storage.getCompanyType(id);
+      if (!companyType) {
+        return res.status(404).json({ message: "Company type not found" });
+      }
+      res.json(companyType);
+    } catch (error) {
+      console.error("Error fetching company type:", error);
+      res.status(500).json({ message: "Failed to fetch company type" });
+    }
+  });
+
+  app.post('/api/company-types', isAdmin, async (req, res) => {
+    try {
+      const validatedData = insertCompanyTypeSchema.parse(req.body);
+      const companyType = await storage.createCompanyType(validatedData);
+      res.status(201).json(companyType);
+    } catch (error) {
+      console.error("Error creating company type:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to create company type" });
+    }
+  });
+
+  app.put('/api/company-types/:id', isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = insertCompanyTypeSchema.parse(req.body);
+      const companyType = await storage.updateCompanyType(id, validatedData);
+      if (!companyType) {
+        return res.status(404).json({ message: "Company type not found" });
+      }
+      res.json(companyType);
+    } catch (error) {
+      console.error("Error updating company type:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to update company type" });
+    }
+  });
+
+  app.delete('/api/company-types/:id', isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteCompanyType(id);
+      res.json({ message: "Company type deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting company type:", error);
+      res.status(500).json({ message: "Failed to delete company type" });
+    }
+  });
+
+  // Product pricing endpoints
+  app.get('/api/products/:id/pricing', async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      const pricing = await storage.getProductPricing(productId);
+      res.json(pricing);
+    } catch (error) {
+      console.error("Error fetching product pricing:", error);
+      res.status(500).json({ message: "Failed to fetch product pricing" });
+    }
+  });
+
+  app.post('/api/products/:id/pricing', isAdmin, async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      
+      // Validate the pricing array
+      const pricingSchema = z.array(insertProductPricingSchema.omit({ productId: true }));
+      const validatedPricing = pricingSchema.parse(req.body);
+      
+      const pricing = await storage.setProductPricing(productId, validatedPricing);
+      res.json(pricing);
+    } catch (error) {
+      console.error("Error setting product pricing:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to set product pricing" });
+    }
+  });
+
+  app.get('/api/products/:productId/pricing/:companyTypeId', async (req, res) => {
+    try {
+      const productId = parseInt(req.params.productId);
+      const companyTypeId = parseInt(req.params.companyTypeId);
+      const price = await storage.getProductPriceForCompanyType(productId, companyTypeId);
+      res.json({ price });
+    } catch (error) {
+      console.error("Error fetching product price for company type:", error);
+      res.status(500).json({ message: "Failed to fetch product price" });
     }
   });
 
