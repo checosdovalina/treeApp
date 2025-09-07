@@ -69,6 +69,7 @@ export interface IStorage {
   getLocalUserById(id: number): Promise<LocalUser | undefined>;
   createLocalUser(user: InsertLocalUser): Promise<LocalUser>;
   updateLocalUserLastLogin(id: number): Promise<void>;
+  updateCustomerCompany(customerId: string | number, companyId: number | null): Promise<void>;
   
   // Category operations
   getCategories(): Promise<Category[]>;
@@ -250,6 +251,14 @@ export class DatabaseStorage implements IStorage {
       .update(localUsers)
       .set({ lastLogin: new Date() })
       .where(eq(localUsers.id, id));
+  }
+
+  async updateCustomerCompany(customerId: string | number, companyId: number | null): Promise<void> {
+    const customerIdNum = typeof customerId === 'string' ? parseInt(customerId) : customerId;
+    await db
+      .update(localUsers)
+      .set({ companyId })
+      .where(eq(localUsers.id, customerIdNum));
   }
 
   // Category operations

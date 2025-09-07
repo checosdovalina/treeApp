@@ -1525,6 +1525,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update customer company assignment
+  app.patch('/api/customers/:customerId/company', isLocalAdmin, async (req, res) => {
+    try {
+      const { customerId } = req.params;
+      const { companyId } = req.body;
+
+      // Validate customer ID
+      if (!customerId) {
+        return res.status(400).json({ message: "Customer ID is required" });
+      }
+
+      // Update customer company assignment
+      await storage.updateCustomerCompany(customerId, companyId);
+      
+      res.json({ message: "Customer company updated successfully" });
+    } catch (error) {
+      console.error("Error updating customer company:", error);
+      res.status(500).json({ message: "Failed to update customer company" });
+    }
+  });
+
   // Dashboard analytics
   app.get('/api/dashboard/stats', isLocalAdmin, async (req, res) => {
     try {
