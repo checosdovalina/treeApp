@@ -1160,7 +1160,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-      res.json(product);
+      
+      // Check if user is logged in and get their company info for pricing
+      let userCompanyType = null;
+      if (req.session && req.session.user && req.session.user.role === 'customer') {
+        try {
+          const customer = await storage.getCustomerByLocalUserId(req.session.user.id);
+          if (customer && customer.companyId) {
+            const company = await storage.getCompany(customer.companyId);
+            if (company && company.companyTypeId) {
+              userCompanyType = await storage.getCompanyType(company.companyTypeId);
+            }
+          }
+        } catch (error) {
+          console.log("Could not fetch user company type:", error);
+        }
+      }
+      
+      // Add pricing information to product
+      let discountedPrice = product.price;
+      let discount = 0;
+      
+      if (userCompanyType && userCompanyType.discountPercentage) {
+        discount = parseFloat(userCompanyType.discountPercentage);
+        discountedPrice = product.price * (1 - discount / 100);
+      }
+      
+      const productWithPricing = {
+        ...product,
+        originalPrice: product.price,
+        discountedPrice: discountedPrice,
+        discount: discount,
+        companyTypeName: userCompanyType?.name || null
+      };
+      
+      res.json(productWithPricing);
     } catch (error) {
       console.error("Error fetching product:", error);
       res.status(500).json({ message: "Failed to fetch product" });
