@@ -1112,7 +1112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let userCompanyType = null;
       if (req.session && req.session.user && req.session.user.role === 'customer') {
         try {
-          const customer = await storage.getCustomerByLocalUserId(req.session.user.id);
+          const customer = await storage.getLocalUserById(req.session.user.id);
           if (customer && customer.companyId) {
             const company = await storage.getCompany(customer.companyId);
             if (company && company.companyTypeId) {
@@ -1165,7 +1165,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let userCompanyType = null;
       if (req.session && req.session.user && req.session.user.role === 'customer') {
         try {
-          const customer = await storage.getCustomerByLocalUserId(req.session.user.id);
+          const customer = await storage.getLocalUserById(req.session.user.id);
           if (customer && customer.companyId) {
             const company = await storage.getCompany(customer.companyId);
             if (company && company.companyTypeId) {
