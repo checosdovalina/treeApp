@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -233,6 +233,9 @@ export default function CompaniesAdminPage() {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Crear Nueva Empresa</DialogTitle>
+              <DialogDescription>
+                Completa los datos de la nueva empresa cliente.
+              </DialogDescription>
             </DialogHeader>
             <CompanyForm
               form={form}
@@ -389,6 +392,9 @@ export default function CompaniesAdminPage() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Editar Empresa</DialogTitle>
+            <DialogDescription>
+              Modifica los datos de la empresa seleccionada.
+            </DialogDescription>
           </DialogHeader>
           <CompanyForm
             form={form}

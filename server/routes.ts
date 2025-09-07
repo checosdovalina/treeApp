@@ -745,7 +745,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/companies', isAdmin, async (req, res) => {
     try {
-      const validatedData = insertCompanySchema.parse(req.body);
+      // Transform empty strings to null for numeric fields
+      const processedData = {
+        ...req.body,
+        companyTypeId: req.body.companyTypeId === "" ? null : req.body.companyTypeId,
+        employeeCount: req.body.employeeCount === "" ? null : req.body.employeeCount,
+        foundedYear: req.body.foundedYear === "" ? null : req.body.foundedYear,
+        creditLimit: req.body.creditLimit === "" ? null : req.body.creditLimit,
+      };
+      
+      const validatedData = insertCompanySchema.parse(processedData);
       const company = await storage.createCompany(validatedData);
       res.status(201).json(company);
     } catch (error) {
@@ -763,7 +772,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/companies/:id', isAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const validatedData = insertCompanySchema.parse(req.body);
+      
+      // Transform empty strings to null for numeric fields
+      const processedData = {
+        ...req.body,
+        companyTypeId: req.body.companyTypeId === "" ? null : req.body.companyTypeId,
+        employeeCount: req.body.employeeCount === "" ? null : req.body.employeeCount,
+        foundedYear: req.body.foundedYear === "" ? null : req.body.foundedYear,
+        creditLimit: req.body.creditLimit === "" ? null : req.body.creditLimit,
+      };
+      
+      const validatedData = insertCompanySchema.parse(processedData);
       const company = await storage.updateCompany(id, validatedData);
       if (!company) {
         return res.status(404).json({ message: "Company not found" });
