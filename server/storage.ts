@@ -15,6 +15,8 @@ import {
   promotions,
   industrySections,
   companies,
+  companyTypes,
+  productPricing,
   type User,
   type UpsertUser,
   type LocalUser,
@@ -47,6 +49,10 @@ import {
   type InsertIndustrySection,
   type Company,
   type InsertCompany,
+  type CompanyType,
+  type InsertCompanyType,
+  type ProductPricing,
+  type InsertProductPricing,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";
@@ -150,6 +156,18 @@ export interface IStorage {
   getCompany(id: number): Promise<Company | undefined>;
   createCompany(company: InsertCompany): Promise<Company>;
   updateCompany(id: number, updates: Partial<InsertCompany>): Promise<Company>;
+  
+  // Company type operations
+  getCompanyTypes(activeOnly?: boolean): Promise<CompanyType[]>;
+  getCompanyType(id: number): Promise<CompanyType | undefined>;
+  createCompanyType(companyType: InsertCompanyType): Promise<CompanyType>;
+  updateCompanyType(id: number, updates: Partial<InsertCompanyType>): Promise<CompanyType>;
+  deleteCompanyType(id: number): Promise<void>;
+  
+  // Product pricing operations
+  getProductPricing(productId: number): Promise<ProductPricing[]>;
+  setProductPricing(productId: number, pricing: Array<Omit<InsertProductPricing, 'productId'>>): Promise<ProductPricing[]>;
+  getProductPriceForCompanyType(productId: number, companyTypeId: number): Promise<string>;
   
   // Customer management
   getCustomers(): Promise<LocalUser[]>;
@@ -1014,7 +1032,87 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCompany(id: number): Promise<boolean> {
     const result = await db.delete(companies).where(eq(companies.id, id));
-    return result.rowCount > 0;
+    return result.rowCount || 0 > 0;
+  }
+
+  // Company type operations
+  async getCompanyTypes(activeOnly = false): Promise<CompanyType[]> {
+    let query = db.select().from(companyTypes);
+    
+    if (activeOnly) {
+      query = query.where(eq(companyTypes.isActive, true));
+    }
+    
+    return await query.orderBy(companyTypes.sortOrder, companyTypes.name);
+  }
+
+  async getCompanyType(id: number): Promise<CompanyType | undefined> {
+    const [companyType] = await db.select().from(companyTypes).where(eq(companyTypes.id, id));
+    return companyType;
+  }
+
+  async createCompanyType(companyType: InsertCompanyType): Promise<CompanyType> {
+    const [created] = await db
+      .insert(companyTypes)
+      .values(companyType)
+      .returning();
+    return created;
+  }
+
+  async updateCompanyType(id: number, updates: Partial<InsertCompanyType>): Promise<CompanyType> {
+    const [updated] = await db
+      .update(companyTypes)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(companyTypes.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCompanyType(id: number): Promise<void> {
+    await db.delete(companyTypes).where(eq(companyTypes.id, id));
+  }
+
+  // Product pricing operations
+  async getProductPricing(productId: number): Promise<ProductPricing[]> {
+    return await db.select().from(productPricing).where(eq(productPricing.productId, productId));
+  }
+
+  async setProductPricing(productId: number, pricing: Array<Omit<InsertProductPricing, 'productId'>>): Promise<ProductPricing[]> {
+    // First, delete existing pricing for this product
+    await db.delete(productPricing).where(eq(productPricing.productId, productId));
+    
+    // Insert new pricing
+    if (pricing.length > 0) {
+      const pricingData = pricing.map(p => ({ ...p, productId }));
+      const created = await db
+        .insert(productPricing)
+        .values(pricingData)
+        .returning();
+      return created;
+    }
+    
+    return [];
+  }
+
+  async getProductPriceForCompanyType(productId: number, companyTypeId: number): Promise<string> {
+    const [pricing] = await db
+      .select()
+      .from(productPricing)
+      .where(
+        and(
+          eq(productPricing.productId, productId),
+          eq(productPricing.companyTypeId, companyTypeId),
+          eq(productPricing.isActive, true)
+        )
+      );
+    
+    if (pricing) {
+      return pricing.price;
+    }
+    
+    // Fallback to base product price
+    const [product] = await db.select({ price: products.price }).from(products).where(eq(products.id, productId));
+    return product?.price || "0";
   }
 }
 
