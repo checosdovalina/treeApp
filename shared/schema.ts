@@ -522,6 +522,11 @@ export const insertCompanySchema = createInsertSchema(companies).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  companyTypeId: z.number().optional().nullable(),
+  employeeCount: z.number().optional().nullable(),
+  foundedYear: z.number().optional().nullable(),
+  creditLimit: z.string().optional().nullable(),
 });
 
 export const insertCompanyTypeSchema = createInsertSchema(companyTypes).omit({
