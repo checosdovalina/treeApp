@@ -98,21 +98,46 @@ export default function CatalogPage() {
   // Obtener imágenes por color para cada producto
   useEffect(() => {
     if (products && Array.isArray(products) && products.length > 0) {
-      products.forEach((product: any) => {
-        if (!productColorImages[product.id]) {
-          fetch(`/api/products/${product.id}/color-images`)
-            .then(res => res.json())
-            .then(colorImages => {
-              setProductColorImages(prev => ({
-                ...prev,
-                [product.id]: colorImages
-              }));
+      // Procesar solo productos que no tienen imágenes cargadas
+      const productsToLoad = products.filter((product: any) => !productColorImages[product.id]);
+      
+      if (productsToLoad.length > 0) {
+        // Limitar concurrencia procesando en lotes
+        const batchSize = 5;
+        let currentIndex = 0;
+        
+        const processBatch = () => {
+          const batch = productsToLoad.slice(currentIndex, currentIndex + batchSize);
+          
+          Promise.all(
+            batch.map(async (product: any) => {
+              try {
+                const res = await fetch(`/api/products/${product.id}/color-images`);
+                if (res.ok) {
+                  const colorImages = await res.json();
+                  setProductColorImages(prev => ({
+                    ...prev,
+                    [product.id]: colorImages
+                  }));
+                }
+              } catch (err) {
+                // Ignorar errores silenciosamente
+                console.debug('Color images not available for product:', product.id);
+              }
             })
-            .catch(err => console.log('Error fetching color images:', err));
-        }
-      });
+          ).then(() => {
+            currentIndex += batchSize;
+            if (currentIndex < productsToLoad.length) {
+              // Procesar siguiente lote con un pequeño delay
+              setTimeout(processBatch, 100);
+            }
+          });
+        };
+        
+        processBatch();
+      }
     }
-  }, [products, productColorImages]);
+  }, [products]); // Removido productColorImages de las dependencias para evitar bucle infinito
 
   // Filter products
   const filteredProducts = (Array.isArray(products) ? products : []).filter((product: any) => {
