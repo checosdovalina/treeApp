@@ -169,9 +169,9 @@ export default function CatalogPage() {
       case 'name_desc':
         return b.name.localeCompare(a.name);
       case 'price_asc':
-        return (a.price || 0) - (b.price || 0);
+        return (a.discountedPrice || a.price || 0) - (b.discountedPrice || b.price || 0);
       case 'price_desc':
-        return (b.price || 0) - (a.price || 0);
+        return (b.discountedPrice || b.price || 0) - (a.discountedPrice || a.price || 0);
       default:
         return 0;
     }
@@ -204,7 +204,7 @@ export default function CatalogPage() {
     addItem({
       id: product.id.toString(),
       name: product.name,
-      price: product.price,
+      price: product.discountedPrice || product.price,
       image: product.images?.[0],
       size: selectedSize,
       color: selectedColor,
@@ -229,7 +229,11 @@ export default function CatalogPage() {
   };
 
   const handleWhatsApp = (product: any) => {
-    const message = `Hola, me interesa el producto: ${product.name} - $${product.price}`;
+    const price = product.discountedPrice || product.price;
+    const priceText = product.discount > 0 
+      ? `$${product.discountedPrice?.toFixed(2)} (${product.discount}% descuento)`
+      : `$${product.price}`;
+    const message = `Hola, me interesa el producto: ${product.name} - ${priceText}`;
     const whatsappUrl = `https://wa.me/5218711234567?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -612,8 +616,31 @@ export default function CatalogPage() {
                     )}
                     
                     <div className="flex justify-between items-center">
-                      <div className="text-xl font-bold text-uniform-primary">
-                        ${product.price}
+                      <div className="flex flex-col">
+                        {product.discount > 0 ? (
+                          <>
+                            <div className="text-lg font-bold text-green-600">
+                              ${product.discountedPrice?.toFixed(2)}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-gray-500 line-through">
+                                ${product.originalPrice}
+                              </span>
+                              <Badge variant="destructive" className="text-xs px-2 py-0 h-5">
+                                -{product.discount}%
+                              </Badge>
+                            </div>
+                            {product.companyTypeName && (
+                              <span className="text-xs text-green-600 mt-1">
+                                Precio {product.companyTypeName}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <div className="text-xl font-bold text-uniform-primary">
+                            ${product.price}
+                          </div>
+                        )}
                       </div>
                       <div className="flex gap-2">
                         <Button
