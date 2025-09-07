@@ -239,6 +239,7 @@ export default function CompaniesAdminPage() {
               onSubmit={handleCreateSubmit}
               isLoading={createMutation.isPending}
               onCancel={() => setIsCreateDialogOpen(false)}
+              companyTypes={companyTypes}
             />
           </DialogContent>
         </Dialog>
@@ -394,6 +395,7 @@ export default function CompaniesAdminPage() {
             onSubmit={handleEditSubmit}
             isLoading={updateMutation.isPending}
             onCancel={() => setIsEditDialogOpen(false)}
+            companyTypes={companyTypes}
           />
         </DialogContent>
       </Dialog>
@@ -427,9 +429,10 @@ interface CompanyFormProps {
   onSubmit: (data: InsertCompany) => void;
   isLoading: boolean;
   onCancel: () => void;
+  companyTypes: CompanyType[];
 }
 
-function CompanyForm({ form, onSubmit, isLoading, onCancel }: CompanyFormProps) {
+function CompanyForm({ form, onSubmit, isLoading, onCancel, companyTypes }: CompanyFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
