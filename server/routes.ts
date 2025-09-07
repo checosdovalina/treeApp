@@ -56,7 +56,8 @@ import {
   quoteRequestSchema,
   sizeRanges,
   loginSchema,
-  adminRegistrationSchema
+  adminRegistrationSchema,
+  type InsertLocalUser
 } from "@shared/schema";
 import { z } from "zod";
 import { db } from "./db";
@@ -1056,8 +1057,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sizes = sizeRange.sizeList;
       } else if (sizeRange.minSize && sizeRange.maxSize) {
         // Generate numeric range
-        const min = parseInt(sizeRange.minSize);
-        const max = parseInt(sizeRange.maxSize);
+        const min = parseInt(sizeRange.minSize as string);
+        const max = parseInt(sizeRange.maxSize as string);
         for (let i = min; i <= max; i++) {
           sizes.push(i.toString());
         }
