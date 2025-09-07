@@ -1,13 +1,19 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import AdminLayout from "@/components/layout/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Eye, Search, Mail, Phone } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Eye, Search, Mail, Phone, Edit, Building2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +24,9 @@ export default function AdminCustomers() {
   const [search, setSearch] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isEditCompanyOpen, setIsEditCompanyOpen] = useState(false);
+  const [customerToEdit, setCustomerToEdit] = useState<any>(null);
+  const queryClient = useQueryClient();
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -37,6 +46,50 @@ export default function AdminCustomers() {
   const { data: customers, isLoading: customersLoading } = useQuery({
     queryKey: ["/api/customers"],
     retry: false,
+  });
+
+  // Fetch companies for assignment
+  const { data: companies = [] } = useQuery({
+    queryKey: ["/api/companies"],
+    retry: false,
+  });
+
+  // Form schema for company assignment
+  const companyAssignmentSchema = z.object({
+    companyId: z.number().nullable().optional(),
+  });
+
+  const form = useForm<z.infer<typeof companyAssignmentSchema>>({
+    resolver: zodResolver(companyAssignmentSchema),
+    defaultValues: {
+      companyId: null,
+    },
+  });
+
+  // Mutation for updating customer company
+  const updateCustomerCompanyMutation = useMutation({
+    mutationFn: async ({ customerId, companyId }: { customerId: number; companyId: number | null }) => {
+      return await apiRequest(`/api/customers/${customerId}/company`, {
+        method: 'PATCH',
+        body: JSON.stringify({ companyId }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/customers"] });
+      setIsEditCompanyOpen(false);
+      setCustomerToEdit(null);
+      toast({
+        title: "Éxito",
+        description: "Empresa asignada correctamente",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Error al asignar empresa",
+        variant: "destructive",
+      });
+    },
   });
 
   if (isLoading || customersLoading) {
@@ -62,6 +115,23 @@ export default function AdminCustomers() {
   const handleViewCustomer = (customer: any) => {
     setSelectedCustomer(customer);
     setIsDetailOpen(true);
+  };
+
+  const handleEditCompany = (customer: any) => {
+    setCustomerToEdit(customer);
+    // Set current company if exists
+    const currentCompanyId = customer.companyId || null;
+    form.reset({ companyId: currentCompanyId });
+    setIsEditCompanyOpen(true);
+  };
+
+  const handleCompanyAssignment = (data: z.infer<typeof companyAssignmentSchema>) => {
+    if (customerToEdit) {
+      updateCustomerCompanyMutation.mutate({
+        customerId: customerToEdit.id,
+        companyId: data.companyId || null,
+      });
+    }
   };
 
   const getCustomerTypeBadge = (customer: any) => {
@@ -214,12 +284,22 @@ export default function AdminCustomers() {
                               variant="outline"
                               size="sm"
                               onClick={() => handleViewCustomer(customer)}
+                              title="Ver detalles"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
+                              onClick={() => handleEditCompany(customer)}
+                              title="Asignar empresa"
+                            >
+                              <Building2 className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              title="Enviar email"
                             >
                               <Mail className="h-4 w-4" />
                             </Button>
@@ -316,6 +396,65 @@ export default function AdminCustomers() {
                 </div>
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Company Modal */}
+        <Dialog open={isEditCompanyOpen} onOpenChange={setIsEditCompanyOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Asignar Empresa</DialogTitle>
+              <DialogDescription>
+                Selecciona una empresa para asignar al cliente {customerToEdit?.firstName} {customerToEdit?.lastName}
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleCompanyAssignment)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="companyId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Empresa</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value ? field.value.toString() : "none"}
+                          onValueChange={(value) => field.onChange(value === "none" ? null : parseInt(value))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona una empresa" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Sin empresa asignada</SelectItem>
+                            {companies.map((company: any) => (
+                              <SelectItem key={company.id} value={company.id.toString()}>
+                                {company.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsEditCompanyOpen(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={updateCustomerCompanyMutation.isPending}
+                  >
+                    {updateCustomerCompanyMutation.isPending ? 'Guardando...' : 'Guardar'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
