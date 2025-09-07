@@ -170,29 +170,6 @@ export default function CatalogPage() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <CustomerLayout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center bg-white rounded-lg shadow-lg p-8 max-w-md">
-            <Package className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Acceso al Catálogo
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Inicia sesión para explorar nuestra colección completa de uniformes
-            </p>
-            <Button 
-              onClick={() => window.location.href = "/login"}
-              className="bg-uniform-primary hover:bg-blue-700"
-            >
-              Iniciar Sesión
-            </Button>
-          </div>
-        </div>
-      </CustomerLayout>
-    );
-  }
 
   const handleAddToCart = (product: any) => {
     if (!selectedSize || !selectedColor) {
