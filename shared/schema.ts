@@ -70,16 +70,26 @@ export const users = pgTable("users", {
 export const companies = pgTable("companies", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 200 }).notNull().unique(),
+  legalName: varchar("legal_name", { length: 250 }), // Razón social completa
   taxId: varchar("tax_id", { length: 50 }), // RFC o número de identificación fiscal
+  taxRegime: varchar("tax_regime", { length: 100 }), // Régimen fiscal
   industry: varchar("industry", { length: 100 }), // tipo de industria
+  businessType: varchar("business_type", { length: 50 }), // S.A. de C.V., S.R.L., etc.
   contactEmail: varchar("contact_email"),
   contactPhone: varchar("contact_phone", { length: 20 }),
+  contactPerson: varchar("contact_person", { length: 150 }), // Nombre del contacto principal
+  billingEmail: varchar("billing_email"), // Email para facturación
   address: text("address"),
   city: varchar("city", { length: 100 }),
   state: varchar("state", { length: 100 }),
   zipCode: varchar("zip_code", { length: 10 }),
+  country: varchar("country", { length: 100 }).default("México"),
   website: varchar("website", { length: 255 }),
+  employeeCount: integer("employee_count"), // Número de empleados
+  foundedYear: integer("founded_year"),
   notes: text("notes"),
+  paymentTerms: varchar("payment_terms", { length: 100 }), // Términos de pago (15 días, 30 días, etc.)
+  creditLimit: decimal("credit_limit", { precision: 10, scale: 2 }), // Límite de crédito
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
