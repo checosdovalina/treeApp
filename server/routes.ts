@@ -1110,19 +1110,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check if user is logged in and get their company info for pricing
       let userCompanyType = null;
+      console.log("=== PRICING DEBUG ===");
+      console.log("Session user:", req.session?.user);
+      
       if (req.session && req.session.user && req.session.user.role === 'customer') {
         try {
+          console.log("Getting customer with ID:", req.session.user.id);
           const customer = await storage.getLocalUserById(req.session.user.id);
+          console.log("Customer found:", { id: customer?.id, email: customer?.email, companyId: customer?.companyId });
+          
           if (customer && customer.companyId) {
+            console.log("Getting company with ID:", customer.companyId);
             const company = await storage.getCompany(customer.companyId);
+            console.log("Company found:", { id: company?.id, name: company?.name, companyTypeId: company?.companyTypeId });
+            
             if (company && company.companyTypeId) {
+              console.log("Getting company type with ID:", company.companyTypeId);
               userCompanyType = await storage.getCompanyType(company.companyTypeId);
+              console.log("Company type found:", { id: userCompanyType?.id, name: userCompanyType?.name, discountPercentage: userCompanyType?.discountPercentage });
             }
           }
         } catch (error) {
           console.log("Could not fetch user company type:", error);
         }
       }
+      console.log("Final userCompanyType:", userCompanyType);
+      console.log("=== END PRICING DEBUG ===");
       
       // Add pricing information to products
       const productsWithPricing = await Promise.all(products.map(async (product) => {
