@@ -219,7 +219,7 @@ export default function AdminCustomers() {
             <CardContent className="p-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-uniform-neutral-900">
-                  {customers?.filter((c: any) => c && c.company).length || 0}
+                  {customers?.filter((c: any) => c && c.companyName).length || 0}
                 </div>
                 <div className="text-sm text-uniform-secondary">Con Empresa</div>
               </div>
@@ -273,7 +273,16 @@ export default function AdminCustomers() {
                         </TableCell>
                         <TableCell>{customer.email}</TableCell>
                         <TableCell>{getCustomerTypeBadge(customer)}</TableCell>
-                        <TableCell>{customer.company || 'N/A'}</TableCell>
+                        <TableCell>
+                          {customer.companyName ? (
+                            <div className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2 text-uniform-secondary" />
+                              <span>{customer.companyName}</span>
+                            </div>
+                          ) : (
+                            <span className="text-uniform-secondary">Sin empresa</span>
+                          )}
+                        </TableCell>
                         <TableCell className="font-medium">{customer.phone || 'N/A'}</TableCell>
                         <TableCell className="text-uniform-secondary">
                           {customer.createdAt ? new Date(customer.createdAt).toLocaleDateString() : 'N/A'}

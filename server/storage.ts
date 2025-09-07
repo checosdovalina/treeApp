@@ -171,7 +171,7 @@ export interface IStorage {
   getProductPriceForCompanyType(productId: number, companyTypeId: number): Promise<string>;
   
   // Customer management
-  getCustomers(): Promise<LocalUser[]>;
+  getCustomers(): Promise<(LocalUser & { companyName?: string })[]>;
 
   // Analytics
   getDashboardStats(): Promise<{
@@ -201,8 +201,26 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async getCustomers(): Promise<LocalUser[]> {
-    return await db.select().from(localUsers).where(eq(localUsers.role, 'customer'));
+  async getCustomers(): Promise<(LocalUser & { companyName?: string })[]> {
+    const result = await db
+      .select({
+        id: localUsers.id,
+        username: localUsers.username,
+        email: localUsers.email,
+        firstName: localUsers.firstName,
+        lastName: localUsers.lastName,
+        role: localUsers.role,
+        isActive: localUsers.isActive,
+        createdAt: localUsers.createdAt,
+        lastLogin: localUsers.lastLogin,
+        companyId: localUsers.companyId,
+        companyName: companies.name,
+      })
+      .from(localUsers)
+      .leftJoin(companies, eq(localUsers.companyId, companies.id))
+      .where(eq(localUsers.role, 'customer'));
+    
+    return result;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
