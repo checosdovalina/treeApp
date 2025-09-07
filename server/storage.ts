@@ -14,6 +14,7 @@ import {
   productColorImages,
   promotions,
   industrySections,
+  companies,
   type User,
   type UpsertUser,
   type LocalUser,
@@ -44,6 +45,8 @@ import {
   type InsertPromotion,
   type IndustrySection,
   type InsertIndustrySection,
+  type Company,
+  type InsertCompany,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";
@@ -141,6 +144,12 @@ export interface IStorage {
   createIndustrySection(section: InsertIndustrySection): Promise<IndustrySection>;
   updateIndustrySection(id: number, updates: Partial<InsertIndustrySection>): Promise<IndustrySection>;
   deleteIndustrySection(id: number): Promise<void>;
+  
+  // Company operations
+  getCompanies(activeOnly?: boolean): Promise<Company[]>;
+  getCompany(id: number): Promise<Company | undefined>;
+  createCompany(company: InsertCompany): Promise<Company>;
+  updateCompany(id: number, updates: Partial<InsertCompany>): Promise<Company>;
   
   // Customer management
   getCustomers(): Promise<LocalUser[]>;
@@ -968,6 +977,39 @@ export class DatabaseStorage implements IStorage {
 
   async deleteIndustrySection(id: number): Promise<void> {
     await db.delete(industrySections).where(eq(industrySections.id, id));
+  }
+
+  // Company operations
+  async getCompanies(activeOnly = false): Promise<Company[]> {
+    let query = db.select().from(companies);
+    
+    if (activeOnly) {
+      query = query.where(eq(companies.isActive, true));
+    }
+    
+    return await query.orderBy(companies.name);
+  }
+
+  async getCompany(id: number): Promise<Company | undefined> {
+    const [company] = await db.select().from(companies).where(eq(companies.id, id));
+    return company;
+  }
+
+  async createCompany(company: InsertCompany): Promise<Company> {
+    const [created] = await db
+      .insert(companies)
+      .values(company)
+      .returning();
+    return created;
+  }
+
+  async updateCompany(id: number, updates: Partial<InsertCompany>): Promise<Company> {
+    const [updated] = await db
+      .update(companies)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(companies.id, id))
+      .returning();
+    return updated;
   }
 }
 

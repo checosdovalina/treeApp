@@ -49,6 +49,7 @@ import {
   insertProductColorImageSchema,
   insertPromotionSchema,
   insertIndustrySectionSchema,
+  insertCompanySchema,
   customerRegistrationSchema,
   quoteRequestSchema,
   sizeRanges,
@@ -690,6 +691,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting brand:", error);
       res.status(500).json({ message: "Failed to delete brand" });
+    }
+  });
+
+  // Companies endpoints
+  app.get('/api/companies', async (req, res) => {
+    try {
+      const activeOnly = req.query.activeOnly === 'true';
+      const companies = await storage.getCompanies(activeOnly);
+      res.json(companies);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      res.status(500).json({ message: "Failed to fetch companies" });
+    }
+  });
+
+  app.get('/api/companies/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const company = await storage.getCompany(id);
+      if (!company) {
+        return res.status(404).json({ message: "Company not found" });
+      }
+      res.json(company);
+    } catch (error) {
+      console.error("Error fetching company:", error);
+      res.status(500).json({ message: "Failed to fetch company" });
+    }
+  });
+
+  app.post('/api/companies', async (req, res) => {
+    try {
+      const validatedData = insertCompanySchema.parse(req.body);
+      const company = await storage.createCompany(validatedData);
+      res.status(201).json(company);
+    } catch (error) {
+      console.error("Error creating company:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to create company" });
     }
   });
 
