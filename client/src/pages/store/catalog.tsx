@@ -77,32 +77,27 @@ export default function CatalogPage() {
   // Fetch data
   const { data: products = [], isLoading: productsLoading } = useQuery({
     queryKey: ['/api/products'],
-    enabled: isAuthenticated,
   });
 
   const { data: categories = [] } = useQuery({
     queryKey: ['/api/categories'],
-    enabled: isAuthenticated,
   });
 
   const { data: brands = [] } = useQuery({
     queryKey: ['/api/brands'],
-    enabled: isAuthenticated,
   });
 
   const { data: garmentTypes = [] } = useQuery({
     queryKey: ['/api/garment-types'],
-    enabled: isAuthenticated,
   });
 
   const { data: colors = [] } = useQuery({
     queryKey: ['/api/colors'],
-    enabled: isAuthenticated,
   });
 
   // Obtener imágenes por color para cada producto
   useEffect(() => {
-    if (products && Array.isArray(products) && products.length > 0 && isAuthenticated) {
+    if (products && Array.isArray(products) && products.length > 0) {
       products.forEach((product: any) => {
         if (!productColorImages[product.id]) {
           fetch(`/api/products/${product.id}/color-images`)
@@ -117,7 +112,7 @@ export default function CatalogPage() {
         }
       });
     }
-  }, [products, isAuthenticated, productColorImages]);
+  }, [products, productColorImages]);
 
   // Filter products
   const filteredProducts = (Array.isArray(products) ? products : []).filter((product: any) => {
@@ -157,7 +152,7 @@ export default function CatalogPage() {
     }
   });
 
-  if (isLoading) {
+  if (productsLoading) {
     return (
       <CustomerLayout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
