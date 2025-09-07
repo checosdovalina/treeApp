@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, Search, Building, Mail, Phone, MapPin, Users, DollarSign } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Company, insertCompanySchema, type InsertCompany } from "@shared/schema";
+import { Company, insertCompanySchema, type InsertCompany, type CompanyType } from "@shared/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AdminLayout from "@/components/layout/admin-layout";
@@ -50,6 +50,11 @@ export default function CompaniesAdminPage() {
     queryKey: ["/api/companies"],
   });
 
+  // Fetch company types
+  const { data: companyTypes = [] } = useQuery<CompanyType[]>({
+    queryKey: ["/api/company-types"],
+  });
+
   // Filter companies based on search term
   const filteredCompanies = companies.filter((company) =>
     company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -67,6 +72,7 @@ export default function CompaniesAdminPage() {
       taxRegime: "",
       industry: "",
       businessType: "",
+      companyTypeId: undefined,
       contactEmail: "",
       contactPhone: "",
       contactPerson: "",
@@ -175,6 +181,7 @@ export default function CompaniesAdminPage() {
       taxRegime: company.taxRegime || "",
       industry: company.industry || "",
       businessType: company.businessType || "",
+      companyTypeId: company.companyTypeId || undefined,
       contactEmail: company.contactEmail || "",
       contactPhone: company.contactPhone || "",
       contactPerson: company.contactPerson || "",
@@ -505,6 +512,39 @@ function CompanyForm({ form, onSubmit, isLoading, onCancel }: CompanyFormProps) 
                         <SelectItem value="AC">A.C.</SelectItem>
                         <SelectItem value="PERSONA_FISICA">Persona Física</SelectItem>
                         <SelectItem value="OTROS">Otros</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="companyTypeId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoría de cliente</FormLabel>
+                  <FormControl>
+                    <Select
+                      value={field.value ? field.value.toString() : ""}
+                      onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona categoría de cliente" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {companyTypes.map((type) => (
+                          <SelectItem key={type.id} value={type.id.toString()}>
+                            {type.name}
+                            {type.discountPercentage && parseFloat(type.discountPercentage) > 0 && (
+                              <span className="text-sm text-muted-foreground ml-2">
+                                ({type.discountPercentage}% desc.)
+                              </span>
+                            )}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormControl>
