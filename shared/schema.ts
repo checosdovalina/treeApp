@@ -66,6 +66,18 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Company types table
+export const companyTypes = pgTable("company_types", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  description: text("description"),
+  discountPercentage: decimal("discount_percentage", { precision: 5, scale: 2 }).default("0"), // Descuento general por tipo
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Companies table
 export const companies = pgTable("companies", {
   id: serial("id").primaryKey(),
@@ -75,6 +87,7 @@ export const companies = pgTable("companies", {
   taxRegime: varchar("tax_regime", { length: 100 }), // Régimen fiscal
   industry: varchar("industry", { length: 100 }), // tipo de industria
   businessType: varchar("business_type", { length: 50 }), // S.A. de C.V., S.R.L., etc.
+  companyTypeId: integer("company_type_id").references(() => companyTypes.id), // Tipo de empresa para precios
   contactEmail: varchar("contact_email"),
   contactPhone: varchar("contact_phone", { length: 20 }),
   contactPerson: varchar("contact_person", { length: 150 }), // Nombre del contacto principal
@@ -165,10 +178,21 @@ export const products = pgTable("products", {
   gender: genderEnum("gender"), // Keep existing column with enum type for compatibility
   genders: text("genders").array().default([]).notNull(), // New array column for multiple genders
   garmentTypeId: integer("garment_type_id").references(() => garmentTypes.id),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(), // Precio base/regular
   images: text("images").array().default([]),
   sizes: text("sizes").array().default([]),
   colors: text("colors").array().default([]),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Product pricing by company type table
+export const productPricing = pgTable("product_pricing", {
+  id: serial("id").primaryKey(),
+  productId: integer("product_id").references(() => products.id).notNull(),
+  companyTypeId: integer("company_type_id").references(() => companyTypes.id).notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -310,6 +334,7 @@ export const productsRelations = relations(products, ({ one, many }) => ({
   inventory: many(inventory),
   orderItems: many(orderItems),
   colorImages: many(productColorImages),
+  pricing: many(productPricing),
 }));
 
 export const productColorImagesRelations = relations(productColorImages, ({ one }) => ({
@@ -385,9 +410,29 @@ export const quotesRelations = relations(quotes, ({ one }) => ({
   }),
 }));
 
-export const companiesRelations = relations(companies, ({ many }) => ({
+export const companyTypesRelations = relations(companyTypes, ({ many }) => ({
+  companies: many(companies),
+  productPricing: many(productPricing),
+}));
+
+export const companiesRelations = relations(companies, ({ one, many }) => ({
+  companyType: one(companyTypes, {
+    fields: [companies.companyTypeId],
+    references: [companyTypes.id],
+  }),
   localUsers: many(localUsers),
   users: many(users),
+}));
+
+export const productPricingRelations = relations(productPricing, ({ one }) => ({
+  product: one(products, {
+    fields: [productPricing.productId],
+    references: [products.id],
+  }),
+  companyType: one(companyTypes, {
+    fields: [productPricing.companyTypeId],
+    references: [companyTypes.id],
+  }),
 }));
 
 export const localUsersRelations = relations(localUsers, ({ one }) => ({
@@ -474,6 +519,18 @@ export const insertIndustrySectionSchema = createInsertSchema(industrySections).
 });
 
 export const insertCompanySchema = createInsertSchema(companies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCompanyTypeSchema = createInsertSchema(companyTypes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertProductPricingSchema = createInsertSchema(productPricing).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -610,3 +667,9 @@ export type IndustrySection = typeof industrySections.$inferSelect;
 
 export type InsertCompany = z.infer<typeof insertCompanySchema>;
 export type Company = typeof companies.$inferSelect;
+
+export type InsertCompanyType = z.infer<typeof insertCompanyTypeSchema>;
+export type CompanyType = typeof companyTypes.$inferSelect;
+
+export type InsertProductPricing = z.infer<typeof insertProductPricingSchema>;
+export type ProductPricing = typeof productPricing.$inferSelect;
