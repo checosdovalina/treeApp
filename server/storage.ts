@@ -598,7 +598,7 @@ export class DatabaseStorage implements IStorage {
               email: localUsers.email,
               firstName: localUsers.firstName,
               lastName: localUsers.lastName,
-              company: localUsers.company,
+              companyId: localUsers.companyId,
             })
             .from(localUsers)
             .where(eq(localUsers.id, parseInt(quote.customerId)));
@@ -607,7 +607,7 @@ export class DatabaseStorage implements IStorage {
             customerInfo = {
               customerName: `${customer.firstName || ''} ${customer.lastName || ''}`.trim(),
               customerEmail: customer.email,
-              customerCompany: customer.company,
+              customerCompany: null, // Will be fetched from company table using companyId
             };
           }
         }

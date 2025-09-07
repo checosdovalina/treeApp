@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { customerRegistrationSchema, type CustomerRegistration } from "@shared/schema";
+import { customerRegistrationSchema, type CustomerRegistration, type Company } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,23 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { User, Building, MapPin, Phone, Mail, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { User, Building, MapPin, Phone, Mail, ArrowLeft, Eye, EyeOff, Plus } from "lucide-react";
 
 export default function CustomerRegisterPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [companyOption, setCompanyOption] = useState<"existing" | "new" | "none">("none");
   const { toast } = useToast();
+
+  // Fetch companies for selection
+  const { data: companies, isLoading: companiesLoading } = useQuery<Company[]>({
+    queryKey: ["/api/companies", "active"],
+    enabled: companyOption === "existing",
+  });
 
   const form = useForm<CustomerRegistration>({
     resolver: zodResolver(customerRegistrationSchema),
@@ -29,7 +39,15 @@ export default function CustomerRegisterPage() {
       password: "",
       confirmPassword: "",
       phone: "",
-      company: "",
+      companyId: undefined,
+      newCompany: {
+        name: "",
+        taxId: "",
+        industry: "",
+        contactEmail: "",
+        contactPhone: "",
+        website: "",
+      },
       address: "",
       city: "",
       state: "",
@@ -264,19 +282,181 @@ export default function CustomerRegisterPage() {
                     <Building className="h-5 w-5 mr-2" />
                     Información de Empresa (Opcional)
                   </h3>
-                  <FormField
-                    control={form.control}
-                    name="company"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre de la empresa</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Nombre de tu empresa" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  
+                  <RadioGroup
+                    value={companyOption}
+                    onValueChange={(value: "existing" | "new" | "none") => {
+                      setCompanyOption(value);
+                      if (value === "none") {
+                        form.setValue("companyId", undefined);
+                        form.setValue("newCompany", undefined);
+                      }
+                    }}
+                    className="mb-4"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="none" id="no-company" />
+                      <Label htmlFor="no-company">Sin empresa</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="existing" id="existing-company" />
+                      <Label htmlFor="existing-company">Seleccionar empresa existente</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="new" id="new-company" />
+                      <Label htmlFor="new-company">Crear nueva empresa</Label>
+                    </div>
+                  </RadioGroup>
+
+                  {companyOption === "existing" && (
+                    <FormField
+                      control={form.control}
+                      name="companyId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Empresa</FormLabel>
+                          <FormControl>
+                            <Select 
+                              value={field.value?.toString()} 
+                              onValueChange={(value) => field.onChange(parseInt(value))}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecciona una empresa" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {companiesLoading ? (
+                                  <SelectItem value="loading" disabled>Cargando...</SelectItem>
+                                ) : companies?.length ? (
+                                  companies.map((company) => (
+                                    <SelectItem key={company.id} value={company.id.toString()}>
+                                      {company.name}
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <SelectItem value="no-companies" disabled>
+                                    No hay empresas disponibles
+                                  </SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {companyOption === "new" && (
+                    <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                      <h4 className="font-medium flex items-center">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Nueva Empresa
+                      </h4>
+                      
+                      <FormField
+                        control={form.control}
+                        name="newCompany.name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nombre de la empresa *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Nombre de la empresa" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="newCompany.taxId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>RFC / ID Fiscal</FormLabel>
+                              <FormControl>
+                                <Input placeholder="RFC123456789" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="newCompany.industry"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Industria / Sector</FormLabel>
+                              <FormControl>
+                                <Select value={field.value} onValueChange={field.onChange}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecciona una industria" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="retail">Retail / Comercio</SelectItem>
+                                    <SelectItem value="hospitality">Hospitalidad / Gastronomía</SelectItem>
+                                    <SelectItem value="healthcare">Salud</SelectItem>
+                                    <SelectItem value="industrial">Industrial</SelectItem>
+                                    <SelectItem value="construction">Construcción</SelectItem>
+                                    <SelectItem value="education">Educación</SelectItem>
+                                    <SelectItem value="security">Seguridad</SelectItem>
+                                    <SelectItem value="corporate">Corporativo</SelectItem>
+                                    <SelectItem value="other">Otro</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="newCompany.contactEmail"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email de contacto</FormLabel>
+                              <FormControl>
+                                <Input type="email" placeholder="contacto@empresa.com" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="newCompany.contactPhone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Teléfono de contacto</FormLabel>
+                              <FormControl>
+                                <Input placeholder="123-456-7890" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name="newCompany.website"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Sitio web</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://empresa.com" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <Separator />

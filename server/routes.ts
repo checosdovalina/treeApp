@@ -377,6 +377,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "El email ya está registrado" });
       }
       
+      // Handle company creation/selection
+      let companyId = customerData.companyId || null;
+      
+      if (customerData.newCompany && customerData.newCompany.name) {
+        // Create new company
+        const newCompany = await storage.createCompany({
+          name: customerData.newCompany.name,
+          taxId: customerData.newCompany.taxId || null,
+          industry: customerData.newCompany.industry || null,
+          contactEmail: customerData.newCompany.contactEmail || null,
+          contactPhone: customerData.newCompany.contactPhone || null,
+          website: customerData.newCompany.website || null,
+          address: customerData.address,
+          city: customerData.city,
+          state: customerData.state,
+          zipCode: customerData.zipCode,
+          isActive: true
+        });
+        companyId = newCompany.id;
+      }
+      
       // Check if username exists
       const existingUsername = await storage.getLocalUserByUsername(username);
       if (existingUsername) {
@@ -393,7 +414,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lastName: customerData.lastName,
           role: 'customer' as const,
           phone: customerData.phone,
-          company: customerData.company || null,
+          companyId: companyId,
           address: customerData.address,
           city: customerData.city,
           state: customerData.state,
@@ -411,7 +432,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
-            company: user.company
+            companyId: user.companyId
           }
         });
       } else {
@@ -424,7 +445,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lastName: customerData.lastName,
           role: 'customer' as const,
           phone: customerData.phone,
-          company: customerData.company || null,
+          companyId: companyId,
           address: customerData.address,
           city: customerData.city,
           state: customerData.state,
@@ -442,7 +463,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
-            company: user.company
+            companyId: user.companyId
           }
         });
       }
