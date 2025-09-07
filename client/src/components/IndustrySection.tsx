@@ -102,7 +102,7 @@ export default function IndustrySection() {
   }
 
   return (
-    <section className="py-12 bg-gradient-to-br from-uniform-primary to-uniform-secondary">
+    <section className="py-12 bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <div className="inline-block bg-uniform-gold/20 text-uniform-gold text-sm font-semibold px-4 py-2 rounded-full mb-4">
