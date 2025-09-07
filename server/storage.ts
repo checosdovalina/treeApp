@@ -1011,6 +1011,11 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updated;
   }
+
+  async deleteCompany(id: number): Promise<boolean> {
+    const result = await db.delete(companies).where(eq(companies.id, id));
+    return result.rowCount > 0;
+  }
 }
 
 export const storage = new DatabaseStorage();
