@@ -36,7 +36,7 @@ export const localUsers = pgTable("local_users", {
   lastName: varchar("last_name"),
   role: varchar("role").notNull().default("customer"), // admin, customer
   phone: varchar("phone", { length: 20 }),
-  company: varchar("company", { length: 200 }),
+  companyId: integer("company_id").references(() => companies.id),
   address: text("address"),
   city: varchar("city", { length: 100 }),
   state: varchar("state", { length: 100 }),
@@ -56,11 +56,30 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   role: varchar("role").notNull().default("customer"), // admin, customer
   phone: varchar("phone", { length: 20 }),
-  company: varchar("company", { length: 200 }),
+  companyId: integer("company_id").references(() => companies.id),
   address: text("address"),
   city: varchar("city", { length: 100 }),
   state: varchar("state", { length: 100 }),
   zipCode: varchar("zip_code", { length: 10 }),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Companies table
+export const companies = pgTable("companies", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 200 }).notNull().unique(),
+  taxId: varchar("tax_id", { length: 50 }), // RFC o número de identificación fiscal
+  industry: varchar("industry", { length: 100 }), // tipo de industria
+  contactEmail: varchar("contact_email"),
+  contactPhone: varchar("contact_phone", { length: 20 }),
+  address: text("address"),
+  city: varchar("city", { length: 100 }),
+  state: varchar("state", { length: 100 }),
+  zipCode: varchar("zip_code", { length: 10 }),
+  website: varchar("website", { length: 255 }),
+  notes: text("notes"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -356,6 +375,25 @@ export const quotesRelations = relations(quotes, ({ one }) => ({
   }),
 }));
 
+export const companiesRelations = relations(companies, ({ many }) => ({
+  localUsers: many(localUsers),
+  users: many(users),
+}));
+
+export const localUsersRelations = relations(localUsers, ({ one }) => ({
+  company: one(companies, {
+    fields: [localUsers.companyId],
+    references: [companies.id],
+  }),
+}));
+
+export const usersRelations = relations(users, ({ one }) => ({
+  company: one(companies, {
+    fields: [users.companyId],
+    references: [companies.id],
+  }),
+}));
+
 // Insert schemas
 export const insertCategorySchema = createInsertSchema(categories).omit({
   id: true,
@@ -425,6 +463,12 @@ export const insertIndustrySectionSchema = createInsertSchema(industrySections).
   updatedAt: true,
 });
 
+export const insertCompanySchema = createInsertSchema(companies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertQuoteSchema = createInsertSchema(quotes).omit({
   id: true,
   quoteNumber: true,
@@ -440,7 +484,15 @@ export const customerRegistrationSchema = z.object({
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   confirmPassword: z.string(),
   phone: z.string().min(10, "El teléfono debe tener al menos 10 dígitos"),
-  company: z.string().optional(),
+  companyId: z.number().optional(),
+  newCompany: z.object({
+    name: z.string().min(2, "El nombre de la empresa debe tener al menos 2 caracteres"),
+    taxId: z.string().optional(),
+    industry: z.string().optional(),
+    contactEmail: z.string().email("Email inválido").optional().or(z.literal("")),
+    contactPhone: z.string().optional(),
+    website: z.string().optional(),
+  }).optional(),
   address: z.string().min(10, "La dirección debe tener al menos 10 caracteres"),
   city: z.string().min(2, "La ciudad debe tener al menos 2 caracteres"),
   state: z.string().min(2, "El estado debe tener al menos 2 caracteres"),
@@ -545,3 +597,6 @@ export type QuoteRequest = z.infer<typeof quoteRequestSchema>;
 
 export type InsertIndustrySection = z.infer<typeof insertIndustrySectionSchema>;
 export type IndustrySection = typeof industrySections.$inferSelect;
+
+export type InsertCompany = z.infer<typeof insertCompanySchema>;
+export type Company = typeof companies.$inferSelect;
