@@ -197,11 +197,12 @@ export default function IndustrySection() {
                       <Link href={section.linkUrl || `/store/catalog?category=${section.industry}`}>
                         <Button
                           variant="outline"
-                          className="w-full text-sm font-semibold hover:scale-105 transition-transform duration-200"
+                          className="w-full text-sm font-semibold hover:scale-105 transition-transform duration-200 hover:bg-white/20"
                           style={{
                             borderColor: section.textColor || '#ffffff',
                             color: section.textColor || '#ffffff',
-                            backgroundColor: 'transparent'
+                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            backdropFilter: 'blur(10px)'
                           }}
                         >
                           {section.buttonText || 'EXPLORAR CATÁLOGO'} →
