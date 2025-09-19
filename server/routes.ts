@@ -1894,6 +1894,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Customer-specific routes
+  app.get('/api/customer/orders', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      // Filter orders by customer ID only for non-admin users
+      const filters = {
+        customerId: userId,
+        limit: 10, // Recent orders
+        offset: 0
+      };
+      
+      const orders = await storage.getOrders(filters);
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching customer orders:", error);
+      res.status(500).json({ message: "Failed to fetch customer orders" });
+    }
+  });
+
+  app.get('/api/customer/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get customer's orders to calculate stats
+      const orders = await storage.getOrders({ customerId: userId });
+      
+      const totalOrders = orders.length;
+      const totalSpent = orders.reduce((sum, order) => sum + parseFloat(order.totalAmount), 0);
+      
+      const stats = {
+        totalOrders,
+        totalSpent: totalSpent.toFixed(2),
+        favoritesCount: 0, // Not implemented yet
+        customerLevel: totalOrders > 5 ? 'Premium' : totalOrders > 1 ? 'Regular' : 'Nuevo'
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching customer stats:", error);
+      res.status(500).json({ message: "Failed to fetch customer stats" });
+    }
+  });
+
+  app.get('/api/customer/favorites', isAuthenticated, async (req: any, res) => {
+    try {
+      // For now, return empty array - favorites functionality not implemented yet
+      res.json([]);
+    } catch (error) {
+      console.error("Error fetching customer favorites:", error);
+      res.status(500).json({ message: "Failed to fetch customer favorites" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

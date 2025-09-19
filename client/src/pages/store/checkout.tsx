@@ -87,6 +87,11 @@ export default function Checkout() {
         title: "¡Pedido creado exitosamente!",
         description: `Tu pedido #${order.id} ha sido procesado. Te contactaremos pronto.`,
       });
+      
+      // Invalidate customer data cache to refresh dashboard
+      queryClient.invalidateQueries({ queryKey: ['/api/customer/orders'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/customer/stats'] });
+      
       setLocation("/customer/orders");
     },
     onError: (error: any) => {
