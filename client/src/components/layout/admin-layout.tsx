@@ -227,7 +227,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Main Content Area */}
         <main className="flex-1 bg-uniform-neutral-50 min-h-[calc(100vh-4rem)]">
-          <BreadcrumbNavigation showStoreLink={true} userRole="admin" />
+          <BreadcrumbNavigation showStoreLink={false} userRole="admin" />
           <ContextActions userRole="admin" />
           {children}
         </main>

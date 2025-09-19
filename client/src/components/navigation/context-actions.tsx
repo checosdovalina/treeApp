@@ -26,7 +26,6 @@ export default function ContextActions({ userRole }: ContextActionsProps) {
     if (userRole === 'admin' && location.startsWith('/admin')) {
       if (location === '/admin' || location === '/admin/') {
         actions.push(
-          { label: 'Ver Tienda', href: '/store', icon: Store, variant: 'outline' as const },
           { label: 'Nuevo Producto', href: '/admin/products', icon: Plus, variant: 'default' as const }
         );
       } else if (location.startsWith('/admin/products')) {
@@ -38,13 +37,11 @@ export default function ContextActions({ userRole }: ContextActionsProps) {
       } else if (location.startsWith('/admin/orders')) {
         actions.push(
           { label: 'Dashboard', href: '/admin', icon: ArrowLeft, variant: 'outline' as const },
-          { label: 'Crear Presupuesto', href: '/admin/quotes/new', icon: FileText, variant: 'default' as const },
-          { label: 'Ver Tienda', href: '/store', icon: Store, variant: 'outline' as const }
+          { label: 'Crear Presupuesto', href: '/admin/quotes/new', icon: FileText, variant: 'default' as const }
         );
       } else if (location.startsWith('/admin/customers')) {
         actions.push(
-          { label: 'Dashboard', href: '/admin', icon: ArrowLeft, variant: 'outline' as const },
-          { label: 'Ver Tienda', href: '/store', icon: Store, variant: 'outline' as const }
+          { label: 'Dashboard', href: '/admin', icon: ArrowLeft, variant: 'outline' as const }
         );
       } else if (location.startsWith('/admin/quotes')) {
         actions.push(
@@ -63,8 +60,7 @@ export default function ContextActions({ userRole }: ContextActionsProps) {
         );
       } else {
         actions.push(
-          { label: 'Dashboard', href: '/admin', icon: ArrowLeft, variant: 'outline' as const },
-          { label: 'Ver Tienda', href: '/store', icon: Store, variant: 'outline' as const }
+          { label: 'Dashboard', href: '/admin', icon: ArrowLeft, variant: 'outline' as const }
         );
       }
     }
