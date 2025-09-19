@@ -29,6 +29,7 @@ import CustomerQuotes from "@/pages/customer/quotes";
 import CustomerRegister from "@/pages/auth/customer-register";
 import AdminRegister from "@/pages/auth/admin-register";
 import QuoteRequest from "@/pages/store/quote-request";
+import Contact from "@/pages/store/contact";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -66,6 +67,7 @@ function Router() {
         <Route path="/store/cart" component={Cart} />
         <Route path="/store/checkout" component={Checkout} />
         <Route path="/store/quote-request" component={QuoteRequest} />
+        <Route path="/store/contact" component={Contact} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -116,6 +118,7 @@ function Router() {
       <Route path="/store/cart" component={Cart} />
       <Route path="/store/checkout" component={Checkout} />
       <Route path="/store/quote-request" component={QuoteRequest} />
+      <Route path="/store/contact" component={Contact} />
       
       {/* Auth routes - available to all users */}
       <Route path="/login" component={LoginPage} />
