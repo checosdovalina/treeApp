@@ -338,8 +338,7 @@ export default function ReturnsPage() {
                   </Button>
                   <Link href="/store/contact">
                     <Button 
-                      variant="outline" 
-                      className="border-white text-white hover:bg-white hover:text-uniform-blue"
+                      className="bg-uniform-gold text-uniform-blue hover:bg-yellow-400 hover:text-uniform-blue font-semibold"
                     >
                       Enviar Mensaje
                     </Button>
