@@ -216,8 +216,7 @@ export default function AboutPage() {
                 <Link href="/store/quote-request">
                   <Button 
                     size="lg" 
-                    variant="outline" 
-                    className="border-white text-white hover:bg-white hover:text-uniform-blue px-8 py-4"
+                    className="bg-white text-uniform-blue hover:bg-gray-100 border-white hover:border-gray-100 px-8 py-4 font-semibold"
                   >
                     Solicitar Cotización
                   </Button>

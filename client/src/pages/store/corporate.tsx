@@ -458,8 +458,7 @@ export default function CorporatePage() {
               </Link>
               <Button 
                 size="lg" 
-                variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-uniform-blue px-8 py-4"
+                className="bg-white text-uniform-blue hover:bg-gray-100 border-white hover:border-gray-100 px-8 py-4 font-semibold"
                 onClick={() => {
                   const whatsappUrl = `https://wa.me/5218711047637?text=${encodeURIComponent("Hola! Quisiera solicitar una cotización para uniformes corporativos")}`;
                   window.open(whatsappUrl, '_blank');
