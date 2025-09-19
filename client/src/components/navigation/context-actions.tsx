@@ -71,11 +71,6 @@ export default function ContextActions({ userRole }: ContextActionsProps) {
 
     // Store/Customer context actions
     if (location.startsWith('/store')) {
-      if (userRole === 'admin') {
-        actions.push(
-          { label: 'Panel Admin', href: '/admin', icon: Building, variant: 'default' as const }
-        );
-      }
       
       if (location === '/store' || location === '/store/') {
         actions.push(
@@ -102,11 +97,6 @@ export default function ContextActions({ userRole }: ContextActionsProps) {
 
     // Customer dashboard context actions
     if (location.startsWith('/customer')) {
-      if (userRole === 'admin') {
-        actions.push(
-          { label: 'Panel Admin', href: '/admin', icon: Building, variant: 'default' as const }
-        );
-      }
       
       actions.push(
         { label: 'Ir a Tienda', href: '/store', icon: Store, variant: 'outline' as const }
