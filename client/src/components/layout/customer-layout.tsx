@@ -639,7 +639,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
 
       {/* Main Content with proper spacing to avoid header overlap */}
       <main className="flex-1 pt-20">
-        <BreadcrumbNavigation showAdminLink={true} userRole={(user as any)?.role} />
+        <BreadcrumbNavigation showAdminLink={false} userRole={(user as any)?.role} />
         <ContextActions userRole={(user as any)?.role} />
         {children}
       </main>
