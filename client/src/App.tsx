@@ -106,18 +106,14 @@ function Router() {
         </>
       )}
       
-      {/* Customer routes - only show if user is customer */}
-      {(user as any)?.role === 'customer' && (
-        <>
-          <Route path="/customer" component={CustomerDashboard} />
-          <Route path="/customer/dashboard" component={CustomerDashboard} />
-          <Route path="/customer/orders" component={CustomerDashboard} />
-          <Route path="/customer/favorites" component={CustomerDashboard} />
-          <Route path="/customer/quotes" component={CustomerQuotes} />
-          <Route path="/customer/support" component={CustomerSupport} />
-          <Route path="/customer/profile" component={CustomerDashboard} />
-        </>
-      )}
+      {/* Customer routes - available to all authenticated users */}
+      <Route path="/customer" component={CustomerDashboard} />
+      <Route path="/customer/dashboard" component={CustomerDashboard} />
+      <Route path="/customer/orders" component={CustomerDashboard} />
+      <Route path="/customer/favorites" component={CustomerDashboard} />
+      <Route path="/customer/quotes" component={CustomerQuotes} />
+      <Route path="/customer/support" component={CustomerSupport} />
+      <Route path="/customer/profile" component={CustomerDashboard} />
       
       {/* Store routes - available to all authenticated users */}
       <Route path="/store" component={StoreHome} />
