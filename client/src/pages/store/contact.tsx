@@ -1,5 +1,6 @@
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import StoreLayout from "@/components/layout/store-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -16,8 +18,34 @@ export default function Contact() {
     subject: '',
     message: ''
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  const contactMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      return apiRequest('POST', '/api/contact-messages', data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Mensaje enviado",
+        description: "Gracias por contactarnos. Te responderemos pronto.",
+      });
+      // Limpiar formulario
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Hubo un problema al enviar tu mensaje. Inténtalo de nuevo.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -29,35 +57,7 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      // Aquí iría la lógica para enviar el formulario
-      // Por ahora solo simularemos el envío
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Mensaje enviado",
-        description: "Gracias por contactarnos. Te responderemos pronto.",
-      });
-
-      // Limpiar formulario
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Hubo un problema al enviar tu mensaje. Inténtalo de nuevo.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    contactMutation.mutate(formData);
   };
 
   return (
@@ -231,11 +231,11 @@ export default function Contact() {
 
                     <Button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={contactMutation.isPending}
                       className="w-full bg-uniform-primary hover:bg-uniform-primary/90"
                       data-testid="button-submit"
                     >
-                      {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
+                      {contactMutation.isPending ? 'Enviando...' : 'Enviar Mensaje'}
                     </Button>
                   </form>
                 </CardContent>
