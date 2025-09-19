@@ -303,6 +303,20 @@ export const promotions = pgTable("promotions", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Contact messages table
+export const contactMessages = pgTable("contact_messages", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 200 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 20 }),
+  subject: varchar("subject", { length: 300 }).notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  respondedAt: timestamp("responded_at"),
+  response: text("response"),
+});
+
 // Industry sections - configurable homepage sections for different industries
 export const industrySections = pgTable("industry_sections", {
   id: serial("id").primaryKey(),
@@ -512,6 +526,11 @@ export const insertPromotionSchema = createInsertSchema(promotions).omit({
   endDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
 });
 
+export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertIndustrySectionSchema = createInsertSchema(industrySections).omit({
   id: true,
   createdAt: true,
@@ -660,6 +679,9 @@ export type Quote = typeof quotes.$inferSelect;
 
 export type InsertPromotion = z.infer<typeof insertPromotionSchema>;
 export type Promotion = typeof promotions.$inferSelect;
+
+export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+export type ContactMessage = typeof contactMessages.$inferSelect;
 
 export type InsertProductColorImage = z.infer<typeof insertProductColorImageSchema>;
 export type ProductColorImage = typeof productColorImages.$inferSelect;
