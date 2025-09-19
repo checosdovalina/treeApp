@@ -130,6 +130,10 @@ function Router() {
       <Route path="/store/corporate" component={Corporate} />
       <Route path="/about" component={About} />
       
+      {/* Support route - available to all authenticated users */}
+      <Route path="/customer/support" component={CustomerSupport} />
+      <Route path="/support" component={CustomerSupport} />
+      
       {/* Auth routes - available to all users */}
       <Route path="/login" component={LoginPage} />
       <Route path="/auth/login" component={LoginPage} />
