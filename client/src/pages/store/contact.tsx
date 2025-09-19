@@ -91,8 +91,7 @@ export default function Contact() {
                         </div>
                         <div>
                           <h3 className="font-semibold text-gray-900 mb-1">Teléfono</h3>
-                          <p className="text-gray-600">+52 (871) 123-4567</p>
-                          <p className="text-gray-600">+52 (871) 765-4321</p>
+                          <p className="text-gray-600">+52 1 871 104 7637</p>
                         </div>
                       </div>
                     </CardContent>

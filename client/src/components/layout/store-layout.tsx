@@ -294,7 +294,7 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="h-4 w-4 text-uniform-primary flex-shrink-0" />
-                  <span className="text-gray-300">+52 871 123 4567</span>
+                  <span className="text-gray-300">+52 1 871 104 7637</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="h-4 w-4 text-uniform-primary flex-shrink-0" />
