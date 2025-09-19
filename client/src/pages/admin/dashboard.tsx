@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DollarSign, ShoppingCart, Package, Users, TrendingUp, Store } from "lucide-react";
+import { DollarSign, ShoppingCart, Package, Users, TrendingUp, Store, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +48,18 @@ export default function AdminDashboard() {
     retry: false,
   });
 
+  const { data: unreadMessagesCount, isLoading: unreadMessagesLoading } = useQuery({
+    queryKey: ['/api/contact-messages/unread-count'],
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+  });
+
+  const { data: recentContactMessages, isLoading: contactMessagesLoading } = useQuery({
+    queryKey: ['/api/contact-messages'],
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+  });
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -67,6 +79,14 @@ export default function AdminDashboard() {
     
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const getMessageStatusBadge = (isRead: boolean) => {
+    return isRead ? (
+      <Badge variant="outline">Leído</Badge>
+    ) : (
+      <Badge variant="default">Nuevo</Badge>
+    );
   };
 
   return (
@@ -90,7 +110,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <StatCard
             title="Ventas Hoy"
             value={statsLoading ? "$0" : `$${(stats as any)?.totalSales || "0"}`}
@@ -125,6 +145,15 @@ export default function AdminDashboard() {
             changeType="positive"
             icon={Users}
             iconColor="text-purple-600"
+          />
+
+          <StatCard
+            title="Mensajes de Contacto"
+            value={unreadMessagesLoading ? "0" : String((unreadMessagesCount as any)?.count || 0)}
+            change="nuevos sin leer"
+            changeType="neutral"
+            icon={Mail}
+            iconColor="text-green-600"
           />
         </div>
 
@@ -244,6 +273,92 @@ export default function AdminDashboard() {
                           <TableCell className="font-medium">${order.total}</TableCell>
                           <TableCell className="text-uniform-secondary">
                             {new Date(order.createdAt).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Contact Messages */}
+        <Card className="mt-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Mensajes de Contacto Recientes</CardTitle>
+              <Button variant="outline" size="sm">
+                Ver todos
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {contactMessagesLoading ? (
+              <div className="flex items-center justify-center h-32">
+                <div className="text-uniform-secondary">Cargando mensajes...</div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Remitente</TableHead>
+                      <TableHead>Asunto</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(!recentContactMessages || (recentContactMessages as any)?.length === 0) ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center text-uniform-secondary py-8">
+                          No hay mensajes de contacto
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      (recentContactMessages as any)?.slice(0, 5).map((message: any) => (
+                        <TableRow key={message.id}>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                <Mail className="h-4 w-4 text-green-600" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-uniform-neutral-900">{message.name}</p>
+                                <p className="text-sm text-uniform-secondary">{message.email}</p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <p className="font-medium text-uniform-neutral-900 truncate max-w-48">
+                              {message.subject}
+                            </p>
+                            <p className="text-sm text-uniform-secondary truncate max-w-48">
+                              {message.message}
+                            </p>
+                          </TableCell>
+                          <TableCell>{getMessageStatusBadge(message.isRead)}</TableCell>
+                          <TableCell className="text-uniform-secondary">
+                            {new Date(message.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                // TODO: Implementar función para marcar como leído/responder
+                                toast({
+                                  title: "Función próximamente",
+                                  description: "La función de respuesta estará disponible pronto.",
+                                });
+                              }}
+                              data-testid={`button-respond-${message.id}`}
+                            >
+                              {message.isRead ? "Responder" : "Marcar leído"}
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))
