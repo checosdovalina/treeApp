@@ -87,7 +87,7 @@ export default function Checkout() {
         title: "¡Pedido creado exitosamente!",
         description: `Tu pedido #${order.id} ha sido procesado. Te contactaremos pronto.`,
       });
-      setLocation(`/customer/orders/${order.id}`);
+      setLocation("/customer/orders");
     },
     onError: (error: any) => {
       toast({
