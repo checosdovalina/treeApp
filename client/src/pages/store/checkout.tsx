@@ -45,28 +45,38 @@ export default function Checkout() {
       }
 
       const orderData = {
+        order: {
+          customerId: user?.id?.toString(),
+          customerEmail: formData.email,
+          customerName: `${formData.firstName} ${formData.lastName}`,
+          customerPhone: formData.phone,
+          status: "pending",
+          subtotal: total.toString(),
+          shipping: shipping.toString(),
+          tax: tax.toString(),
+          total: finalTotal.toString(),
+          shippingAddress: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zipCode: formData.zipCode,
+          },
+          notes: formData.notes,
+        },
         items: items.map(item => ({
           productId: parseInt(item.id),
+          productName: item.name,
           quantity: item.quantity,
-          price: item.price,
+          unitPrice: item.price.toString(),
+          totalPrice: (item.price * item.quantity).toString(),
           size: item.size,
           color: item.color,
+          gender: "unisex", // default value, can be enhanced later
         })),
-        shippingAddress: {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zipCode: formData.zipCode,
-        },
-        subtotal: total,
-        shipping: shipping,
-        tax: tax,
-        total: finalTotal,
-        notes: formData.notes,
       };
 
       return await apiRequest("POST", "/api/orders", orderData);
