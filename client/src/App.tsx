@@ -36,6 +36,7 @@ import Corporate from "@/pages/store/corporate";
 import About from "@/pages/about";
 import Shipping from "@/pages/shipping";
 import Returns from "@/pages/returns";
+import FAQ from "@/pages/faq";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -141,6 +142,9 @@ function Router() {
       
       {/* Returns route - available to all authenticated users */}
       <Route path="/returns" component={Returns} />
+      
+      {/* FAQ route - available to all authenticated users */}
+      <Route path="/faq" component={FAQ} />
       
       {/* Auth routes - available to all users */}
       <Route path="/login" component={LoginPage} />
