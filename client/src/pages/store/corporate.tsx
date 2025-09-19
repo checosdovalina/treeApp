@@ -100,8 +100,7 @@ export default function CorporatePage() {
                 </Link>
                 <Button 
                   size="lg" 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white hover:text-uniform-blue px-8 py-4"
+                  className="bg-green-600 text-white hover:bg-green-700 border-green-600 hover:border-green-700 px-8 py-4 transition-all duration-300"
                   onClick={() => {
                     const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent("Hola! Me interesa conocer más sobre sus uniformes corporativos")}`;
                     window.open(whatsappUrl, '_blank');

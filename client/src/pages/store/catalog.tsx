@@ -657,12 +657,11 @@ export default function CatalogPage() {
                         </Button>
                         <Button
                           size="sm"
-                          variant="outline"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleWhatsApp(product);
                           }}
-                          className="h-8 px-2"
+                          className="h-8 px-2 bg-green-600 hover:bg-green-700 text-white border-green-600"
                           title="Contactar por WhatsApp"
                         >
                           <Phone className="h-3 w-3" />
