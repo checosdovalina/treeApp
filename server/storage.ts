@@ -17,6 +17,7 @@ import {
   companies,
   companyTypes,
   productPricing,
+  contactMessages,
   type User,
   type UpsertUser,
   type LocalUser,
@@ -53,6 +54,8 @@ import {
   type InsertCompanyType,
   type ProductPricing,
   type InsertProductPricing,
+  type ContactMessage,
+  type InsertContactMessage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";
@@ -182,6 +185,12 @@ export interface IStorage {
   }>;
   getTopProducts(limit?: number): Promise<Array<Product & { salesCount: number; revenue: string }>>;
   getRecentOrders(limit?: number): Promise<Order[]>;
+  
+  // Contact messages operations
+  createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
+  getContactMessages(): Promise<ContactMessage[]>;
+  markContactMessageAsRead(id: number): Promise<ContactMessage>;
+  getUnreadContactMessagesCount(): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1140,6 +1149,39 @@ export class DatabaseStorage implements IStorage {
     // Fallback to base product price
     const [product] = await db.select({ price: products.price }).from(products).where(eq(products.id, productId));
     return product?.price || "0";
+  }
+
+  // Contact messages operations
+  async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
+    const [created] = await db
+      .insert(contactMessages)
+      .values(message)
+      .returning();
+    return created;
+  }
+
+  async getContactMessages(): Promise<ContactMessage[]> {
+    return await db
+      .select()
+      .from(contactMessages)
+      .orderBy(desc(contactMessages.createdAt));
+  }
+
+  async markContactMessageAsRead(id: number): Promise<ContactMessage> {
+    const [updated] = await db
+      .update(contactMessages)
+      .set({ isRead: true, respondedAt: new Date() })
+      .where(eq(contactMessages.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getUnreadContactMessagesCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: count() })
+      .from(contactMessages)
+      .where(eq(contactMessages.isRead, false));
+    return result.count;
   }
 }
 

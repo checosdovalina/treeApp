@@ -52,6 +52,7 @@ import {
   insertCompanySchema,
   insertCompanyTypeSchema,
   insertProductPricingSchema,
+  insertContactMessageSchema,
   customerRegistrationSchema,
   quoteRequestSchema,
   sizeRanges,
@@ -1801,6 +1802,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating industry section image:", error);
       res.status(500).json({ error: "Failed to update image" });
+    }
+  });
+
+  // Contact Messages endpoints
+  // POST /api/contact-messages - Create a new contact message
+  app.post('/api/contact-messages', async (req, res) => {
+    try {
+      const validatedData = insertContactMessageSchema.parse(req.body);
+      const message = await storage.createContactMessage(validatedData);
+      res.json(message);
+    } catch (error) {
+      console.error("Error creating contact message:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid data", details: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create contact message" });
+    }
+  });
+
+  // GET /api/contact-messages - Get all contact messages (admin only)
+  app.get('/api/contact-messages', isLocallyAuthenticated, async (req, res) => {
+    try {
+      // Check if user is admin
+      const user = req.session?.user;
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      const messages = await storage.getContactMessages();
+      res.json(messages);
+    } catch (error) {
+      console.error("Error getting contact messages:", error);
+      res.status(500).json({ error: "Failed to get contact messages" });
+    }
+  });
+
+  // PATCH /api/contact-messages/:id/read - Mark message as read (admin only)
+  app.patch('/api/contact-messages/:id/read', isLocallyAuthenticated, async (req, res) => {
+    try {
+      // Check if user is admin
+      const user = req.session?.user;
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      const { id } = req.params;
+      const message = await storage.markContactMessageAsRead(parseInt(id));
+      res.json(message);
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+      res.status(500).json({ error: "Failed to mark message as read" });
+    }
+  });
+
+  // GET /api/contact-messages/unread-count - Get count of unread messages (admin only)
+  app.get('/api/contact-messages/unread-count', isLocallyAuthenticated, async (req, res) => {
+    try {
+      // Check if user is admin
+      const user = req.session?.user;
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      const count = await storage.getUnreadContactMessagesCount();
+      res.json({ count });
+    } catch (error) {
+      console.error("Error getting unread count:", error);
+      res.status(500).json({ error: "Failed to get unread count" });
     }
   });
 
