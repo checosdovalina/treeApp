@@ -34,6 +34,7 @@ import QuoteRequest from "@/pages/store/quote-request";
 import Contact from "@/pages/store/contact";
 import Corporate from "@/pages/store/corporate";
 import About from "@/pages/about";
+import Shipping from "@/pages/shipping";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -133,6 +134,9 @@ function Router() {
       {/* Support route - available to all authenticated users */}
       <Route path="/customer/support" component={CustomerSupport} />
       <Route path="/support" component={CustomerSupport} />
+      
+      {/* Shipping route - available to all authenticated users */}
+      <Route path="/shipping" component={Shipping} />
       
       {/* Auth routes - available to all users */}
       <Route path="/login" component={LoginPage} />
