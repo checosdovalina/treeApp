@@ -30,6 +30,7 @@ import CustomerRegister from "@/pages/auth/customer-register";
 import AdminRegister from "@/pages/auth/admin-register";
 import QuoteRequest from "@/pages/store/quote-request";
 import Contact from "@/pages/store/contact";
+import Corporate from "@/pages/store/corporate";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -68,6 +69,7 @@ function Router() {
         <Route path="/store/checkout" component={Checkout} />
         <Route path="/store/quote-request" component={QuoteRequest} />
         <Route path="/store/contact" component={Contact} />
+        <Route path="/store/corporate" component={Corporate} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -119,6 +121,7 @@ function Router() {
       <Route path="/store/checkout" component={Checkout} />
       <Route path="/store/quote-request" component={QuoteRequest} />
       <Route path="/store/contact" component={Contact} />
+      <Route path="/store/corporate" component={Corporate} />
       
       {/* Auth routes - available to all users */}
       <Route path="/login" component={LoginPage} />
