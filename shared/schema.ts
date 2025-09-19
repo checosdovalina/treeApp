@@ -234,7 +234,7 @@ export const orderStatusEnum = pgEnum("order_status", [
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
   orderNumber: varchar("order_number", { length: 50 }).notNull().unique(),
-  customerId: varchar("customer_id").references(() => users.id),
+  customerId: varchar("customer_id"), // Removed foreign key constraint to support both auth systems
   customerEmail: varchar("customer_email"),
   customerName: varchar("customer_name"),
   customerPhone: varchar("customer_phone"),
