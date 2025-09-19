@@ -73,7 +73,7 @@ export default function CorporatePage() {
 
   const handleWhatsAppContact = (product: any) => {
     const message = `Hola! Me interesa el producto corporativo: ${product.name} - $${product.price}`;
-    const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/5218711047637?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -102,7 +102,7 @@ export default function CorporatePage() {
                   size="lg" 
                   className="bg-green-600 text-white hover:bg-green-700 border-green-600 hover:border-green-700 px-8 py-4 transition-all duration-300"
                   onClick={() => {
-                    const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent("Hola! Me interesa conocer más sobre sus uniformes corporativos")}`;
+                    const whatsappUrl = `https://wa.me/5218711047637?text=${encodeURIComponent("Hola! Me interesa conocer más sobre sus uniformes corporativos")}`;
                     window.open(whatsappUrl, '_blank');
                   }}
                 >
@@ -461,7 +461,7 @@ export default function CorporatePage() {
                 variant="outline" 
                 className="border-white text-white hover:bg-white hover:text-uniform-blue px-8 py-4"
                 onClick={() => {
-                  const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent("Hola! Quisiera solicitar una cotización para uniformes corporativos")}`;
+                  const whatsappUrl = `https://wa.me/5218711047637?text=${encodeURIComponent("Hola! Quisiera solicitar una cotización para uniformes corporativos")}`;
                   window.open(whatsappUrl, '_blank');
                 }}
               >

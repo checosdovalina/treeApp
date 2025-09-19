@@ -202,7 +202,7 @@ export default function StoreIndex() {
 
   const handleWhatsAppContact = (product: any) => {
     const message = `Hola! Me interesa el producto: ${product.name} - $${product.price}`;
-    const whatsappUrl = `https://wa.me/5218116789012?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/5218711047637?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 

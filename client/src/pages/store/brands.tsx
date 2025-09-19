@@ -149,7 +149,7 @@ export default function BrandsPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="https://wa.me/524771234567?text=Hola,%20me%20interesa%20conocer%20más%20marcas%20disponibles"
+              href="https://wa.me/5218711047637?text=Hola,%20me%20interesa%20conocer%20más%20marcas%20disponibles"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-6 py-3 bg-uniform-primary text-white rounded-lg hover:bg-uniform-primary/90 transition-colors font-medium"

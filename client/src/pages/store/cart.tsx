@@ -81,7 +81,7 @@ Total: $${total.toFixed(2)}
 
 Gracias.`;
     
-    const whatsappUrl = `https://wa.me/5218711234567?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/5218711047637?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 

@@ -234,7 +234,7 @@ export default function CatalogPage() {
       ? `$${product.discountedPrice?.toFixed(2)} (${product.discount}% descuento)`
       : `$${product.price}`;
     const message = `Hola, me interesa el producto: ${product.name} - ${priceText}`;
-    const whatsappUrl = `https://wa.me/5218711234567?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/5218711047637?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
