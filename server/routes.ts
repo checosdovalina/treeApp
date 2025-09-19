@@ -1895,14 +1895,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Customer-specific routes
-  app.get('/api/customer/orders', isAuthenticated, async (req: any, res) => {
+  app.get('/api/customer/orders', isLocallyAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.session?.user;
+      if (!user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       
       // Filter orders by customer ID only for non-admin users
       const filters = {
-        customerId: userId,
+        customerId: user.id.toString(),
         limit: 10, // Recent orders
         offset: 0
       };
@@ -1915,15 +1917,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/customer/stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/customer/stats', isLocallyAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const user = req.session?.user;
+      if (!user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       
       // Get customer's orders to calculate stats
-      const orders = await storage.getOrders({ customerId: userId });
+      const orders = await storage.getOrders({ customerId: user.id.toString() });
       
       const totalOrders = orders.length;
-      const totalSpent = orders.reduce((sum, order) => sum + parseFloat(order.totalAmount), 0);
+      const totalSpent = orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
       
       const stats = {
         totalOrders,
@@ -1939,7 +1944,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/customer/favorites', isAuthenticated, async (req: any, res) => {
+  app.get('/api/customer/favorites', isLocallyAuthenticated, async (req: any, res) => {
     try {
       // For now, return empty array - favorites functionality not implemented yet
       res.json([]);
