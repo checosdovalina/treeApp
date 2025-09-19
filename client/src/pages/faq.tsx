@@ -518,8 +518,7 @@ export default function FAQPage() {
                 WhatsApp
               </Button>
               <Button 
-                variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-uniform-blue"
+                className="bg-uniform-gold text-uniform-blue hover:bg-yellow-400 hover:text-uniform-blue font-semibold"
                 onClick={() => window.open('tel:+5218711047637')}
               >
                 <Phone className="mr-2 h-4 w-4" />
