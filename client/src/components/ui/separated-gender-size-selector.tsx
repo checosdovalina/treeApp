@@ -103,7 +103,7 @@ export function SeparatedGenderSizeSelector({
     
     // Ensure proper ordering of sizes including 3XL and 4XL
     const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
-    return sizes.sort((a, b) => {
+    return [...sizes].sort((a, b) => {
       const aIndex = sizeOrder.indexOf(a);
       const bIndex = sizeOrder.indexOf(b);
       
@@ -117,10 +117,19 @@ export function SeparatedGenderSizeSelector({
     });
   };
 
-  const handleSizeToggle = (size: string) => {
-    const newSizes = selectedSizes.includes(size)
-      ? selectedSizes.filter(s => s !== size)
-      : [...selectedSizes, size];
+  const handleSizeToggle = (size: string, gender: string) => {
+    // Usar formato namespaced: "gender:size" para distinguir tallas por género
+    const namespacedSize = `${gender}:${size}`;
+    
+    // Si la talla ya está seleccionada para este género, la deseleccionamos
+    if (selectedSizes.includes(namespacedSize)) {
+      const newSizes = selectedSizes.filter(s => s !== namespacedSize);
+      onSizesChange(newSizes);
+      return;
+    }
+
+    // Agregar la nueva talla con namespace de género
+    const newSizes = [...selectedSizes, namespacedSize];
     onSizesChange(newSizes);
   };
 
@@ -214,8 +223,8 @@ export function SeparatedGenderSizeSelector({
                         <div key={`${gender}-${size}`} className="flex items-center space-x-2">
                           <Checkbox
                             id={`size-${gender}-${size}`}
-                            checked={selectedSizes.includes(size)}
-                            onCheckedChange={() => handleSizeToggle(size)}
+                            checked={selectedSizes.includes(`${gender}:${size}`)}
+                            onCheckedChange={() => handleSizeToggle(size, gender)}
                             className="data-[state=checked]:bg-uniform-primary"
                           />
                           <Label
@@ -231,7 +240,9 @@ export function SeparatedGenderSizeSelector({
                   
                   {/* Mostrar tallas seleccionadas para este género */}
                   {(() => {
-                    const selectedForGender = selectedSizes.filter(size => sizes.includes(size));
+                    const selectedForGender = selectedSizes
+                      .filter(namespacedSize => namespacedSize.startsWith(`${gender}:`))
+                      .map(namespacedSize => namespacedSize.split(':')[1]);
                     return selectedForGender.length > 0 ? (
                       <div className="mt-3 pt-3 border-t">
                         <p className="text-xs text-gray-600 mb-2">
@@ -267,11 +278,15 @@ export function SeparatedGenderSizeSelector({
                 Total de tallas seleccionadas: {selectedSizes.length}
               </p>
               <div className="flex flex-wrap gap-1">
-                {selectedSizes.map((size) => (
-                  <Badge key={size} variant="outline" className="text-xs">
-                    {size}
-                  </Badge>
-                ))}
+                {selectedSizes.map((namespacedSize) => {
+                  const [gender, size] = namespacedSize.split(':');
+                  const genderLabel = getGenderDisplayName(gender);
+                  return (
+                    <Badge key={namespacedSize} variant="outline" className="text-xs">
+                      {genderLabel}: {size}
+                    </Badge>
+                  );
+                })}
               </div>
             </div>
           </CardContent>

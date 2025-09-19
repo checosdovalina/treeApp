@@ -27,12 +27,12 @@ export default function ContextActions({ userRole }: ContextActionsProps) {
       if (location === '/admin' || location === '/admin/') {
         actions.push(
           { label: 'Ver Tienda', href: '/store', icon: Store, variant: 'outline' as const },
-          { label: 'Nuevo Producto', href: '/admin/products/new', icon: Plus, variant: 'default' as const }
+          { label: 'Nuevo Producto', href: '/admin/products', icon: Plus, variant: 'default' as const }
         );
       } else if (location.startsWith('/admin/products')) {
         actions.push(
           { label: 'Dashboard', href: '/admin', icon: ArrowLeft, variant: 'outline' as const },
-          { label: 'Nuevo Producto', href: '/admin/products/new', icon: Plus, variant: 'default' as const },
+          { label: 'Nuevo Producto', href: '/admin/products', icon: Plus, variant: 'default' as const },
           { label: 'Ver en Tienda', href: '/store/catalog', icon: Eye, variant: 'outline' as const }
         );
       } else if (location.startsWith('/admin/orders')) {
