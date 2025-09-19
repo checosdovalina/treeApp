@@ -576,14 +576,26 @@ export const customerRegistrationSchema = z.object({
   confirmPassword: z.string(),
   phone: z.string().min(10, "El teléfono debe tener al menos 10 dígitos"),
   companyId: z.number().optional(),
-  newCompany: z.object({
-    name: z.string().min(2, "El nombre de la empresa debe tener al menos 2 caracteres"),
+  newCompany: z.preprocess((val) => {
+    // Convert empty object or object with empty strings to undefined
+    if (val === null || val === undefined) return undefined;
+    if (typeof val === 'object') {
+      const obj = val as any;
+      // Check if all values are empty strings or undefined
+      const hasValidValues = Object.values(obj).some(value => 
+        value && typeof value === 'string' && value.trim().length > 0
+      );
+      if (!hasValidValues) return undefined;
+    }
+    return val;
+  }, z.object({
+    name: z.string().optional(),
     taxId: z.string().optional(),
     industry: z.string().optional(),
-    contactEmail: z.string().email("Email inválido").optional().or(z.literal("")),
+    contactEmail: z.string().optional().or(z.literal("")),
     contactPhone: z.string().optional(),
     website: z.string().optional(),
-  }).optional(),
+  }).partial().optional()),
   address: z.string().min(10, "La dirección debe tener al menos 10 caracteres"),
   city: z.string().min(2, "La ciudad debe tener al menos 2 caracteres"),
   state: z.string().min(2, "El estado debe tener al menos 2 caracteres"),
@@ -591,6 +603,22 @@ export const customerRegistrationSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
+}).superRefine((data, ctx) => {
+  // Only validate newCompany.name if newCompany is defined and being used
+  if (data.newCompany && typeof data.newCompany === 'object') {
+    if (data.newCompany.name && data.newCompany.name.trim().length > 0) {
+      if (data.newCompany.name.length < 2) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_small,
+          minimum: 2,
+          type: "string",
+          inclusive: true,
+          message: "El nombre de la empresa debe tener al menos 2 caracteres",
+          path: ["newCompany", "name"],
+        });
+      }
+    }
+  }
 });
 
 // Quote request schema

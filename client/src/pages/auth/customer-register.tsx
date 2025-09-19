@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { customerRegistrationSchema, type CustomerRegistration, type Company } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,23 +59,37 @@ export default function CustomerRegisterPage() {
     mutationFn: async (data: CustomerRegistration) => {
       return await apiRequest("POST", "/api/register/customer", data);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      console.log("Registration successful:", response);
+      // Invalidate user cache to refetch authentication status
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       setIsSubmitted(true);
       toast({
         title: "¡Registro exitoso!",
-        description: "Tu cuenta ha sido creada correctamente.",
+        description: "Tu cuenta ha sido creada correctamente. Serás redirigido automáticamente.",
+        duration: 5000,
       });
     },
     onError: (error: any) => {
+      console.error("Registration error:", error);
       toast({
         title: "Error al registrarse",
         description: error.message || "Ocurrió un error durante el registro",
         variant: "destructive",
+        duration: 5000,
       });
     },
   });
 
   const onSubmit = (data: CustomerRegistration) => {
+    console.log("Form submission triggered with data:", data);
+    console.log("Form errors:", form.formState.errors);
+    
+    // Clean newCompany data if not creating a new company
+    if (companyOption !== 'new') {
+      data.newCompany = undefined;
+    }
+    
     registerMutation.mutate(data);
   };
 
@@ -135,7 +149,15 @@ export default function CustomerRegisterPage() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+                console.error("Form validation failed:", errors);
+                toast({
+                  title: "Error de validación",
+                  description: "Por favor, revisa los campos marcados en rojo.",
+                  variant: "destructive",
+                  duration: 5000,
+                });
+              })} className="space-y-6">
                 {/* Personal Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
@@ -290,6 +312,18 @@ export default function CustomerRegisterPage() {
                       if (value === "none") {
                         form.setValue("companyId", undefined);
                         form.setValue("newCompany", undefined);
+                      } else if (value === "existing") {
+                        form.setValue("newCompany", undefined);
+                      } else if (value === "new") {
+                        form.setValue("companyId", undefined);
+                        form.setValue("newCompany", {
+                          name: "",
+                          taxId: "",
+                          industry: "",
+                          contactEmail: "",
+                          contactPhone: "",
+                          website: "",
+                        });
                       }
                     }}
                     className="mb-4"

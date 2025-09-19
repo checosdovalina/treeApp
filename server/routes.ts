@@ -370,7 +370,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Customer registration route
   app.post('/api/register/customer', async (req, res) => {
     try {
+      console.log("Customer registration request received for email:", req.body.email);
       const customerData = customerRegistrationSchema.parse(req.body);
+      console.log("Customer data parsed successfully for:", customerData.email);
       
       // Generate a username from email (before @)
       const username = customerData.email.split('@')[0];
@@ -428,6 +430,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
 
         const user = await authService.createUser(customerUser);
+        console.log("Customer user created successfully:", { id: user.id, username: user.username, email: user.email });
+        
+        // Automatically log in the user after successful registration
+        req.session.userId = user.id;
+        req.session.userRole = user.role;
+        console.log("User session established after registration:", { userId: user.id, role: user.role });
+        
         res.json({ 
           message: 'Cliente registrado exitosamente',
           user: {
@@ -459,6 +468,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
 
         const user = await authService.createUser(customerUser);
+        console.log("Customer user created successfully:", { id: user.id, username: user.username, email: user.email });
+        
+        // Automatically log in the user after successful registration
+        req.session.userId = user.id;
+        req.session.userRole = user.role;
+        console.log("User session established after registration:", { userId: user.id, role: user.role });
+        
         res.json({ 
           message: 'Cliente registrado exitosamente',
           user: {
@@ -473,8 +489,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       console.error("Error registering customer:", error);
+      console.error("Error details:", error.message, error.stack);
       if (error.code === '23505') { // Unique constraint violation
         return res.status(400).json({ message: "El email ya está registrado" });
+      }
+      if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
+        return res.status(400).json({ message: "Datos de registro inválidos", errors: error.errors });
       }
       res.status(400).json({ message: "Error al registrar el cliente" });
     }

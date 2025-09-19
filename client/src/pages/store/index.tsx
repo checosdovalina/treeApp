@@ -230,7 +230,7 @@ export default function StoreIndex() {
 
 
       {/* Brands Carousel Section */}
-      <BrandsCarouselSection brands={brands} />
+      <BrandsCarouselSection brands={Array.isArray(brands) ? brands : []} />
 
       {/* Industry Sections - Dynamic */}
       <IndustrySection />
