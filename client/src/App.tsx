@@ -18,6 +18,7 @@ import AdminReports from "@/pages/admin/reports";
 import AdminPromotions from "@/pages/admin/promotions";
 import AdminIndustrySections from "@/pages/admin/industry-sections";
 import AdminCompanies from "@/pages/admin/companies";
+import AdminContactMessages from "@/pages/admin/contact-messages";
 import StoreHome from "@/pages/store/index";
 import StoreCatalog from "@/pages/store/catalog";
 import StoreBrands from "@/pages/store/brands";
@@ -91,6 +92,7 @@ function Router() {
           <Route path="/admin/orders" component={AdminOrders} />
           <Route path="/admin/customers" component={AdminCustomers} />
           <Route path="/admin/quotes" component={AdminQuotes} />
+          <Route path="/admin/contact-messages" component={AdminContactMessages} />
           <Route path="/admin/reports" component={AdminReports} />
           <Route path="/admin/promotions" component={AdminPromotions} />
           <Route path="/admin/industry-sections" component={AdminIndustrySections} />
