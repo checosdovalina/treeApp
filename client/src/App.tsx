@@ -42,6 +42,7 @@ import { useAuth } from "@/hooks/useAuth";
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
   
+  
   // Show loading state
   if (isLoading) {
     return (
@@ -89,7 +90,7 @@ function Router() {
       <Route path="/" component={StoreHome} />
       
       {/* Admin routes - only show if user is admin */}
-      {(user as any)?.role === 'admin' && (
+      {user && user.role === 'admin' && (
         <>
           <Route path="/admin" component={AdminDashboard} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
