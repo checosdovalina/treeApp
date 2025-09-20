@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -205,15 +205,18 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
   });
 
   // Effect para limpiar tallas cuando cambia el tipo de prenda
+  const watchedGarmentTypeId = form.watch("garmentTypeId");
+  const prevGarmentTypeIdRef = useRef<number>(watchedGarmentTypeId);
+  
   useEffect(() => {
-    const subscription = form.watch((values, { name, type }) => {
-      if (name === "garmentTypeId" && type === "change") {
-        // Limpiar tallas seleccionadas cuando cambia el tipo de prenda
-        form.setValue("sizes", []);
+    if (watchedGarmentTypeId && watchedGarmentTypeId !== prevGarmentTypeIdRef.current) {
+      // Solo limpiar si hay un cambio real y no es la primera carga
+      if (prevGarmentTypeIdRef.current !== 0 && prevGarmentTypeIdRef.current !== undefined) {
+        form.setValue("sizes", [], { shouldTouch: false, shouldDirty: false });
       }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+      prevGarmentTypeIdRef.current = watchedGarmentTypeId;
+    }
+  }, [watchedGarmentTypeId, form]);
 
   // Mutations para crear nuevas entidades
   const createCategoryMutation = useMutation({
