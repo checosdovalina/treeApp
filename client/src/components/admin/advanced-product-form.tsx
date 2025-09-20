@@ -204,6 +204,17 @@ export function AdvancedProductForm({ product, onSuccess, trigger }: AdvancedPro
     },
   });
 
+  // Effect para limpiar tallas cuando cambia el tipo de prenda
+  useEffect(() => {
+    const subscription = form.watch((values, { name, type }) => {
+      if (name === "garmentTypeId" && type === "change") {
+        // Limpiar tallas seleccionadas cuando cambia el tipo de prenda
+        form.setValue("sizes", []);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   // Mutations para crear nuevas entidades
   const createCategoryMutation = useMutation({
     mutationFn: async (data: { name: string; description?: string }) => {
