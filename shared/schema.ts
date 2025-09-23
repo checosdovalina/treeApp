@@ -147,6 +147,7 @@ export const garmentTypes = pgTable("garment_types", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 50 }).notNull().unique(),
   displayName: varchar("display_name", { length: 100 }).notNull(),
+  requiresSizes: boolean("requires_sizes").default(true), // Si el tipo de prenda requiere tallas
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
