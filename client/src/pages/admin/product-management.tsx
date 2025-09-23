@@ -324,12 +324,13 @@ export default function ProductManagement() {
                                 ref={inputRef}
                                 type="number"
                                 step="0.01"
-                                min="0"
+                                min="0.01"
                                 value={editing.newPrice}
                                 onChange={(e) => setEditing({ ...editing, newPrice: e.target.value })}
                                 onKeyDown={handleKeyPress}
-                                className="w-24 pl-8 text-sm"
+                                className="w-32 pl-8 text-sm"
                                 data-testid={`input-price-${product.id}`}
+                                placeholder="0.00"
                               />
                             </div>
                             <div className="flex items-center space-x-1">
