@@ -325,13 +325,7 @@ export default function ProductManagement() {
                                 type="text"
                                 inputMode="decimal"
                                 value={editing.newPrice}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  // Allow only valid price input - numbers and decimal point
-                                  if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
-                                    setEditing({ ...editing, newPrice: value });
-                                  }
-                                }}
+                                onChange={(e) => setEditing({ ...editing, newPrice: e.target.value })}
                                 onKeyDown={handleKeyPress}
                                 className="w-32 pl-8 text-sm"
                                 data-testid={`input-price-${product.id}`}
