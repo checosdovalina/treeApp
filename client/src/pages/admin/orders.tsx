@@ -319,7 +319,10 @@ export default function AdminOrders() {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2">Información del Pedido</h3>
-                    <p><strong>Estado:</strong> {getStatusBadge(orderDetail.status)}</p>
+                    <div className="flex items-center space-x-2">
+                      <strong>Estado:</strong> 
+                      {getStatusBadge(orderDetail.status)}
+                    </div>
                     <p><strong>Fecha:</strong> {new Date(orderDetail.createdAt).toLocaleString()}</p>
                     <p><strong>Total:</strong> ${orderDetail.total}</p>
                   </div>

@@ -1,0 +1,41 @@
+Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p 
+    at div
+    at Badge (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/src/components/ui/badge.tsx:35:18)
+    at p
+    at div
+    at div
+    at div
+    at div
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-V54TMEDA.js?v=e4839f11:42:13
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-N56NGC7X.js?v=e4839f11:59:7
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=e4839f11:79:13
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=e4839f11:56:13
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-V54TMEDA.js?v=e4839f11:42:13
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WT35VI3A.js?v=e4839f11:29:5
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-LOFXIYRW.js?v=e4839f11:233:13
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-LOFXIYRW.js?v=e4839f11:156:58
+    at Presence (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-7VIRS4RK.js?v=e4839f11:24:11)
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-LOFXIYRW.js?v=e4839f11:147:64
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=e4839f11:79:13
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=e4839f11:56:13
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-V54TMEDA.js?v=e4839f11:42:13
+    at https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-N56NGC7X.js?v=e4839f11:258:22
+    at Presence (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-7VIRS4RK.js?v=e4839f11:24:11)
+    at Provider (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-54LY3QNH.js?v=e4839f11:38:15)
+    at DialogPortal (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-LOFXIYRW.js?v=e4839f11:109:11)
+    at _c3 (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/src/components/ui/dialog.tsx:52:12)
+    at Provider (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-54LY3QNH.js?v=e4839f11:38:15)
+    at Dialog (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-LOFXIYRW.js?v=e4839f11:50:5)
+    at div
+    at main
+    at div
+    at div
+    at AdminLayout (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/src/components/layout/admin-layout.tsx:45:39)
+    at AdminOrders (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/src/pages/admin/orders.tsx:36:48)
+    at Route (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=e4839f11:191:16)
+    at Switch (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=e4839f11:247:17)
+    at Router (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/src/App.tsx?v=HeWaIDX9ZNW5qMcUMHjhF:59:48)
+    at Provider (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-54LY3QNH.js?v=e4839f11:38:15)
+    at TooltipProvider (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=e4839f11:61:5)
+    at QueryClientProvider (https://878dd31b-697c-4d4f-ac37-cf8003e4f7cf-00-17t113r8g6ozf.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=e4839f11:2805:3)
+    at App
