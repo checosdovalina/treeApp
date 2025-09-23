@@ -1427,14 +1427,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Orders
-  app.get('/api/orders', isAuthenticated, async (req: any, res) => {
+  app.get('/api/orders', isLocallyAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.session.user;
       
       const { status, limit, offset } = req.query;
       const filters = {
-        customerId: user?.role === 'admin' ? undefined : userId,
+        customerId: user?.role === 'admin' ? undefined : user.id.toString(),
         status: status as string,
         limit: limit ? parseInt(limit as string) : undefined,
         offset: offset ? parseInt(offset as string) : undefined,
@@ -1448,11 +1447,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/orders/:id', isAuthenticated, async (req: any, res) => {
+  app.get('/api/orders/:id', isLocallyAuthenticated, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.session.user;
       
       const order = await storage.getOrderWithItems(id);
       if (!order) {
@@ -1460,7 +1458,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check authorization
-      if (user?.role !== 'admin' && order.customerId !== userId) {
+      if (user?.role !== 'admin' && order.customerId !== user.id.toString()) {
         return res.status(403).json({ message: "Access denied" });
       }
       
