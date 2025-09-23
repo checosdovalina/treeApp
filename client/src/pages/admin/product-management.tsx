@@ -322,11 +322,17 @@ export default function ProductManagement() {
                               <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                               <Input
                                 ref={inputRef}
-                                type="number"
-                                step="0.01"
-                                min="0.01"
+                                type="text"
+                                inputMode="decimal"
+                                pattern="[0-9]+(\.[0-9]{1,2})?"
                                 value={editing.newPrice}
-                                onChange={(e) => setEditing({ ...editing, newPrice: e.target.value })}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  // Allow only numbers and one decimal point
+                                  if (/^\d*\.?\d{0,2}$/.test(value) || value === '') {
+                                    setEditing({ ...editing, newPrice: value });
+                                  }
+                                }}
                                 onKeyDown={handleKeyPress}
                                 className="w-32 pl-8 text-sm"
                                 data-testid={`input-price-${product.id}`}
