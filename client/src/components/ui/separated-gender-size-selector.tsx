@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Ruler, User } from "lucide-react";
+import { Ruler, User, Info } from "lucide-react";
+import type { GarmentType } from "@shared/schema";
 
 interface SeparatedGenderSizeSelectorProps {
   garmentTypeId?: number;
@@ -30,6 +31,14 @@ export function SeparatedGenderSizeSelector({
   label = "Tallas por Género",
   className
 }: SeparatedGenderSizeSelectorProps) {
+
+  // Fetch garment type information to check if it requires sizes
+  const { data: garmentTypes = [] } = useQuery<GarmentType[]>({
+    queryKey: ["/api/garment-types"],
+  });
+
+  const currentGarmentType = garmentTypes.find(gt => gt.id === garmentTypeId);
+  const requiresSizes = currentGarmentType?.requiresSizes ?? true;
 
   // Fetch sizes for masculine gender
   const { data: masculineData } = useQuery<SizeRangeData>({
@@ -142,6 +151,29 @@ export function SeparatedGenderSizeSelector({
       default: return '';
     }
   };
+
+  // Si el tipo de prenda no requiere tallas, mostrar mensaje informativo
+  if (!requiresSizes && garmentTypeId) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="text-sm font-roboto flex items-center gap-2">
+            <Info className="h-4 w-4 text-blue-500" />
+            {label}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <Info className="h-5 w-5 text-blue-500 flex-shrink-0" />
+            <p className="text-sm text-blue-700">
+              Este tipo de producto <strong>"{currentGarmentType?.displayName}"</strong> no requiere selección de tallas. 
+              Puedes continuar sin especificar tallas.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!garmentTypeId || genders.length === 0) {
     return (
