@@ -324,12 +324,11 @@ export default function ProductManagement() {
                                 ref={inputRef}
                                 type="text"
                                 inputMode="decimal"
-                                pattern="[0-9]+(\.[0-9]{1,2})?"
                                 value={editing.newPrice}
                                 onChange={(e) => {
                                   const value = e.target.value;
-                                  // Allow only numbers and one decimal point
-                                  if (/^\d*\.?\d{0,2}$/.test(value) || value === '') {
+                                  // Allow only valid price input - numbers and decimal point
+                                  if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
                                     setEditing({ ...editing, newPrice: value });
                                   }
                                 }}
