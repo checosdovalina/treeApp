@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Search, Package, DollarSign, Edit3, Save, X, Eye } from "lucide-react";
+import { Search, Package, DollarSign, Edit3, Save, X, Eye, Filter } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Product } from "@shared/schema";
 
 interface ProductWithDetails extends Product {
@@ -21,6 +22,7 @@ interface EditingState {
 
 export default function ProductManagement() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [editing, setEditing] = useState<EditingState | null>(null);
   const [sortBy, setSortBy] = useState<"sku" | "name" | "price">("sku");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -30,6 +32,10 @@ export default function ProductManagement() {
 
   const { data: products = [], isLoading } = useQuery<ProductWithDetails[]>({
     queryKey: ["/api/products/management"],
+  });
+
+  const { data: brands = [] } = useQuery({
+    queryKey: ["/api/brands"],
   });
 
   const updatePriceMutation = useMutation({
@@ -102,26 +108,31 @@ export default function ProductManagement() {
 
   // Filter and sort products
   const filteredAndSortedProducts = products
-    .filter(product => 
-      product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.brandName && product.brandName.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
+    .filter(product => {
+      const matchesSearch = !searchTerm || 
+        (product.sku && product.sku.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.brandName && product.brandName.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesBrand = !selectedBrand || product.brandName === selectedBrand;
+      
+      return matchesSearch && matchesBrand;
+    })
     .sort((a, b) => {
       let aValue, bValue;
       
       switch (sortBy) {
         case "sku":
-          aValue = a.sku.toLowerCase();
-          bValue = b.sku.toLowerCase();
+          aValue = (a.sku || "").toLowerCase();
+          bValue = (b.sku || "").toLowerCase();
           break;
         case "name":
           aValue = a.name.toLowerCase();
           bValue = b.name.toLowerCase();
           break;
         case "price":
-          aValue = a.price;
-          bValue = b.price;
+          aValue = parseFloat(a.price.toString());
+          bValue = parseFloat(b.price.toString());
           break;
         default:
           return 0;
@@ -171,15 +182,49 @@ export default function ProductManagement() {
       {/* Search and Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Buscar por SKU, nombre del producto o marca..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-              data-testid="input-search-products"
-            />
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Buscar por SKU, nombre del producto o marca..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+                data-testid="input-search-products"
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-gray-400" />
+                <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                  <SelectTrigger className="w-48" data-testid="select-brand-filter">
+                    <SelectValue placeholder="Filtrar por marca" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="" data-testid="option-all-brands">Todas las marcas</SelectItem>
+                    {brands.map((brand: any) => (
+                      <SelectItem key={brand.id} value={brand.name} data-testid={`option-brand-${brand.id}`}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {(searchTerm || selectedBrand) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedBrand("");
+                  }}
+                  data-testid="button-clear-filters"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Limpiar
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -313,7 +358,7 @@ export default function ProductManagement() {
                         ) : (
                           <div className="flex items-center space-x-2">
                             <div className="text-lg font-semibold text-gray-900" data-testid={`text-price-${product.id}`}>
-                              ${product.price.toFixed(2)}
+                              ${parseFloat(product.price.toString()).toFixed(2)}
                             </div>
                             <Button
                               size="sm"
