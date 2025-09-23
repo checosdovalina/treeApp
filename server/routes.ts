@@ -81,7 +81,166 @@ const isLocalAdmin = (req: any, res: any, next: any) => {
   return res.status(403).json({ message: "Admin access required" });
 };
 
-// PDF HTML generator function
+// PDF HTML generator functions
+function generateOrderPDFHTML(order: any): string {
+  const shippingAddress = typeof order.shippingAddress === 'string' 
+    ? JSON.parse(order.shippingAddress) 
+    : order.shippingAddress || {};
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Pedido ${order.orderNumber}</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 20px;
+          color: #333;
+        }
+        .header {
+          border-bottom: 3px solid #1F4287;
+          padding-bottom: 20px;
+          margin-bottom: 30px;
+        }
+        .company-name {
+          font-size: 28px;
+          font-weight: bold;
+          color: #1F4287;
+          margin-bottom: 5px;
+        }
+        .order-info {
+          background: #f8f9fa;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 30px;
+        }
+        .order-title {
+          font-size: 24px;
+          font-weight: bold;
+          margin-bottom: 15px;
+          color: #1F4287;
+        }
+        .products-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 30px;
+        }
+        .products-table th,
+        .products-table td {
+          border: 1px solid #ddd;
+          padding: 12px;
+          text-align: left;
+        }
+        .products-table th {
+          background-color: #1F4287;
+          color: white;
+          font-weight: bold;
+        }
+        .products-table tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
+        .total-section {
+          text-align: right;
+          margin-top: 20px;
+        }
+        .total-final {
+          font-size: 20px;
+          font-weight: bold;
+          border-top: 2px solid #1F4287;
+          padding-top: 10px;
+          color: #1F4287;
+        }
+        .address-section {
+          background: #e3f2fd;
+          border: 1px solid #90caf9;
+          border-radius: 8px;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .two-column {
+          display: flex;
+          gap: 30px;
+        }
+        .column {
+          flex: 1;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="company-name">TREE Uniformes & Kodiak Industrial</div>
+      </div>
+
+      <div class="order-info">
+        <div class="order-title">Pedido ${order.orderNumber}</div>
+        <div class="two-column">
+          <div class="column">
+            <p><strong>Cliente:</strong> ${order.customerName || 'No disponible'}</p>
+            <p><strong>Email:</strong> ${order.customerEmail || 'No disponible'}</p>
+            <p><strong>Teléfono:</strong> ${order.customerPhone || 'No disponible'}</p>
+          </div>
+          <div class="column">
+            <p><strong>Fecha:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+            <p><strong>Estado:</strong> ${order.status === 'pending' ? 'Pendiente' : order.status}</p>
+          </div>
+        </div>
+      </div>
+
+      ${shippingAddress && Object.keys(shippingAddress).length > 0 ? `
+        <div class="address-section">
+          <strong>Dirección de Envío:</strong><br>
+          ${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}<br>
+          ${shippingAddress.address || ''}<br>
+          ${shippingAddress.city || ''}, ${shippingAddress.state || ''} ${shippingAddress.zipCode || ''}
+        </div>
+      ` : ''}
+
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Talla</th>
+            <th>Color</th>
+            <th>Cantidad</th>
+            <th>Precio Unit.</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${order.items?.map((item: any) => `
+            <tr>
+              <td>${item.productName || 'Producto'}</td>
+              <td>${item.size || '-'}</td>
+              <td>${item.color || '-'}</td>
+              <td>${item.quantity}</td>
+              <td>$${parseFloat(item.unitPrice || 0).toFixed(2)}</td>
+              <td>$${parseFloat(item.totalPrice || 0).toFixed(2)}</td>
+            </tr>
+          `).join('') || ''}
+        </tbody>
+      </table>
+
+      ${order.notes ? `
+        <div class="address-section">
+          <strong>Notas del Pedido:</strong><br>
+          ${order.notes}
+        </div>
+      ` : ''}
+
+      <div class="total-section">
+        <p>Subtotal: $${parseFloat(order.subtotal || 0).toFixed(2)}</p>
+        <p>Envío: $${parseFloat(order.shipping || 0).toFixed(2)}</p>
+        <p>IVA: $${parseFloat(order.tax || 0).toFixed(2)}</p>
+        <div class="total-final">Total: $${parseFloat(order.total || 0).toFixed(2)}</div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 function generateQuotePDFHTML(quote: any): string {
   const items = Array.isArray(quote.items) ? quote.items : JSON.parse(quote.items || '[]');
   
@@ -1494,6 +1653,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating order status:", error);
       res.status(400).json({ message: "Failed to update order status" });
+    }
+  });
+
+  app.get('/api/orders/:id/pdf', isLocallyAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const user = req.session.user;
+      
+      // Get order with items
+      const order = await storage.getOrderWithItems(id);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Check permissions: admin can access all orders, customers only their own
+      if (user?.role !== 'admin' && order.customerId !== user?.id?.toString()) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Generate HTML content
+      const htmlContent = generateOrderPDFHTML(order);
+      
+      // Set headers for PDF download
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="pedido-${order.orderNumber}.html"`);
+      
+      // For now, return HTML content (we'll implement actual PDF generation)
+      res.send(htmlContent);
+    } catch (error) {
+      console.error("Error generating order PDF:", error);
+      res.status(500).json({ message: "Failed to generate order PDF" });
     }
   });
 

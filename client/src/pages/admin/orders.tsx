@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Eye, Search, Filter } from "lucide-react";
+import { Eye, Search, Filter, Download } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -75,7 +75,7 @@ export default function AdminOrders() {
   });
 
   const { data: orderDetail } = useQuery({
-    queryKey: ['/api/orders', selectedOrder?.id],
+    queryKey: [`/api/orders/${selectedOrder?.id}`],
     enabled: !!selectedOrder?.id,
   });
 
@@ -107,6 +107,38 @@ export default function AdminOrders() {
 
   const handleStatusChange = (orderId: number, newStatus: string) => {
     updateStatusMutation.mutate({ id: orderId, status: newStatus });
+  };
+
+  const handleDownloadPDF = async (orderId: number, orderNumber: string) => {
+    try {
+      const response = await fetch(`/api/orders/${orderId}/pdf`);
+      if (!response.ok) {
+        throw new Error('Error al generar PDF');
+      }
+      
+      const htmlContent = await response.text();
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `pedido-${orderNumber}.html`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "PDF descargado",
+        description: "El PDF del pedido se ha descargado correctamente.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo descargar el PDF del pedido.",
+        variant: "destructive",
+      });
+    }
   };
 
   const filteredOrders = orders?.filter((order: any) => 
@@ -259,9 +291,22 @@ export default function AdminOrders() {
         <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>
-                Detalle del Pedido {selectedOrder?.orderNumber}
-              </DialogTitle>
+              <div className="flex items-center justify-between">
+                <DialogTitle>
+                  Detalle del Pedido {selectedOrder?.orderNumber}
+                </DialogTitle>
+                {selectedOrder && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDownloadPDF(selectedOrder.id, selectedOrder.orderNumber)}
+                    className="flex items-center space-x-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span>Descargar PDF</span>
+                  </Button>
+                )}
+              </div>
             </DialogHeader>
             {orderDetail && (
               <div className="space-y-6">
