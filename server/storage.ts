@@ -484,6 +484,33 @@ export class DatabaseStorage implements IStorage {
     await db.delete(products).where(eq(products.id, id));
   }
 
+  async getProductsWithDetails(): Promise<any[]> {
+    const productList = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        sku: products.sku,
+        price: products.price,
+        isActive: products.isActive,
+        brandName: products.brand,
+        categoryName: categories.name
+      })
+      .from(products)
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .orderBy(products.sku);
+
+    return productList;
+  }
+
+  async updateProductPrice(id: number, price: number): Promise<Product> {
+    const [updatedProduct] = await db
+      .update(products)
+      .set({ price: price.toString(), updatedAt: new Date() })
+      .where(eq(products.id, id))
+      .returning();
+    return updatedProduct;
+  }
+
   // Inventory operations
   async getInventory(productId: number): Promise<Inventory[]> {
     return await db.select().from(inventory).where(eq(inventory.productId, productId));

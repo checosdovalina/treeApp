@@ -1185,6 +1185,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Products management - with brand and category details (admin only)
+  app.get('/api/products/management', isLocallyAuthenticated, isLocalAdmin, async (req, res) => {
+    try {
+      const products = await storage.getProductsWithDetails();
+      res.json(products);
+    } catch (error) {
+      console.error("Error fetching products for management:", error);
+      res.status(500).json({ message: "Failed to fetch products for management" });
+    }
+  });
+
+  // Update product price endpoint (admin only)
+  app.patch('/api/products/:id/price', isLocallyAuthenticated, isLocalAdmin, async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      const { price } = req.body;
+      
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+      
+      if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
+        return res.status(400).json({ message: "Invalid price" });
+      }
+
+      const updatedProduct = await storage.updateProductPrice(productId, parseFloat(price));
+      res.json(updatedProduct);
+    } catch (error) {
+      console.error("Error updating product price:", error);
+      res.status(500).json({ message: "Failed to update product price" });
+    }
+  });
+
   app.get('/api/products/:id', async (req, res) => {
     try {
       const id = parseInt(req.params.id);

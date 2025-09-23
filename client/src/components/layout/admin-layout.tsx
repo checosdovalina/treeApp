@@ -68,6 +68,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Dashboard", href: "/", icon: BarChart3 },
     { name: "Ventas", href: "/admin/sales", icon: TrendingUp },
     { name: "Productos", href: "/admin/products", icon: Package },
+    { name: "Gestión Masiva", href: "/admin/product-management", icon: Package },
     { name: "Pedidos", href: "/admin/orders", icon: ShoppingCart },
     { name: "Clientes", href: "/admin/customers", icon: Users },
     { name: "Empresas", href: "/admin/companies", icon: Building },

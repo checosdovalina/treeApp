@@ -34,7 +34,7 @@ export default function ProductManagement() {
     queryKey: ["/api/products/management"],
   });
 
-  const { data: brands = [] } = useQuery({
+  const { data: brands = [] } = useQuery<{ id: number; name: string }[]>({
     queryKey: ["/api/brands"],
   });
 
@@ -114,7 +114,7 @@ export default function ProductManagement() {
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (product.brandName && product.brandName.toLowerCase().includes(searchTerm.toLowerCase()));
       
-      const matchesBrand = !selectedBrand || product.brandName === selectedBrand;
+      const matchesBrand = !selectedBrand || selectedBrand === "all" || product.brandName === selectedBrand;
       
       return matchesSearch && matchesBrand;
     })
@@ -201,8 +201,8 @@ export default function ProductManagement() {
                     <SelectValue placeholder="Filtrar por marca" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="" data-testid="option-all-brands">Todas las marcas</SelectItem>
-                    {brands.map((brand: any) => (
+                    <SelectItem value="all" data-testid="option-all-brands">Todas las marcas</SelectItem>
+                    {brands.map((brand) => (
                       <SelectItem key={brand.id} value={brand.name} data-testid={`option-brand-${brand.id}`}>
                         {brand.name}
                       </SelectItem>
