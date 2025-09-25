@@ -74,7 +74,7 @@ export default function AdminOrders() {
     },
   });
 
-  const { data: orderDetail } = useQuery({
+  const { data: orderDetail } = useQuery<any>({
     queryKey: [`/api/orders/${selectedOrder?.id}`],
     enabled: !!selectedOrder?.id,
   });
