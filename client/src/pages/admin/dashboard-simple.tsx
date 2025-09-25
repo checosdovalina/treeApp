@@ -66,17 +66,18 @@ export default function AdminDashboardSimple() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
+      <div className="p-3 sm:p-4 lg:p-6">
         {/* Page Header */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 lg:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-uniform-neutral-900">Dashboard Administrativo</h1>
-            <p className="text-uniform-secondary mt-2">Bienvenido, {user.firstName} {user.lastName}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-uniform-neutral-900">Dashboard Administrativo</h1>
+            <p className="text-uniform-secondary mt-1 sm:mt-2 text-sm sm:text-base">Bienvenido, {user.firstName} {user.lastName}</p>
           </div>
-          <div className="mt-4 sm:mt-0">
+          <div className="w-full sm:w-auto">
             <Button 
               onClick={() => window.open('/store', '_blank')}
-              className="bg-uniform-primary hover:bg-uniform-darker text-white flex items-center gap-2"
+              className="bg-uniform-primary hover:bg-uniform-darker text-white flex items-center justify-center gap-2 w-full sm:w-auto"
+              data-testid="button-view-store"
             >
               <Store className="h-4 w-4" />
               Ver Tienda
@@ -85,7 +86,7 @@ export default function AdminDashboardSimple() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Ventas Totales</CardTitle>
@@ -145,16 +146,17 @@ export default function AdminDashboardSimple() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Gestión de Productos</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Gestión de Productos</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-4">Administra tu catálogo de uniformes</p>
+              <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Administra tu catálogo de uniformes</p>
               <Button 
                 onClick={() => window.location.href = '/admin/products'}
-                className="w-full"
+                className="w-full text-sm sm:text-base"
+                data-testid="button-manage-products"
               >
                 Ver Productos
               </Button>
@@ -163,13 +165,14 @@ export default function AdminDashboardSimple() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Pedidos y Ventas</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Pedidos y Ventas</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-4">Revisa pedidos y genera reportes</p>
+              <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Revisa pedidos y genera reportes</p>
               <Button 
                 onClick={() => window.location.href = '/admin/orders'}
-                className="w-full"
+                className="w-full text-sm sm:text-base"
+                data-testid="button-manage-orders"
               >
                 Ver Pedidos
               </Button>
@@ -178,13 +181,14 @@ export default function AdminDashboardSimple() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Cotizaciones</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Cotizaciones</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-4">Gestiona cotizaciones de clientes</p>
+              <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Gestiona cotizaciones de clientes</p>
               <Button 
                 onClick={() => window.location.href = '/admin/quotes'}
-                className="w-full"
+                className="w-full text-sm sm:text-base"
+                data-testid="button-manage-quotes"
               >
                 Ver Cotizaciones
               </Button>
@@ -193,11 +197,11 @@ export default function AdminDashboardSimple() {
         </div>
 
         {/* Contact Messages */}
-        <Card className="mt-6">
+        <Card className="mt-4 lg:mt-6">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Mensajes de Contacto Recientes</CardTitle>
-              <Button variant="outline" size="sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <CardTitle className="text-base sm:text-lg">Mensajes de Contacto Recientes</CardTitle>
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 Ver todos
               </Button>
             </div>
@@ -205,24 +209,24 @@ export default function AdminDashboardSimple() {
           <CardContent>
             {contactMessagesLoading ? (
               <div className="flex items-center justify-center h-32">
-                <div className="text-uniform-secondary">Cargando mensajes...</div>
+                <div className="text-uniform-secondary text-sm sm:text-base">Cargando mensajes...</div>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Remitente</TableHead>
-                      <TableHead>Asunto</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Acciones</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Remitente</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Asunto</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Estado</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Fecha</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {(!recentContactMessages || (recentContactMessages as any)?.length === 0) ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center text-uniform-secondary py-8">
+                        <TableCell colSpan={5} className="text-center text-uniform-secondary py-6 sm:py-8 text-sm sm:text-base">
                           No hay mensajes de contacto
                         </TableCell>
                       </TableRow>
@@ -231,25 +235,25 @@ export default function AdminDashboardSimple() {
                         <TableRow key={message.id}>
                           <TableCell>
                             <div className="flex items-center">
-                              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                <Mail className="h-4 w-4 text-green-600" />
+                              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                                <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
                               </div>
-                              <div>
-                                <p className="font-medium text-uniform-neutral-900">{message.name}</p>
-                                <p className="text-sm text-uniform-secondary">{message.email}</p>
+                              <div className="min-w-0">
+                                <p className="font-medium text-uniform-neutral-900 text-xs sm:text-sm truncate">{message.name}</p>
+                                <p className="text-xs text-uniform-secondary truncate">{message.email}</p>
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell>
-                            <p className="font-medium text-uniform-neutral-900 truncate max-w-48">
+                          <TableCell className="hidden md:table-cell">
+                            <p className="font-medium text-uniform-neutral-900 truncate max-w-32 lg:max-w-48 text-xs sm:text-sm">
                               {message.subject}
                             </p>
-                            <p className="text-sm text-uniform-secondary truncate max-w-48">
+                            <p className="text-xs text-uniform-secondary truncate max-w-32 lg:max-w-48">
                               {message.message}
                             </p>
                           </TableCell>
                           <TableCell>{getMessageStatusBadge(message.isRead)}</TableCell>
-                          <TableCell className="text-uniform-secondary">
+                          <TableCell className="text-uniform-secondary text-xs sm:text-sm hidden lg:table-cell">
                             {new Date(message.createdAt).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
@@ -264,8 +268,10 @@ export default function AdminDashboardSimple() {
                                 });
                               }}
                               data-testid={`button-respond-${message.id}`}
+                              className="text-xs sm:text-sm px-2 sm:px-3"
                             >
-                              {message.isRead ? "Responder" : "Marcar leído"}
+                              <span className="hidden sm:inline">{message.isRead ? "Responder" : "Marcar leído"}</span>
+                              <span className="sm:hidden">📝</span>
                             </Button>
                           </TableCell>
                         </TableRow>
