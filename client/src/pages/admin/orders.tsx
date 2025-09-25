@@ -289,110 +289,105 @@ export default function AdminOrders() {
 
         {/* Order Detail Modal */}
         <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <div className="flex items-center justify-between">
-                <DialogTitle>
-                  Detalle del Pedido {selectedOrder?.orderNumber}
-                </DialogTitle>
-                {selectedOrder && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDownloadPDF(selectedOrder.id, selectedOrder.orderNumber)}
-                    className="flex items-center space-x-2"
-                  >
-                    <Download className="h-4 w-4" />
-                    <span>Descargar PDF</span>
-                  </Button>
-                )}
-              </div>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+            <DialogHeader className="shrink-0">
+              <DialogTitle>
+                Detalle del Pedido {selectedOrder?.orderNumber}
+              </DialogTitle>
             </DialogHeader>
             {orderDetail && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="font-semibold mb-2">Información del Cliente</h3>
-                    <p><strong>Nombre:</strong> {orderDetail.customerName || "No especificado"}</p>
-                    <p><strong>Email:</strong> {orderDetail.customerEmail}</p>
-                    <p><strong>Teléfono:</strong> {orderDetail.customerPhone || "No especificado"}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Información del Pedido</h3>
-                    <div className="flex items-center space-x-2">
-                      <strong>Estado:</strong> 
-                      {getStatusBadge(orderDetail.status)}
+              <div className="flex-1 overflow-y-auto">
+                <div className="space-y-6 p-1">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="font-semibold mb-2">Información del Cliente</h3>
+                      <div className="space-y-1">
+                        <p><strong>Nombre:</strong> {orderDetail.customerName || "No especificado"}</p>
+                        <p><strong>Email:</strong> {orderDetail.customerEmail}</p>
+                        <p><strong>Teléfono:</strong> {orderDetail.customerPhone || "No especificado"}</p>
+                      </div>
                     </div>
-                    <p><strong>Fecha:</strong> {new Date(orderDetail.createdAt).toLocaleString()}</p>
-                    <p><strong>Total:</strong> ${orderDetail.total}</p>
+                    <div>
+                      <h3 className="font-semibold mb-2">Información del Pedido</h3>
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-2">
+                          <strong>Estado:</strong> 
+                          {getStatusBadge(orderDetail.status)}
+                        </div>
+                        <p><strong>Fecha:</strong> {new Date(orderDetail.createdAt).toLocaleString()}</p>
+                        <p><strong>Total:</strong> ${orderDetail.total}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {orderDetail.shippingAddress && (
+                    <div>
+                      <h3 className="font-semibold mb-2">Dirección de Envío</h3>
+                      <div className="bg-gray-50 p-3 rounded-md">
+                        <p>{JSON.stringify(orderDetail.shippingAddress)}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold">Productos</h3>
+                      {selectedOrder && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDownloadPDF(selectedOrder.id, selectedOrder.orderNumber)}
+                          className="flex items-center space-x-2"
+                        >
+                          <Download className="h-4 w-4" />
+                          <span>Descargar PDF</span>
+                        </Button>
+                      )}
+                    </div>
+                    <div className="border rounded-md overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Producto</TableHead>
+                            <TableHead>Cantidad</TableHead>
+                            <TableHead>Precio Unit.</TableHead>
+                            <TableHead>Total</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {orderDetail.items?.map((item: any) => (
+                            <TableRow key={item.id}>
+                              <TableCell>
+                                <div>
+                                  <div className="font-medium">{item.productName}</div>
+                                  <div className="text-sm text-uniform-secondary">
+                                    {item.size && `Talla: ${item.size}`} {item.color && `Color: ${item.color}`}
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>{item.quantity}</TableCell>
+                              <TableCell>${item.unitPrice}</TableCell>
+                              <TableCell>${item.totalPrice}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <div className="flex justify-end">
+                      <div className="text-right space-y-1">
+                        <p><strong>Subtotal:</strong> ${orderDetail.subtotal || orderDetail.total}</p>
+                        <p><strong>Envío:</strong> ${orderDetail.shipping || "0.00"}</p>
+                        <p><strong>Impuestos:</strong> ${orderDetail.tax || "0.00"}</p>
+                        <p className="text-lg font-bold border-t pt-1">
+                          <strong>Total:</strong> ${orderDetail.total}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                
-                {orderDetail.shippingAddress && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Dirección de Envío</h3>
-                    <p>{JSON.stringify(orderDetail.shippingAddress)}</p>
-                  </div>
-                )}
-
-                <div>
-                  <h3 className="font-semibold mb-2">Productos</h3>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Producto</TableHead>
-                        <TableHead>Cantidad</TableHead>
-                        <TableHead>Precio Unit.</TableHead>
-                        <TableHead>Total</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {orderDetail.items?.map((item: any) => (
-                        <TableRow key={item.id}>
-                          <TableCell>
-                            <div>
-                              <div className="font-medium">{item.productName}</div>
-                              <div className="text-sm text-uniform-secondary">
-                                {item.size && `Talla: ${item.size}`} {item.color && `Color: ${item.color}`}
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{item.quantity}</TableCell>
-                          <TableCell>${item.unitPrice}</TableCell>
-                          <TableCell>${item.totalPrice}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-
-                <div className="border-t pt-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Subtotal:</span>
-                      <span>${orderDetail.subtotal}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Envío:</span>
-                      <span>${orderDetail.shipping || "0.00"}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Impuestos:</span>
-                      <span>${orderDetail.tax || "0.00"}</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg">
-                      <span>Total:</span>
-                      <span>${orderDetail.total}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {orderDetail.notes && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Notas</h3>
-                    <p className="text-uniform-secondary">{orderDetail.notes}</p>
-                  </div>
-                )}
               </div>
             )}
           </DialogContent>
