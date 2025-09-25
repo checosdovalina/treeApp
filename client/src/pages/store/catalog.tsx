@@ -61,7 +61,8 @@ export default function CatalogPage() {
       const garmentTypeMap: { [key: string]: string } = {
         'polo': '6',
         'playera': '3',
-        'camisa': '5'
+        'camisa': '5',
+        'pantalon': '4'
       };
       
       if (garmentTypeMap[garmentTypeParam]) {
@@ -250,6 +251,12 @@ export default function CatalogPage() {
     setSelectedGarmentType("all");
   };
 
+  // Función para filtro rápido por tipo de prenda
+  const applyQuickFilter = (garmentTypeId: string) => {
+    clearAllFilters();
+    setSelectedGarmentType(garmentTypeId);
+  };
+
   // Función para obtener el código hexadecimal de un color
   const getColorHex = (colorName: string, availableColors: any) => {
     if (!availableColors || !Array.isArray(availableColors)) return '#ccc';
@@ -302,6 +309,66 @@ export default function CatalogPage() {
             <p className="text-lg text-gray-600">
               Explora nuestra colección completa de uniformes profesionales
             </p>
+          </div>
+
+          {/* Quick Filter Buttons */}
+          <div className="mb-6">
+            <div className="flex flex-wrap gap-3">
+              <Button
+                variant={selectedGarmentType === "" ? "default" : "outline"}
+                size="sm"
+                onClick={() => clearAllFilters()}
+                className="rounded-full"
+                data-testid="button-filter-all"
+              >
+                Todos los productos
+              </Button>
+              <Button
+                variant={selectedGarmentType === "4" ? "default" : "outline"}
+                size="sm"
+                onClick={() => applyQuickFilter("4")}
+                className="rounded-full"
+                data-testid="button-filter-pantalon"
+              >
+                🦵 Pantalones
+              </Button>
+              <Button
+                variant={selectedGarmentType === "3" ? "default" : "outline"}
+                size="sm"
+                onClick={() => applyQuickFilter("3")}
+                className="rounded-full"
+                data-testid="button-filter-playera"
+              >
+                👕 Playeras
+              </Button>
+              <Button
+                variant={selectedGarmentType === "5" ? "default" : "outline"}
+                size="sm"
+                onClick={() => applyQuickFilter("5")}
+                className="rounded-full"
+                data-testid="button-filter-camisa"
+              >
+                👔 Camisas
+              </Button>
+              <Button
+                variant={selectedGarmentType === "6" ? "default" : "outline"}
+                size="sm"
+                onClick={() => applyQuickFilter("6")}
+                className="rounded-full"
+                data-testid="button-filter-polo"
+              >
+                🏌️ Polos
+              </Button>
+              <Button
+                variant={selectedGarmentType === "2" ? "default" : "outline"}
+                size="sm"
+                onClick={() => applyQuickFilter("2")}
+                className="rounded-full"
+                data-testid="button-filter-chamarra"
+              >
+                🧥 Chamarras
+              </Button>
+            </div>
           </div>
 
           {/* Compact Filter Bar */}
