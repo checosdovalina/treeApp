@@ -68,9 +68,11 @@ export default function IndustrySection() {
     align: 'start',
     containScroll: 'trimSnaps',
     slidesToScroll: 1,
+    dragFree: false,
     breakpoints: {
-      '(min-width: 768px)': { slidesToScroll: 2 },
-      '(min-width: 1024px)': { slidesToScroll: 3 }
+      '(min-width: 768px)': { slidesToScroll: 1 },
+      '(min-width: 1024px)': { slidesToScroll: 2 },
+      '(min-width: 1280px)': { slidesToScroll: 3 }
     }
   });
   const [canScrollPrev, setCanScrollPrev] = useState(false);
@@ -120,8 +122,8 @@ export default function IndustrySection() {
         <div className="relative">
           {/* Navigation Buttons */}
           <button
-            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 ${
-              !canScrollPrev ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+            className={`absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-uniform-gold hover:bg-uniform-gold/90 text-black p-3 rounded-full shadow-lg transition-all duration-200 ${
+              !canScrollPrev ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 shadow-xl'
             }`}
             onClick={scrollPrev}
             disabled={!canScrollPrev}
@@ -130,8 +132,8 @@ export default function IndustrySection() {
           </button>
           
           <button
-            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 ${
-              !canScrollNext ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+            className={`absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-uniform-gold hover:bg-uniform-gold/90 text-black p-3 rounded-full shadow-lg transition-all duration-200 ${
+              !canScrollNext ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 shadow-xl'
             }`}
             onClick={scrollNext}
             disabled={!canScrollNext}
@@ -140,12 +142,12 @@ export default function IndustrySection() {
           </button>
 
           {/* Embla Viewport */}
-          <div className="overflow-hidden mx-8" ref={emblaRef}>
-            <div className="flex gap-6">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex gap-4 px-2">
               {sections.map((section: IndustrySection) => (
                 <div
                   key={section.id}
-                  className="relative group overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex-none w-80"
+                  className="relative group overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex-none w-[320px] min-w-[320px] md:w-[340px] md:min-w-[340px]"
                   style={{ backgroundColor: section.backgroundColor }}
                 >
                   {/* Background Image */}
