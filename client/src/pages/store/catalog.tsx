@@ -313,21 +313,21 @@ export default function CatalogPage() {
 
           {/* Quick Filter Buttons */}
           <div className="mb-6">
-            <div className="flex flex-wrap gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-2 lg:gap-3">
               <Button
                 variant={selectedGarmentType === "" ? "default" : "outline"}
                 size="sm"
                 onClick={() => clearAllFilters()}
-                className="rounded-full"
+                className="rounded-full text-xs sm:text-sm whitespace-nowrap"
                 data-testid="button-filter-all"
               >
-                Todos los productos
+                Todos
               </Button>
               <Button
                 variant={selectedGarmentType === "4" ? "default" : "outline"}
                 size="sm"
                 onClick={() => applyQuickFilter("4")}
-                className="rounded-full"
+                className="rounded-full text-xs sm:text-sm whitespace-nowrap"
                 data-testid="button-filter-pantalon"
               >
                 🦵 Pantalones
@@ -336,7 +336,7 @@ export default function CatalogPage() {
                 variant={selectedGarmentType === "3" ? "default" : "outline"}
                 size="sm"
                 onClick={() => applyQuickFilter("3")}
-                className="rounded-full"
+                className="rounded-full text-xs sm:text-sm whitespace-nowrap"
                 data-testid="button-filter-playera"
               >
                 👕 Playeras
@@ -345,7 +345,7 @@ export default function CatalogPage() {
                 variant={selectedGarmentType === "5" ? "default" : "outline"}
                 size="sm"
                 onClick={() => applyQuickFilter("5")}
-                className="rounded-full"
+                className="rounded-full text-xs sm:text-sm whitespace-nowrap"
                 data-testid="button-filter-camisa"
               >
                 👔 Camisas
@@ -354,7 +354,7 @@ export default function CatalogPage() {
                 variant={selectedGarmentType === "6" ? "default" : "outline"}
                 size="sm"
                 onClick={() => applyQuickFilter("6")}
-                className="rounded-full"
+                className="rounded-full text-xs sm:text-sm whitespace-nowrap"
                 data-testid="button-filter-polo"
               >
                 🏌️ Polos
@@ -363,7 +363,7 @@ export default function CatalogPage() {
                 variant={selectedGarmentType === "2" ? "default" : "outline"}
                 size="sm"
                 onClick={() => applyQuickFilter("2")}
-                className="rounded-full"
+                className="rounded-full text-xs sm:text-sm whitespace-nowrap"
                 data-testid="button-filter-chamarra"
               >
                 🧥 Chamarras
