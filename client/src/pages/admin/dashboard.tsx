@@ -91,17 +91,18 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
+      <div className="p-3 sm:p-4 lg:p-6">
         {/* Page Header */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 lg:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-uniform-neutral-900">Dashboard</h1>
-            <p className="text-uniform-secondary mt-2">Resumen general de tu tienda de uniformes</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-uniform-neutral-900">Dashboard Administrativo</h1>
+            <p className="text-uniform-secondary mt-1 sm:mt-2 text-sm sm:text-base">Bienvenido, {user?.firstName || 'Administrador'}</p>
           </div>
-          <div className="mt-4 sm:mt-0">
+          <div className="w-full sm:w-auto">
             <Button 
               onClick={() => window.open('/store', '_blank')}
-              className="bg-uniform-primary hover:bg-uniform-darker text-white flex items-center gap-2"
+              className="bg-uniform-primary hover:bg-uniform-darker text-white flex items-center justify-center gap-2 w-full sm:w-auto"
+              data-testid="button-view-store"
             >
               <Store className="h-4 w-4" />
               Ver Tienda
@@ -110,7 +111,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
           <StatCard
             title="Ventas Hoy"
             value={statsLoading ? "$0" : `$${(stats as any)?.totalSales || "0"}`}
@@ -158,13 +159,13 @@ export default function AdminDashboard() {
         </div>
 
         {/* Charts and Tables Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
           {/* Sales Chart Placeholder */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Ventas Últimos 7 Días</CardTitle>
-                <select className="text-sm border border-gray-200 rounded-lg px-3 py-1">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <CardTitle className="text-lg sm:text-xl">Ventas Últimos 7 Días</CardTitle>
+                <select className="text-xs sm:text-sm border border-gray-200 rounded-lg px-2 sm:px-3 py-1 w-full sm:w-auto">
                   <option>Últimos 7 días</option>
                   <option>Último mes</option>
                   <option>Último año</option>
@@ -172,11 +173,11 @@ export default function AdminDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="h-64 bg-uniform-neutral-50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-200">
+              <div className="h-48 sm:h-64 bg-uniform-neutral-50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-200">
                 <div className="text-center">
-                  <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500">Gráfico de ventas</p>
-                  <p className="text-xs text-gray-400">Chart.js o similar</p>
+                  <TrendingUp className="h-8 sm:h-12 w-8 sm:w-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-sm sm:text-base text-gray-500">Gráfico de ventas</p>
+                  <p className="text-xs text-gray-400">Sistema en desarrollo</p>
                 </div>
               </div>
             </CardContent>
@@ -185,32 +186,33 @@ export default function AdminDashboard() {
           {/* Top Products */}
           <Card>
             <CardHeader>
-              <CardTitle>Productos Más Vendidos</CardTitle>
+              <CardTitle className="text-lg sm:text-xl">Productos Más Vendidos</CardTitle>
             </CardHeader>
             <CardContent>
               {topProductsLoading ? (
                 <div className="flex items-center justify-center h-32">
-                  <div className="text-uniform-secondary">Cargando productos...</div>
+                  <div className="text-uniform-secondary text-sm sm:text-base">Cargando productos...</div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {(topProducts as any)?.length === 0 ? (
-                    <div className="text-center text-uniform-secondary py-8">
-                      No hay datos de productos vendidos
+                    <div className="text-center text-uniform-secondary py-6 sm:py-8">
+                      <p className="text-sm sm:text-base">Varios</p>
+                      <p className="text-xs sm:text-sm text-gray-400 mt-1">Productos disponibles</p>
                     </div>
                   ) : (
                     (topProducts as any)?.map((product: any) => (
-                      <div key={product.id} className="flex items-center space-x-4 p-3 border border-gray-200 rounded-lg">
-                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <Package className="h-8 w-8 text-gray-400" />
+                      <div key={product.id} className="flex items-center space-x-3 sm:space-x-4 p-2 sm:p-3 border border-gray-200 rounded-lg">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Package className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
                         </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-uniform-neutral-900">{product.name}</h4>
-                          <p className="text-sm text-uniform-secondary">{product.salesCount} vendidas</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-uniform-neutral-900 text-sm sm:text-base truncate">{product.name}</h4>
+                          <p className="text-xs sm:text-sm text-uniform-secondary">{product.salesCount} vendidas</p>
                         </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-uniform-neutral-900">${product.revenue}</p>
-                          <p className="text-sm text-uniform-accent">+15%</p>
+                        <div className="text-right flex-shrink-0">
+                          <p className="font-semibold text-uniform-neutral-900 text-sm sm:text-base">${product.revenue}</p>
+                          <p className="text-xs sm:text-sm text-uniform-accent">+15%</p>
                         </div>
                       </div>
                     ))
@@ -222,11 +224,11 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Orders */}
-        <Card>
+        <Card className="mt-4 lg:mt-0">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Pedidos Recientes</CardTitle>
-              <Button variant="outline" size="sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <CardTitle className="text-lg sm:text-xl">Pedidos Recientes</CardTitle>
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 Ver todos
               </Button>
             </div>
@@ -234,44 +236,47 @@ export default function AdminDashboard() {
           <CardContent>
             {recentOrdersLoading ? (
               <div className="flex items-center justify-center h-32">
-                <div className="text-uniform-secondary">Cargando pedidos...</div>
+                <div className="text-uniform-secondary text-sm sm:text-base">Cargando pedidos...</div>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Pedido</TableHead>
-                      <TableHead>Cliente</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Total</TableHead>
-                      <TableHead>Fecha</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Pedido</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Cliente</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Estado</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Total</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Fecha</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {(recentOrders as any)?.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center text-uniform-secondary py-8">
-                          No hay pedidos recientes
+                        <TableCell colSpan={5} className="text-center text-uniform-secondary py-6 sm:py-8 text-sm sm:text-base">
+                          $0
+                          <div className="text-xs text-gray-400 mt-1">Sistema en desarrollo</div>
                         </TableCell>
                       </TableRow>
                     ) : (
                       (recentOrders as any)?.map((order: any) => (
                         <TableRow key={order.id}>
-                          <TableCell className="font-medium">{order.orderNumber}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium text-xs sm:text-sm">{order.orderNumber}</TableCell>
+                          <TableCell className="hidden sm:table-cell">
                             <div className="flex items-center">
-                              <div className="w-8 h-8 avatar-gradient-2 rounded-full flex items-center justify-center mr-3">
+                              <div className="w-6 h-6 sm:w-8 sm:h-8 avatar-gradient-2 rounded-full flex items-center justify-center mr-2 sm:mr-3">
                                 <span className="text-white text-xs font-medium">
                                   {order.customerName?.[0] || 'C'}
                                 </span>
                               </div>
-                              {order.customerName || order.customerEmail}
+                              <span className="text-xs sm:text-sm truncate max-w-24 sm:max-w-none">
+                                {order.customerName || order.customerEmail}
+                              </span>
                             </div>
                           </TableCell>
                           <TableCell>{getStatusBadge(order.status)}</TableCell>
-                          <TableCell className="font-medium">${order.total}</TableCell>
-                          <TableCell className="text-uniform-secondary">
+                          <TableCell className="font-medium text-xs sm:text-sm">${order.total}</TableCell>
+                          <TableCell className="text-uniform-secondary text-xs sm:text-sm hidden md:table-cell">
                             {new Date(order.createdAt).toLocaleDateString()}
                           </TableCell>
                         </TableRow>
@@ -285,11 +290,11 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Contact Messages */}
-        <Card className="mt-6">
+        <Card className="mt-4 lg:mt-6">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Mensajes de Contacto Recientes</CardTitle>
-              <Button variant="outline" size="sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <CardTitle className="text-lg sm:text-xl">Clientes</CardTitle>
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 Ver todos
               </Button>
             </div>
@@ -297,24 +302,24 @@ export default function AdminDashboard() {
           <CardContent>
             {contactMessagesLoading ? (
               <div className="flex items-center justify-center h-32">
-                <div className="text-uniform-secondary">Cargando mensajes...</div>
+                <div className="text-uniform-secondary text-sm sm:text-base">Cargando mensajes...</div>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Remitente</TableHead>
-                      <TableHead>Asunto</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Acciones</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Remitente</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Asunto</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Estado</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Fecha</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {(!recentContactMessages || (recentContactMessages as any)?.length === 0) ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center text-uniform-secondary py-8">
+                        <TableCell colSpan={5} className="text-center text-uniform-secondary py-6 sm:py-8 text-sm sm:text-base">
                           No hay mensajes de contacto
                         </TableCell>
                       </TableRow>
@@ -323,25 +328,25 @@ export default function AdminDashboard() {
                         <TableRow key={message.id}>
                           <TableCell>
                             <div className="flex items-center">
-                              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                <Mail className="h-4 w-4 text-green-600" />
+                              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                                <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
                               </div>
-                              <div>
-                                <p className="font-medium text-uniform-neutral-900">{message.name}</p>
-                                <p className="text-sm text-uniform-secondary">{message.email}</p>
+                              <div className="min-w-0">
+                                <p className="font-medium text-uniform-neutral-900 text-xs sm:text-sm truncate">{message.name}</p>
+                                <p className="text-xs text-uniform-secondary truncate">{message.email}</p>
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell>
-                            <p className="font-medium text-uniform-neutral-900 truncate max-w-48">
+                          <TableCell className="hidden md:table-cell">
+                            <p className="font-medium text-uniform-neutral-900 truncate max-w-32 lg:max-w-48 text-xs sm:text-sm">
                               {message.subject}
                             </p>
-                            <p className="text-sm text-uniform-secondary truncate max-w-48">
+                            <p className="text-xs text-uniform-secondary truncate max-w-32 lg:max-w-48">
                               {message.message}
                             </p>
                           </TableCell>
                           <TableCell>{getMessageStatusBadge(message.isRead)}</TableCell>
-                          <TableCell className="text-uniform-secondary">
+                          <TableCell className="text-uniform-secondary text-xs sm:text-sm hidden lg:table-cell">
                             {new Date(message.createdAt).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
@@ -356,8 +361,10 @@ export default function AdminDashboard() {
                                 });
                               }}
                               data-testid={`button-respond-${message.id}`}
+                              className="text-xs sm:text-sm px-2 sm:px-3"
                             >
-                              {message.isRead ? "Responder" : "Marcar leído"}
+                              <span className="hidden sm:inline">{message.isRead ? "Responder" : "Marcar leído"}</span>
+                              <span className="sm:hidden">📝</span>
                             </Button>
                           </TableCell>
                         </TableRow>
