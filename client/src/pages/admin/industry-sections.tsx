@@ -47,7 +47,7 @@ export default function IndustrySectionsPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: InsertIndustrySection) => apiRequest('/api/industry-sections', 'POST', data),
+    mutationFn: (data: InsertIndustrySection) => apiRequest('POST', '/api/industry-sections', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/industry-sections'] });
       toast({ title: "Sección creada exitosamente" });
@@ -61,7 +61,7 @@ export default function IndustrySectionsPage() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<InsertIndustrySection> }) =>
-      apiRequest(`/api/industry-sections/${id}`, 'PUT', data),
+      apiRequest('PUT', `/api/industry-sections/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/industry-sections'] });
       toast({ title: "Sección actualizada exitosamente" });
@@ -75,7 +75,7 @@ export default function IndustrySectionsPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/industry-sections/${id}`, 'DELETE'),
+    mutationFn: (id: number) => apiRequest('DELETE', `/api/industry-sections/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/industry-sections'] });
       toast({ title: "Sección eliminada exitosamente" });
