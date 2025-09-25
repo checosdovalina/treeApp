@@ -510,11 +510,11 @@ export default function CatalogPage() {
             }`}>
               {sortedProducts.map((product: any) => (
                 <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer" onClick={() => navigateToProduct(product.id)}>
-                  <div className="relative">
+                  <div className="relative aspect-square bg-white flex items-center justify-center p-3">
                     <img
                       src={getProductDisplayImage(product)}
                       alt={product.name}
-                      className="w-full h-48 object-cover transition-transform duration-200 hover:scale-105"
+                      className="max-w-full max-h-full object-contain"
                     />
                     {/* SKU Badge removido - ya no se muestra en las tarjetas de producto */}
                     {product.isActive === false && (
