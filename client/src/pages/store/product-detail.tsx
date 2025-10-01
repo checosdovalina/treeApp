@@ -27,6 +27,11 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
+  // Scroll to top cuando se carga la página
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: [`/api/products/${id}`],
     enabled: !!id && !isNaN(Number(id)),
@@ -198,7 +203,7 @@ export default function ProductDetail() {
   if (isLoading) {
     return (
       <StoreLayout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style={{ zoom: '0.87' }}>
           <div className="animate-pulse">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-4">
@@ -224,7 +229,7 @@ export default function ProductDetail() {
   if (!product) {
     return (
       <StoreLayout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style={{ zoom: '0.87' }}>
           <div className="text-center py-16">
             <Shirt className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-uniform-neutral-900 mb-2">
@@ -321,7 +326,7 @@ export default function ProductDetail() {
 
   return (
     <StoreLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style={{ zoom: '0.87' }}>
         {/* Breadcrumb */}
         <nav className="mb-8">
           <ol className="flex items-center space-x-2 text-sm text-uniform-secondary">
