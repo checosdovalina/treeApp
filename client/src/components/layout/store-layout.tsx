@@ -119,7 +119,18 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
               </Button>
 
               {/* User Account */}
-              <Button variant="ghost" size="sm">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => {
+                  if (isAuthenticated) {
+                    setLocation('/customer/dashboard');
+                  } else {
+                    setLocation('/login');
+                  }
+                }}
+                data-testid="button-user-account"
+              >
                 <User className="h-5 w-5" />
               </Button>
 
@@ -172,7 +183,16 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
                     {isAuthenticated ? (
                       <div className="space-y-4">
                         <p className="font-medium">Hola, {(user as any)?.firstName || 'Usuario'}</p>
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setLocation('/customer/dashboard');
+                          }}
+                          data-testid="button-my-account"
+                        >
                           Mi Cuenta
                         </Button>
                         <Button 
@@ -188,7 +208,10 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
                     ) : (
                       <Button 
                         className="w-full bg-uniform-primary hover:bg-blue-700"
-                        onClick={() => window.location.href = '/api/login'}
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          setLocation('/login');
+                        }}
                       >
                         Iniciar Sesión
                       </Button>
