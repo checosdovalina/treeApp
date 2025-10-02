@@ -374,6 +374,7 @@ export default function AdminOrders() {
                       <Table>
                         <TableHeader>
                           <TableRow>
+                            <TableHead className="w-20">Imagen</TableHead>
                             <TableHead>Producto</TableHead>
                             <TableHead>Cantidad</TableHead>
                             <TableHead>Precio Unit.</TableHead>
@@ -383,6 +384,26 @@ export default function AdminOrders() {
                         <TableBody>
                           {orderDetail.items?.map((item: any) => (
                             <TableRow key={item.id}>
+                              <TableCell>
+                                <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+                                  {item.productId ? (
+                                    <img 
+                                      src={`/api/products/${item.productId}/image`}
+                                      alt={item.productName}
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        e.currentTarget.src = '/api/placeholder/64/64';
+                                      }}
+                                    />
+                                  ) : (
+                                    <img 
+                                      src="/api/placeholder/64/64"
+                                      alt="Producto"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  )}
+                                </div>
+                              </TableCell>
                               <TableCell>
                                 <div>
                                   <div className="font-medium">{item.productName}</div>
