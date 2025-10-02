@@ -5,6 +5,7 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { authService, createDefaultAdmin } from "./auth";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import pdf from "html-pdf-node";
 
 // Admin middleware
 const isAdmin = async (req: any, res: any, next: any) => {
@@ -1757,13 +1758,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate PDF HTML content
       const pdfHtml = generateQuotePDFHTML(quote);
       
+      // Configure PDF generation options
+      const options = { 
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '20px',
+          right: '20px',
+          bottom: '20px',
+          left: '20px'
+        }
+      };
+      
+      const file = { content: pdfHtml };
+      
+      // Generate PDF buffer
+      const pdfBuffer = await pdf.generatePdf(file, options);
+      
       // Set response headers for PDF download
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="Presupuesto-${quote.quoteNumber}.pdf"`);
+      res.setHeader('Content-Length', pdfBuffer.length);
       
-      // For now, return HTML content (we'll implement actual PDF generation)
-      res.setHeader('Content-Type', 'text/html');
-      res.send(pdfHtml);
+      // Send PDF buffer
+      res.send(pdfBuffer);
       
     } catch (error) {
       console.error("Error generating PDF:", error);
