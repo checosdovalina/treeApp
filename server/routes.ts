@@ -1756,8 +1756,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const id = parseInt(req.params.id);
       const updateData = req.body;
       
-      // Validate the update data
-      const allowedFields = ['status', 'notes', 'validUntil', 'subtotal', 'tax', 'total'];
+      // Validate the update data - allow all quote fields except id, quoteNumber, createdAt
+      const allowedFields = ['customerId', 'customerEmail', 'customerName', 'customerCompany', 'items', 'subtotal', 'tax', 'total', 'validUntil', 'notes', 'status'];
       const filteredData = Object.keys(updateData)
         .filter(key => allowedFields.includes(key))
         .reduce((obj, key) => {
