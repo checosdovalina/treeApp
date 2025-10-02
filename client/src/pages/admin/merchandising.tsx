@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   DndContext,
@@ -139,14 +139,17 @@ export default function Merchandising() {
   );
 
   // Fetch products
-  const { isLoading, refetch } = useQuery<Product[]>({
+  const { data: productsData, isLoading, refetch } = useQuery<Product[]>({
     queryKey: ["/api/products"],
-    onSuccess: (data) => {
-      // Sort by featured, displayOrder, then createdAt (already done by backend)
-      setProducts(data);
-      setHasChanges(false);
-    },
   });
+
+  // Update local state when data changes
+  useEffect(() => {
+    if (productsData) {
+      setProducts(productsData);
+      setHasChanges(false);
+    }
+  }, [productsData]);
 
   // Save mutation
   const saveMutation = useMutation({
