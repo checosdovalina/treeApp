@@ -184,6 +184,8 @@ export const products = pgTable("products", {
   sizes: text("sizes").array().default([]),
   colors: text("colors").array().default([]),
   isActive: boolean("is_active").default(true),
+  displayOrder: integer("display_order"), // Orden de visualización (menor = mayor prioridad)
+  isFeatured: boolean("is_featured").default(false), // Productos destacados
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
