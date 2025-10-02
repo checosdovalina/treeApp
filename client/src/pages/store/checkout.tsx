@@ -103,6 +103,56 @@ export default function Checkout() {
     },
   });
 
+  const createQuoteMutation = useMutation({
+    mutationFn: async () => {
+      const quoteData = {
+        customerId: isAuthenticated ? user?.id : null,
+        customerInfo: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          company: null,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+        },
+        products: items.map(item => ({
+          productId: parseInt(item.id),
+          quantity: item.quantity,
+          size: item.size,
+          color: item.color,
+        })),
+        notes: formData.notes,
+      };
+
+      return await apiRequest("POST", "/api/quotes/request", quoteData);
+    },
+    onSuccess: (response) => {
+      clearCart();
+      toast({
+        title: "¡Presupuesto solicitado exitosamente!",
+        description: `Tu solicitud de presupuesto #${response.quote.quoteNumber} ha sido enviada. Te contactaremos pronto con los detalles.`,
+      });
+      
+      // Invalidate customer data cache to refresh dashboard
+      if (isAuthenticated) {
+        queryClient.invalidateQueries({ queryKey: ['/api/customer/quotes'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/customer/stats'] });
+      }
+      
+      setLocation(isAuthenticated ? "/customer/quotes" : "/store");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Error al crear la solicitud de presupuesto",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
@@ -110,20 +160,36 @@ export default function Checkout() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validaciones básicas
+  const validateForm = () => {
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.address) {
       toast({
         title: "Error",
         description: "Por favor completa todos los campos obligatorios",
         variant: "destructive",
       });
+      return false;
+    }
+    return true;
+  };
+
+  const handleOrder = () => {
+    if (!validateForm()) return;
+    
+    if (!isAuthenticated) {
+      toast({
+        title: "Inicia sesión",
+        description: "Debes iniciar sesión para realizar una compra",
+        variant: "destructive",
+      });
       return;
     }
-
+    
     createOrderMutation.mutate();
+  };
+
+  const handleQuote = () => {
+    if (!validateForm()) return;
+    createQuoteMutation.mutate();
   };
 
   if (items.length === 0) {
@@ -167,7 +233,7 @@ export default function Checkout() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Formulario de checkout */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-6">
               {/* Información personal */}
               <Card>
                 <CardHeader>
@@ -295,7 +361,7 @@ export default function Checkout() {
                   />
                 </CardContent>
               </Card>
-            </form>
+            </div>
           </div>
 
           {/* Resumen del pedido */}
@@ -374,18 +440,32 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Botón de compra */}
-                <Button
-                  onClick={handleSubmit}
-                  className="w-full bg-uniform-primary hover:bg-blue-700"
-                  size="lg"
-                  disabled={createOrderMutation.isPending}
-                >
-                  {createOrderMutation.isPending ? "Procesando..." : "Realizar Pedido"}
-                </Button>
+                {/* Botones de acción */}
+                <div className="space-y-3">
+                  <Button
+                    onClick={handleOrder}
+                    className="w-full bg-uniform-primary hover:bg-blue-700"
+                    size="lg"
+                    disabled={createOrderMutation.isPending || createQuoteMutation.isPending}
+                    data-testid="button-order"
+                  >
+                    {createOrderMutation.isPending ? "Procesando..." : "Realizar Pedido"}
+                  </Button>
+
+                  <Button
+                    onClick={handleQuote}
+                    variant="outline"
+                    className="w-full border-uniform-primary text-uniform-primary hover:bg-uniform-primary hover:text-white"
+                    size="lg"
+                    disabled={createOrderMutation.isPending || createQuoteMutation.isPending}
+                    data-testid="button-quote"
+                  >
+                    {createQuoteMutation.isPending ? "Enviando..." : "Solicitar Presupuesto"}
+                  </Button>
+                </div>
 
                 <p className="text-xs text-gray-500 text-center">
-                  Al realizar el pedido, recibirás un email de confirmación y nos pondremos en contacto contigo.
+                  Al realizar el pedido o solicitar presupuesto, recibirás un email de confirmación y nos pondremos en contacto contigo.
                 </p>
               </CardContent>
             </Card>
