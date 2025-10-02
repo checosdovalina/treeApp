@@ -114,6 +114,13 @@ export default function AdminQuotes() {
     updateQuoteMutation.mutate({
       id: editingQuote.id,
       updates: {
+        customerName: editingQuote.customerName,
+        customerEmail: editingQuote.customerEmail,
+        customerCompany: editingQuote.customerCompany,
+        items: editingQuote.items,
+        subtotal: editingQuote.subtotal,
+        tax: editingQuote.tax,
+        total: editingQuote.total,
         status: editingQuote.status,
         notes: editingQuote.notes,
         validUntil: editingQuote.validUntil,
@@ -418,12 +425,194 @@ export default function AdminQuotes() {
 
         {/* Quote Edit Modal */}
         <Dialog open={isEditing} onOpenChange={setIsEditing}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Editar Presupuesto {editingQuote?.quoteNumber}</DialogTitle>
             </DialogHeader>
             {editingQuote && (
               <div className="space-y-4">
+                {/* Customer Information */}
+                <div>
+                  <h3 className="font-semibold mb-3">Información del Cliente</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Nombre del Cliente</label>
+                      <Input
+                        value={editingQuote.customerName || ''}
+                        onChange={(e) => setEditingQuote({...editingQuote, customerName: e.target.value})}
+                        placeholder="Nombre o empresa"
+                        data-testid="input-customer-name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Email</label>
+                      <Input
+                        type="email"
+                        value={editingQuote.customerEmail || ''}
+                        onChange={(e) => setEditingQuote({...editingQuote, customerEmail: e.target.value})}
+                        placeholder="cliente@ejemplo.com"
+                        data-testid="input-customer-email"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="text-sm font-medium">Empresa</label>
+                      <Input
+                        value={editingQuote.customerCompany || ''}
+                        onChange={(e) => setEditingQuote({...editingQuote, customerCompany: e.target.value})}
+                        placeholder="Nombre de la empresa (opcional)"
+                        data-testid="input-customer-company"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Products */}
+                <div>
+                  <h3 className="font-semibold mb-3">Productos del Presupuesto</h3>
+                  <div className="space-y-2">
+                    {editingQuote.items?.map((item: any, index: number) => (
+                      <div key={index} className="grid grid-cols-6 gap-2 items-end bg-gray-50 p-3 rounded-md">
+                        <div className="col-span-2">
+                          <label className="text-xs font-medium">Producto</label>
+                          <Input
+                            value={item.productName || ''}
+                            onChange={(e) => {
+                              const newItems = [...editingQuote.items];
+                              newItems[index].productName = e.target.value;
+                              setEditingQuote({...editingQuote, items: newItems});
+                            }}
+                            placeholder="Nombre del producto"
+                            data-testid={`input-item-name-${index}`}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium">Cantidad</label>
+                          <Input
+                            type="number"
+                            min="1"
+                            value={item.quantity || 1}
+                            onChange={(e) => {
+                              const newItems = [...editingQuote.items];
+                              newItems[index].quantity = parseInt(e.target.value) || 1;
+                              newItems[index].total = (newItems[index].quantity * parseFloat(newItems[index].unitPrice || '0')).toFixed(2);
+                              
+                              // Recalculate totals
+                              const subtotal = newItems.reduce((sum, i) => sum + parseFloat(i.total || '0'), 0);
+                              const tax = subtotal * 0.16;
+                              const total = subtotal + tax;
+                              
+                              setEditingQuote({
+                                ...editingQuote, 
+                                items: newItems,
+                                subtotal: subtotal.toFixed(2),
+                                tax: tax.toFixed(2),
+                                total: total.toFixed(2)
+                              });
+                            }}
+                            data-testid={`input-item-quantity-${index}`}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium">Precio Unit.</label>
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.unitPrice || '0'}
+                            onChange={(e) => {
+                              const newItems = [...editingQuote.items];
+                              newItems[index].unitPrice = e.target.value;
+                              newItems[index].total = (newItems[index].quantity * parseFloat(e.target.value || '0')).toFixed(2);
+                              
+                              // Recalculate totals
+                              const subtotal = newItems.reduce((sum, i) => sum + parseFloat(i.total || '0'), 0);
+                              const tax = subtotal * 0.16;
+                              const total = subtotal + tax;
+                              
+                              setEditingQuote({
+                                ...editingQuote, 
+                                items: newItems,
+                                subtotal: subtotal.toFixed(2),
+                                tax: tax.toFixed(2),
+                                total: total.toFixed(2)
+                              });
+                            }}
+                            data-testid={`input-item-price-${index}`}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium">Total</label>
+                          <Input
+                            value={`$${item.total || '0.00'}`}
+                            disabled
+                            className="bg-gray-100"
+                            data-testid={`text-item-total-${index}`}
+                          />
+                        </div>
+                        <div>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              const newItems = editingQuote.items.filter((_: any, i: number) => i !== index);
+                              const subtotal = newItems.reduce((sum: number, i: any) => sum + parseFloat(i.total || '0'), 0);
+                              const tax = subtotal * 0.16;
+                              const total = subtotal + tax;
+                              
+                              setEditingQuote({
+                                ...editingQuote, 
+                                items: newItems,
+                                subtotal: subtotal.toFixed(2),
+                                tax: tax.toFixed(2),
+                                total: total.toFixed(2)
+                              });
+                            }}
+                            data-testid={`button-remove-item-${index}`}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newItems = [...(editingQuote.items || []), { 
+                          productName: '', 
+                          quantity: 1, 
+                          unitPrice: '0', 
+                          total: '0' 
+                        }];
+                        setEditingQuote({...editingQuote, items: newItems});
+                      }}
+                      data-testid="button-add-item"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Agregar Producto
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Totals */}
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Subtotal:</span>
+                      <span className="font-medium">${editingQuote.subtotal || '0.00'}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>IVA (16%):</span>
+                      <span className="font-medium">${editingQuote.tax || '0.00'}</span>
+                    </div>
+                    <div className="flex justify-between text-lg font-bold border-t pt-2">
+                      <span>Total:</span>
+                      <span className="text-uniform-primary">${editingQuote.total || '0.00'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status and Validity */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Estado</label>
@@ -435,10 +624,9 @@ export default function AdminQuotes() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="draft">Borrador</SelectItem>
                         <SelectItem value="sent">Enviado</SelectItem>
-                        <SelectItem value="approved">Aprobado</SelectItem>
-                        <SelectItem value="rejected">Rechazado</SelectItem>
+                        <SelectItem value="accepted">Aceptado</SelectItem>
                         <SelectItem value="expired">Expirado</SelectItem>
                       </SelectContent>
                     </Select>
@@ -454,6 +642,7 @@ export default function AdminQuotes() {
                   </div>
                 </div>
                 
+                {/* Notes */}
                 <div>
                   <label className="text-sm font-medium">Notas para el cliente</label>
                   <Textarea
@@ -469,7 +658,8 @@ export default function AdminQuotes() {
                   </p>
                 </div>
 
-                <div className="flex justify-end space-x-2 pt-4">
+                {/* Action Buttons */}
+                <div className="flex justify-end space-x-2 pt-4 border-t">
                   <Button 
                     variant="outline" 
                     onClick={() => setIsEditing(false)}
@@ -481,6 +671,7 @@ export default function AdminQuotes() {
                   <Button 
                     onClick={handleSaveQuote}
                     disabled={updateQuoteMutation.isPending}
+                    className="bg-uniform-primary hover:bg-blue-700"
                     data-testid="button-save-quote"
                   >
                     <Save className="h-4 w-4 mr-2" />
