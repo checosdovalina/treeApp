@@ -73,11 +73,33 @@ export default function ProductDetail() {
     // Si tenemos datos de tallas específicas por género, usarlas
     if (sizesData?.sizes) {
       // Filtrar solo las tallas que están disponibles en el producto
-      return sizesData.sizes.filter(size => product?.sizes?.includes(size));
+      // Las tallas del producto pueden estar en formato "genero:talla" o solo "talla"
+      return sizesData.sizes.filter(size => {
+        // Buscar si existe la talla sola o con el prefijo del género
+        const sizeWithGender = `${selectedGender}:${size}`;
+        return product?.sizes?.includes(size) || product?.sizes?.includes(sizeWithGender);
+      });
     }
     
-    // Fallback: mostrar todas las tallas del producto
-    return product?.sizes || [];
+    // Fallback: extraer las tallas del producto para el género seleccionado
+    const productSizes = product?.sizes || [];
+    return productSizes
+      .filter((size: string) => {
+        // Si la talla tiene formato "genero:talla", verificar que coincida con el género seleccionado
+        if (size.includes(':')) {
+          const [sizeGender, sizeName] = size.split(':');
+          return sizeGender === selectedGender;
+        }
+        // Si no tiene formato especial, incluirla
+        return true;
+      })
+      .map((size: string) => {
+        // Extraer solo el nombre de la talla sin el prefijo de género
+        if (size.includes(':')) {
+          return size.split(':')[1];
+        }
+        return size;
+      });
   }, [product?.sizes, selectedGender, sizesData]);
 
   // Calcular las imágenes a mostrar basándose en el color seleccionado
