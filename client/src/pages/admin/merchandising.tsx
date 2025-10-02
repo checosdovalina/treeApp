@@ -24,6 +24,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { GripVertical, Star, Save, RefreshCw } from "lucide-react";
+import AdminLayout from "@/components/layout/admin-layout";
 
 interface Product {
   id: number;
@@ -212,103 +213,107 @@ export default function Merchandising() {
 
   if (isLoading) {
     return (
-      <div className="p-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-20 bg-gray-200 rounded"></div>
-          <div className="h-20 bg-gray-200 rounded"></div>
-          <div className="h-20 bg-gray-200 rounded"></div>
+      <AdminLayout>
+        <div className="p-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+            <div className="h-20 bg-gray-200 rounded"></div>
+            <div className="h-20 bg-gray-200 rounded"></div>
+            <div className="h-20 bg-gray-200 rounded"></div>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="p-8">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl">Merchandising de Productos</CardTitle>
-              <CardDescription className="mt-2">
-                Arrastra y suelta para reordenar cómo aparecen los productos en la tienda. Los productos destacados aparecen primero.
-              </CardDescription>
-            </div>
-            <div className="flex gap-2">
-              {hasChanges && (
+    <AdminLayout>
+      <div className="p-8">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl">Merchandising de Productos</CardTitle>
+                <CardDescription className="mt-2">
+                  Arrastra y suelta para reordenar cómo aparecen los productos en la tienda. Los productos destacados aparecen primero.
+                </CardDescription>
+              </div>
+              <div className="flex gap-2">
+                {hasChanges && (
+                  <Button
+                    variant="outline"
+                    onClick={handleReset}
+                    disabled={saveMutation.isPending}
+                    data-testid="button-reset-changes"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Descartar Cambios
+                  </Button>
+                )}
                 <Button
-                  variant="outline"
-                  onClick={handleReset}
-                  disabled={saveMutation.isPending}
-                  data-testid="button-reset-changes"
+                  onClick={handleSave}
+                  disabled={!hasChanges || saveMutation.isPending}
+                  className="bg-uniform-primary hover:bg-blue-700"
+                  data-testid="button-save-order"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Descartar Cambios
+                  <Save className="h-4 w-4 mr-2" />
+                  {saveMutation.isPending ? "Guardando..." : "Guardar Cambios"}
                 </Button>
-              )}
-              <Button
-                onClick={handleSave}
-                disabled={!hasChanges || saveMutation.isPending}
-                className="bg-uniform-primary hover:bg-blue-700"
-                data-testid="button-save-order"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                {saveMutation.isPending ? "Guardando..." : "Guardar Cambios"}
-              </Button>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {products.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              No hay productos disponibles
-            </div>
-          ) : (
-            <>
-              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <Star className="h-5 w-5 text-yellow-500 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-medium text-gray-900">Productos Destacados</p>
-                    <p className="text-gray-600 mt-1">
-                      Los productos marcados como "Destacado" aparecerán primero en la tienda y en la página principal.
-                      Usa el switch a la derecha de cada producto para destacarlo.
-                    </p>
+          </CardHeader>
+          <CardContent>
+            {products.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                No hay productos disponibles
+              </div>
+            ) : (
+              <>
+                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Star className="h-5 w-5 text-yellow-500 mt-0.5" />
+                    <div className="text-sm">
+                      <p className="font-medium text-gray-900">Productos Destacados</p>
+                      <p className="text-gray-600 mt-1">
+                        Los productos marcados como "Destacado" aparecerán primero en la tienda y en la página principal.
+                        Usa el switch a la derecha de cada producto para destacarlo.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={products.map((p) => p.id)}
-                  strategy={verticalListSortingStrategy}
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
                 >
-                  {products.map((product, index) => (
-                    <SortableProduct
-                      key={product.id}
-                      product={product}
-                      index={index}
-                      onToggleFeatured={handleToggleFeatured}
-                    />
-                  ))}
-                </SortableContext>
-              </DndContext>
+                  <SortableContext
+                    items={products.map((p) => p.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {products.map((product, index) => (
+                      <SortableProduct
+                        key={product.id}
+                        product={product}
+                        index={index}
+                        onToggleFeatured={handleToggleFeatured}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
 
-              {hasChanges && (
-                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-sm text-yellow-800">
-                    ⚠️ Tienes cambios sin guardar. Presiona "Guardar Cambios" para aplicarlos.
-                  </p>
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+                {hasChanges && (
+                  <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      ⚠️ Tienes cambios sin guardar. Presiona "Guardar Cambios" para aplicarlos.
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </AdminLayout>
   );
 }
