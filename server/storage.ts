@@ -58,7 +58,7 @@ import {
   type InsertContactMessage,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";
+import { eq, desc, asc, and, sql, ilike, count, arrayContains, lte, gte } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -110,6 +110,7 @@ export interface IStorage {
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: number, updates: Partial<InsertProduct>): Promise<Product>;
   deleteProduct(id: number): Promise<void>;
+  updateProductsOrder(updates: { id: number; displayOrder: number; isFeatured?: boolean }[]): Promise<void>;
   
   // Inventory operations
   getInventory(productId: number): Promise<Inventory[]>;
@@ -405,7 +406,12 @@ export class DatabaseStorage implements IStorage {
       query = query.where(and(...conditions));
     }
     
-    query = query.orderBy(desc(products.createdAt));
+    // Order by: featured first, then by displayOrder (nulls last), then by createdAt
+    query = query.orderBy(
+      desc(products.isFeatured),
+      asc(sql`COALESCE(${products.displayOrder}, 999999)`),
+      desc(products.createdAt)
+    );
     
     if (filters?.limit) {
       query = query.limit(filters.limit);
@@ -482,6 +488,25 @@ export class DatabaseStorage implements IStorage {
 
   async deleteProduct(id: number): Promise<void> {
     await db.delete(products).where(eq(products.id, id));
+  }
+
+  async updateProductsOrder(updates: { id: number; displayOrder: number; isFeatured?: boolean }[]): Promise<void> {
+    // Update each product in the batch
+    for (const update of updates) {
+      const setValues: any = { 
+        displayOrder: update.displayOrder, 
+        updatedAt: new Date() 
+      };
+      
+      if (update.isFeatured !== undefined) {
+        setValues.isFeatured = update.isFeatured;
+      }
+      
+      await db
+        .update(products)
+        .set(setValues)
+        .where(eq(products.id, update.id));
+    }
   }
 
   async getProductsWithDetails(): Promise<any[]> {
