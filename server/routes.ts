@@ -1514,6 +1514,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Batch update product order and featured status (must be before /:id route)
+  app.put('/api/products/batch-order', isAdmin, async (req, res) => {
+    try {
+      const updates = z.array(z.object({
+        id: z.number(),
+        displayOrder: z.number(),
+        isFeatured: z.boolean().optional()
+      })).parse(req.body);
+      
+      await storage.updateProductsOrder(updates);
+      res.json({ message: "Product order updated successfully" });
+    } catch (error) {
+      console.error("Error updating product order:", error);
+      res.status(400).json({ message: "Failed to update product order" });
+    }
+  });
+
   app.put('/api/products/:id', isAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
