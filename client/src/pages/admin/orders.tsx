@@ -323,8 +323,34 @@ export default function AdminOrders() {
                   {orderDetail.shippingAddress && (
                     <div>
                       <h3 className="font-semibold mb-2">Dirección de Envío</h3>
-                      <div className="bg-gray-50 p-3 rounded-md">
-                        <p>{JSON.stringify(orderDetail.shippingAddress)}</p>
+                      <div className="bg-gray-50 p-3 rounded-md space-y-1">
+                        {(() => {
+                          const addr = typeof orderDetail.shippingAddress === 'string' 
+                            ? JSON.parse(orderDetail.shippingAddress) 
+                            : orderDetail.shippingAddress;
+                          return (
+                            <>
+                              {addr.firstName && addr.lastName && (
+                                <p><strong>Nombre:</strong> {addr.firstName} {addr.lastName}</p>
+                              )}
+                              {addr.address && (
+                                <p><strong>Dirección:</strong> {addr.address}</p>
+                              )}
+                              {addr.city && addr.state && (
+                                <p><strong>Ciudad/Estado:</strong> {addr.city}, {addr.state}</p>
+                              )}
+                              {addr.zipCode && (
+                                <p><strong>Código Postal:</strong> {addr.zipCode}</p>
+                              )}
+                              {addr.phone && (
+                                <p><strong>Teléfono:</strong> {addr.phone}</p>
+                              )}
+                              {addr.email && (
+                                <p><strong>Email:</strong> {addr.email}</p>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   )}
