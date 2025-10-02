@@ -1418,19 +1418,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
-        return res.redirect('/api/placeholder/64/64');
+        return res.redirect(301, '/api/placeholder/64/64');
       }
       
       const product = await storage.getProduct(id);
       if (!product || !product.images || product.images.length === 0) {
-        return res.redirect('/api/placeholder/64/64');
+        return res.redirect(301, '/api/placeholder/64/64');
       }
       
       // Redirect to first image URL
-      res.redirect(product.images[0]);
+      return res.redirect(301, product.images[0]);
     } catch (error) {
       console.error("Error fetching product image:", error);
-      res.redirect('/api/placeholder/64/64');
+      return res.redirect(301, '/api/placeholder/64/64');
     }
   });
 
