@@ -5,7 +5,6 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { authService, createDefaultAdmin } from "./auth";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
-import pdf from "html-pdf-node";
 
 // Admin middleware
 const isAdmin = async (req: any, res: any, next: any) => {
@@ -318,9 +317,46 @@ function generateQuotePDFHTML(quote: any): string {
           padding: 15px;
           margin: 20px 0;
         }
+        .print-button {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 12px 24px;
+          background-color: #1F4287;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .print-button:hover {
+          background-color: #153261;
+        }
+        @media print {
+          .print-button {
+            display: none;
+          }
+          body {
+            padding: 0;
+          }
+        }
       </style>
+      <script>
+        window.onload = function() {
+          // Auto-open print dialog after a short delay
+          setTimeout(function() {
+            window.print();
+          }, 500);
+        }
+        function printDocument() {
+          window.print();
+        }
+      </script>
     </head>
     <body>
+      <button class="print-button" onclick="printDocument()">Imprimir / Descargar PDF</button>
+      
       <div class="header">
         <div class="company-name">TREE Uniformes & Kodiak Industrial</div>
       </div>
@@ -1755,33 +1791,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      // Generate PDF HTML content
+      // Generate PDF-ready HTML content with print styles
       const pdfHtml = generateQuotePDFHTML(quote);
       
-      // Configure PDF generation options
-      const options = { 
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          top: '20px',
-          right: '20px',
-          bottom: '20px',
-          left: '20px'
-        }
-      };
-      
-      const file = { content: pdfHtml };
-      
-      // Generate PDF buffer
-      const pdfBuffer = await pdf.generatePdf(file, options);
-      
-      // Set response headers for PDF download
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="Presupuesto-${quote.quoteNumber}.pdf"`);
-      res.setHeader('Content-Length', pdfBuffer.length);
-      
-      // Send PDF buffer
-      res.send(pdfBuffer);
+      // Return HTML that will be printed as PDF by the browser
+      res.setHeader('Content-Type', 'text/html');
+      res.send(pdfHtml);
       
     } catch (error) {
       console.error("Error generating PDF:", error);
