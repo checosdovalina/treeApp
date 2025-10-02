@@ -59,15 +59,25 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
     queryKey: ['/api/garment-types'],
   });
 
-  const navigation = [
+  // Items públicos (siempre visibles)
+  const publicNavigation = [
     { name: "Inicio", href: "/store", icon: Home },
     { name: "Catálogo", href: "/store/catalog", icon: Package },
     { name: "Marcas", href: "/store/brands", icon: Tag },
     { name: "Presupuesto", href: "/store/quote-request", icon: FileText },
+  ];
+
+  // Items privados (solo para autenticados)
+  const privateNavigation = [
     { name: "Mi Cuenta", href: "/customer/dashboard", icon: User },
     { name: "Favoritos", href: "/customer/favorites", icon: Heart },
     { name: "Cotizaciones", href: "/customer/quotes", icon: FileText },
   ];
+
+  // Combinar navegación basada en autenticación
+  const navigation = isAuthenticated 
+    ? [...publicNavigation, ...privateNavigation]
+    : publicNavigation;
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
