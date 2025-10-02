@@ -125,6 +125,7 @@ export default function Checkout() {
           color: item.color,
         })),
         notes: formData.notes,
+        urgency: 'normal', // Urgencia por defecto
       };
 
       return await apiRequest("POST", "/api/quotes/request", quoteData);
