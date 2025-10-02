@@ -24,7 +24,8 @@ import {
   Shirt,
   Building,
   ChevronDown,
-  Mail
+  Mail,
+  LayoutGrid
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -69,6 +70,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Ventas", href: "/admin/sales", icon: TrendingUp },
     { name: "Productos", href: "/admin/products", icon: Package },
     { name: "Gestión Masiva", href: "/admin/product-management", icon: Package },
+    { name: "Merchandising", href: "/admin/merchandising", icon: LayoutGrid },
     { name: "Pedidos", href: "/admin/orders", icon: ShoppingCart },
     { name: "Clientes", href: "/admin/customers", icon: Users },
     { name: "Empresas", href: "/admin/companies", icon: Building },
