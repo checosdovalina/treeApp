@@ -123,7 +123,7 @@ export default function AdminQuotes() {
         total: editingQuote.total,
         status: editingQuote.status,
         notes: editingQuote.notes,
-        validUntil: editingQuote.validUntil,
+        validUntil: editingQuote.validUntil ? new Date(editingQuote.validUntil) : null,
       },
     });
   };
