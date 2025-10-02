@@ -92,7 +92,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-uniform-neutral-50">
       {/* Top Navigation */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="sticky top-0 z-50 bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -190,7 +190,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       <div className="flex">
         {/* Sidebar Navigation */}
-        <aside className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:flex w-64 bg-white shadow-sm border-r flex-col fixed md:sticky top-16 h-[calc(100vh-4rem)] z-40`}>
+        <aside className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:flex w-64 bg-white shadow-sm border-r flex-col fixed md:sticky top-16 h-[calc(100vh-4rem)] z-40 md:z-30`}>
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = location === item.href || 
