@@ -44,7 +44,7 @@ Login Credentials: admin/admin123 or registered admin emails work perfectly, cus
 ### Key Features & Technical Implementations
 - **Authentication System**: FULLY OPERATIONAL - Dual authentication (Replit Auth + local auth), role-based access with seamless routing, PostgreSQL-backed sessions, optimized login flow with proper cache invalidation and timing. Customer authentication fully functional with bcrypt password hashing and proper session management.
 - **Product Management**: Hierarchical categorization, inventory tracking (size/color variants), multiple image support (URL/file upload with base64 conversion), active/inactive states, dynamic brand/size/color/category creation. Gender-specific size configurations based on garment type. SKU implementation with validation. **COMPLETED**: Color-specific product images system fully functional - customers can preview garments in selected colors with proper image switching. **RESOLVED**: Size system now includes 3XL and 4XL sizes in all components - cache issues fixed in both product creation and editing forms.
-- **Order Management**: Manual quote creation (B2B) with PDF export and email, full order lifecycle management, customer database with purchase history.
+- **Order Management**: Manual quote creation (B2B) with PDF export and email, full order lifecycle management, customer database with purchase history. **NEW**: Automated email notifications using Resend API - customers and admins receive confirmation emails when orders are placed or quotes are requested.
 - **Shopping Cart**: Client-side localStorage persistence, real-time updates, variant support.
 - **Admin Dashboard**: Comprehensive CRUD for products, order processing, customer management, quote generation, sales analytics. Product color image configuration interface available. **COMPLETED**: TypeScript errors resolved, dashboard fully functional with stats, top products, and recent orders sections. **NEW**: Configurable industry sections with object storage image upload capability. **COMPLETED**: Contact messages management system - admins can view, filter, and mark messages as read from the dashboard navigation.
 - **UI/UX**: Consistent branding across customer and admin interfaces, mobile-optimized navigation, advanced filtering/sorting, WhatsApp integration for product inquiry. Expandable navigation menus with hover-based submenus for catalog and brand filtering. **UPDATED**: Industry sections converted to rotating carousel format. Main hero section modified to show "test" instead of "UNIFORMES". **COMPLETED**: Brand showcase carousel with minimal design (logo, name, "Ver productos" only), dark gradient background for better contrast. **UPDATED**: SKU badges removed from product cards in catalog for cleaner appearance.
@@ -60,6 +60,18 @@ Login Credentials: admin/admin123 or registered admin emails work perfectly, cus
 ### Authentication
 - **Provider**: Replit Auth
 - **Configuration**: Requires `REPLIT_DOMAINS`, `ISSUER_URL`, `REPL_ID`, `SESSION_SECRET`.
+
+### Email Notifications
+- **Provider**: Resend (resend.com)
+- **Configuration**: Requires `RESEND_API_KEY` environment variable
+- **Implementation**: `server/email.service.ts` - Service with HTML email templates and notification functions
+- **Features**: 
+  - Order confirmation emails to customers with full order details, shipping information, and itemized list
+  - Order notifications to admin (checodovalina@gmail.com) for new orders
+  - Quote confirmation emails to customers with quote details and validity period
+  - Quote notifications to admin for new quote requests
+  - Professional HTML templates with brand colors and styling
+  - Non-blocking email sending (doesn't fail order/quote creation if email fails)
 
 ### UI Libraries
 - **Radix UI**: Component primitives
