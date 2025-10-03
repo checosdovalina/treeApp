@@ -2346,6 +2346,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test email endpoint
+  app.post('/api/test-email', async (req, res) => {
+    try {
+      const testData = {
+        orderNumber: 'TEST-001',
+        customerName: 'Sergio Flores',
+        customerEmail: 'checodovalina@gmail.com',
+        items: [{
+          name: 'Camisa Alfa',
+          sku: '342',
+          quantity: 2,
+          size: 'M',
+          color: 'Blanco',
+          price: '499.00'
+        }],
+        subtotal: '998.00',
+        shipping: '150.00',
+        total: '1148.00',
+        shippingAddress: {
+          street: 'Vinedos 161',
+          city: 'Torreon',
+          state: 'Coahuila',
+          zipCode: '27023',
+          country: 'México'
+        },
+        paymentMethod: 'Transferencia',
+        orderDate: new Date().toLocaleDateString('es-MX', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      };
+
+      console.log('Intentando enviar email de prueba a:', testData.customerEmail);
+      await sendOrderConfirmationEmail(testData);
+      console.log('Email de prueba enviado exitosamente');
+      
+      res.json({ message: 'Email de prueba enviado exitosamente' });
+    } catch (error) {
+      console.error('Error al enviar email de prueba:', error);
+      res.status(500).json({ 
+        message: 'Error al enviar email de prueba',
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
