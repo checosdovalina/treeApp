@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import StoreLayout from "@/components/layout/store-layout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +18,7 @@ import type { Product, InventoryItem } from "../../lib/types";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { addItem } = useCart();
   const [selectedSize, setSelectedSize] = useState("");
@@ -319,6 +320,53 @@ export default function ProductDetail() {
     addToCartMutation.mutate();
   };
 
+  const handleBuyNow = () => {
+    if (!product) {
+      toast({
+        title: "Error",
+        description: "Producto no encontrado.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validar talla si el producto tiene tallas disponibles
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      toast({
+        title: "Selecciona una talla",
+        description: "Por favor selecciona una talla antes de continuar.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar color si el producto tiene colores disponibles
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      toast({
+        title: "Selecciona un color",
+        description: "Por favor selecciona un color antes de continuar.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Agregar al carrito
+    const cartItem = {
+      id: product.id.toString(),
+      name: product.name,
+      price: parseFloat(product.price),
+      size: selectedSize,
+      color: selectedColor,
+      quantity: quantity,
+      image: getValidImageUrl(displayImages, 0),
+    };
+    
+    addItem(cartItem);
+    
+    // Redirigir al carrito
+    setLocation('/store/cart');
+  };
+
   const getStockForVariant = () => {
     if (!inventory || !selectedSize || !selectedColor) return 100; // Asumir stock disponible
     const variant = inventory.find((item) => 
@@ -571,7 +619,12 @@ export default function ProductDetail() {
                   <Share2 className="h-5 w-5" />
                 </Button>
               </div>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={handleBuyNow}
+                disabled={!isInStock}
+              >
                 Comprar Ahora
               </Button>
             </div>
