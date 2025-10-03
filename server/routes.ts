@@ -858,6 +858,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       const newQuote = await storage.createQuote(quote);
+      
+      // Send email notifications
+      try {
+        // Get customer information
+        const customer = await storage.getUserById(finalCustomerId);
+        
+        const emailData = {
+          quoteNumber: newQuote.quoteNumber,
+          customerName: customerInfo ? `${customerInfo.firstName} ${customerInfo.lastName}` : 
+                       (customer ? `${customer.firstName} ${customer.lastName}` : 'Cliente'),
+          customerEmail: customerInfo?.email || customer?.email || '',
+          companyName: customerInfo?.company || customer?.company || undefined,
+          items: items.map(item => ({
+            name: item.productName,
+            sku: '', // SKU not available in quote items
+            quantity: item.quantity,
+            size: item.size || '',
+            color: item.color || '',
+            price: item.unitPrice.toString()
+          })),
+          subtotal: totalAmount.toString(),
+          total: totalAmount.toString(),
+          notes: quoteData.notes || undefined,
+          validUntil: newQuote.validUntil ? new Date(newQuote.validUntil).toLocaleDateString('es-MX', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }) : '30 días',
+          requestDate: new Date().toLocaleDateString('es-MX', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })
+        };
+        
+        // Send emails in parallel (don't wait for completion)
+        Promise.all([
+          sendQuoteConfirmationEmail(emailData),
+          sendQuoteNotificationToAdmin(emailData)
+        ]).catch(error => {
+          console.error('Error sending quote emails:', error);
+          // Don't fail the quote creation if emails fail
+        });
+      } catch (emailError) {
+        console.error('Error preparing quote emails:', emailError);
+        // Don't fail the quote creation if email preparation fails
+      }
+      
       res.json({ 
         message: 'Solicitud de presupuesto enviada exitosamente',
         quote: newQuote
