@@ -5,6 +5,12 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { authService, createDefaultAdmin } from "./auth";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import {
+  sendOrderConfirmationEmail,
+  sendOrderNotificationToAdmin,
+  sendQuoteConfirmationEmail,
+  sendQuoteNotificationToAdmin
+} from "./email.service";
 
 // Admin middleware
 const isAdmin = async (req: any, res: any, next: any) => {
@@ -1711,6 +1717,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { order, items } = createOrderSchema.parse(req.body);
       const newOrder = await storage.createOrder(order, items);
+      
+      // Send email notifications
+      try {
+        const emailData = {
+          orderNumber: newOrder.orderNumber,
+          customerName: order.customerName,
+          customerEmail: order.customerEmail,
+          items: items.map(item => ({
+            name: item.productName,
+            sku: item.productSku || '',
+            quantity: item.quantity,
+            size: item.size || '',
+            color: item.color || '',
+            price: item.price.toString()
+          })),
+          subtotal: order.subtotal.toString(),
+          shipping: order.shippingCost?.toString() || '0',
+          total: order.total.toString(),
+          shippingAddress: {
+            street: order.shippingAddress || '',
+            city: order.shippingCity || '',
+            state: order.shippingState || '',
+            zipCode: order.shippingZipCode || '',
+            country: 'México'
+          },
+          paymentMethod: order.paymentMethod || 'Pendiente',
+          orderDate: new Date().toLocaleDateString('es-MX', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })
+        };
+        
+        // Send emails in parallel (don't wait for completion)
+        Promise.all([
+          sendOrderConfirmationEmail(emailData),
+          sendOrderNotificationToAdmin(emailData)
+        ]).catch(error => {
+          console.error('Error sending order emails:', error);
+          // Don't fail the order creation if emails fail
+        });
+      } catch (emailError) {
+        console.error('Error preparing order emails:', emailError);
+        // Don't fail the order creation if email preparation fails
+      }
+      
       res.json(newOrder);
     } catch (error) {
       console.error("Error creating order:", error);
