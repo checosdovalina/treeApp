@@ -48,8 +48,9 @@ interface QuoteEmailData {
   requestDate: string;
 }
 
-const ADMIN_EMAIL = 'checodovalina@gmail.com'; // Email del administrador
-const FROM_EMAIL = 'onboarding@resend.dev'; // Cambiar cuando tengas dominio verificado
+const ADMIN_EMAIL = 'angelitosfoto@gmail.com'; // Email del administrador
+// Cambiar a 'pedidos@treeuniforme.com' cuando el dominio esté verificado en Resend
+const FROM_EMAIL = 'onboarding@resend.dev';
 
 // Plantilla HTML para confirmación de pedido
 function createOrderConfirmationHTML(data: OrderEmailData): string {
