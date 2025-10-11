@@ -30,8 +30,15 @@ export default function ProductDetail() {
 
   // Scroll to top cuando se carga la página
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [id]);
+
+  // También hacer scroll cuando termine de cargar el producto
+  useEffect(() => {
+    if (!isLoading && product) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [isLoading, product]);
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: [`/api/products/${id}`],
