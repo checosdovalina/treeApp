@@ -636,7 +636,11 @@ export default function AdminQuotes() {
                     <Input
                       type="date"
                       value={editingQuote.validUntil ? new Date(editingQuote.validUntil).toISOString().split('T')[0] : ''}
-                      onChange={(e) => setEditingQuote({...editingQuote, validUntil: e.target.value})}
+                      onChange={(e) => {
+                        // Convertir la fecha del input (YYYY-MM-DD) a ISO string
+                        const dateValue = e.target.value ? new Date(e.target.value + 'T00:00:00').toISOString() : '';
+                        setEditingQuote({...editingQuote, validUntil: dateValue});
+                      }}
                       data-testid="input-valid-until"
                     />
                   </div>
