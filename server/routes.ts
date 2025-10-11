@@ -11,6 +11,7 @@ import {
   sendQuoteConfirmationEmail,
   sendQuoteNotificationToAdmin
 } from "./email.service";
+import pdf from 'html-pdf-node';
 
 // Admin middleware
 const isAdmin = async (req: any, res: any, next: any) => {
@@ -247,7 +248,7 @@ function generateOrderPDFHTML(order: any): string {
   `;
 }
 
-function generateQuotePDFHTML(quote: any): string {
+function generateQuotePDFHTML(quote: any, forPdfGeneration: boolean = false): string {
   const items = Array.isArray(quote.items) ? quote.items : JSON.parse(quote.items || '[]');
   
   return `
@@ -323,6 +324,7 @@ function generateQuotePDFHTML(quote: any): string {
           padding: 15px;
           margin: 20px 0;
         }
+        ${!forPdfGeneration ? `
         .print-button {
           position: fixed;
           top: 20px;
@@ -346,8 +348,9 @@ function generateQuotePDFHTML(quote: any): string {
           body {
             padding: 0;
           }
-        }
+        }` : ''}
       </style>
+      ${!forPdfGeneration ? `
       <script>
         window.onload = function() {
           // Auto-open print dialog after a short delay
@@ -358,10 +361,10 @@ function generateQuotePDFHTML(quote: any): string {
         function printDocument() {
           window.print();
         }
-      </script>
+      </script>` : ''}
     </head>
     <body>
-      <button class="print-button" onclick="printDocument()">Imprimir / Descargar PDF</button>
+      ${!forPdfGeneration ? '<button class="print-button" onclick="printDocument()">Imprimir / Descargar PDF</button>' : ''}
       
       <div class="header">
         <div class="company-name">TREE Uniformes & Kodiak Industrial</div>
@@ -1928,12 +1931,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      // Generate PDF-ready HTML content with print styles
-      const pdfHtml = generateQuotePDFHTML(quote);
+      // Generate PDF-ready HTML content (sin botón de imprimir)
+      const pdfHtml = generateQuotePDFHTML(quote, true);
       
-      // Return HTML that will be printed as PDF by the browser
-      res.setHeader('Content-Type', 'text/html');
-      res.send(pdfHtml);
+      // Generate PDF from HTML
+      const file = { content: pdfHtml };
+      const options = { 
+        format: 'A4',
+        margin: {
+          top: '20px',
+          right: '20px',
+          bottom: '20px',
+          left: '20px'
+        }
+      };
+      
+      const pdfBuffer = await pdf.generatePdf(file, options);
+      
+      // Set headers for PDF download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="Presupuesto-${quote.quoteNumber}.pdf"`);
+      res.send(pdfBuffer);
       
     } catch (error) {
       console.error("Error generating PDF:", error);
