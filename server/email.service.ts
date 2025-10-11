@@ -49,7 +49,7 @@ interface QuoteEmailData {
 }
 
 const ADMIN_EMAIL = 'angelitosfoto@gmail.com'; // Email del administrador
-// Cambiar a 'pedidos@treeuniforme.com' cuando el dominio esté verificado en Resend
+// TODO: Cambiar a 'pedidos@treeuniforme.com' cuando el dominio esté verificado
 const FROM_EMAIL = 'onboarding@resend.dev';
 
 // Plantilla HTML para confirmación de pedido
