@@ -54,9 +54,9 @@ function IndustryIcon({ industry, className = "w-12 h-12" }: IndustryIconProps) 
 
 export default function IndustrySection() {
   const { data: sections, isLoading, isError } = useQuery({
-    queryKey: ['/api/industry-sections'],
+    queryKey: ['/api/industry-sections/with-garment-types'],
     queryFn: async () => {
-      const res = await fetch('/api/industry-sections?active=true');
+      const res = await fetch('/api/industry-sections/with-garment-types');
       if (!res.ok) {
         throw new Error('Failed to fetch industry sections');
       }
@@ -184,6 +184,30 @@ export default function IndustrySection() {
                           {section.subtitle}
                         </p>
                       )}
+                      
+                      {/* Auto-populated garment types */}
+                      {section.garmentTypes && section.garmentTypes.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-xs font-roboto opacity-75 mb-2" style={{ color: section.textColor || '#ffffff' }}>
+                            Tipos disponibles:
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {section.garmentTypes.map((gt: any) => (
+                              <span
+                                key={gt.id}
+                                className="text-xs px-2 py-1 rounded-full font-medium"
+                                style={{ 
+                                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                  color: section.textColor || '#ffffff'
+                                }}
+                              >
+                                {gt.name} ({gt.productCount})
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
                       {section.description && (
                         <p
                           className="text-sm font-roboto opacity-90"

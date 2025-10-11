@@ -28,6 +28,11 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
+  const { data: product, isLoading } = useQuery<Product>({
+    queryKey: [`/api/products/${id}`],
+    enabled: !!id && !isNaN(Number(id)),
+  });
+
   // Scroll to top cuando se carga la página
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -39,11 +44,6 @@ export default function ProductDetail() {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [isLoading, product]);
-
-  const { data: product, isLoading } = useQuery<Product>({
-    queryKey: [`/api/products/${id}`],
-    enabled: !!id && !isNaN(Number(id)),
-  });
 
   const { data: inventory = [] } = useQuery<InventoryItem[]>({
     queryKey: [`/api/products/${id}/inventory`],

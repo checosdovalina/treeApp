@@ -2133,6 +2133,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get garment types with products for industry sections (BEFORE :id route)
+  app.get('/api/industry-sections/with-garment-types', async (req, res) => {
+    try {
+      const sections = await storage.getIndustrySections();
+      const activeSections = sections.filter(s => s.isActive);
+      
+      const sectionsWithGarmentTypes = await Promise.all(
+        activeSections.map(async (section) => {
+          // Buscar garment types basándose en palabras clave del título
+          const titleWords = section.title.toLowerCase().split(/\s+/);
+          
+          // Obtener todos los garment types con sus productos activos
+          const allGarmentTypes = await storage.getGarmentTypes();
+          const garmentTypesWithProducts = [];
+          
+          for (const gt of allGarmentTypes) {
+            if (!gt.id) continue;
+            const products = await storage.getProducts({ garmentTypeId: gt.id.toString(), isActive: true });
+            if (products.length > 0) {
+              const gtName = gt.displayName?.toLowerCase() || gt.name.toLowerCase();
+              
+              // Verificar si hay una coincidencia exacta o variación del nombre
+              const matches = titleWords.some(word => {
+                // Coincidencia exacta
+                if (word === gtName) return true;
+                
+                // Variaciones comunes (singular/plural)
+                const variations = [
+                  { singular: 'playera', plural: 'playeras' },
+                  { singular: 'polo', plural: 'polos' },
+                  { singular: 'pantalón', plural: 'pantalones' },
+                  { singular: 'short', plural: 'shorts' },
+                  { singular: 'termo', plural: 'termos' },
+                  { singular: 'botella', plural: 'botellas' },
+                  { singular: 'chamarra', plural: 'chamarras' },
+                  { singular: 'sudadera', plural: 'sudaderas' }
+                ];
+                
+                return variations.some(v => 
+                  (word === v.plural && gtName === v.singular) ||
+                  (word === v.singular && gtName === v.plural)
+                );
+              });
+              
+              if (matches) {
+                garmentTypesWithProducts.push({
+                  id: gt.id,
+                  name: gt.displayName || gt.name,
+                  productCount: products.length
+                });
+              }
+            }
+          }
+          
+          return {
+            ...section,
+            garmentTypes: garmentTypesWithProducts
+          };
+        })
+      );
+      
+      res.json(sectionsWithGarmentTypes);
+    } catch (error) {
+      console.error("Error fetching industry sections with garment types:", error);
+      res.status(500).json({ message: "Failed to fetch industry sections with garment types" });
+    }
+  });
+
   app.get('/api/industry-sections/:id', async (req, res) => {
     try {
       const id = parseInt(req.params.id);
