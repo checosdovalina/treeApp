@@ -11,7 +11,6 @@ import {
   sendQuoteConfirmationEmail,
   sendQuoteNotificationToAdmin
 } from "./email.service";
-import pdf from 'html-pdf-node';
 
 // Admin middleware
 const isAdmin = async (req: any, res: any, next: any) => {
@@ -361,10 +360,16 @@ function generateQuotePDFHTML(quote: any, forPdfGeneration: boolean = false): st
         function printDocument() {
           window.print();
         }
+        function downloadPDF() {
+          window.print();
+        }
       </script>` : ''}
     </head>
     <body>
-      ${!forPdfGeneration ? '<button class="print-button" onclick="printDocument()">Imprimir / Descargar PDF</button>' : ''}
+      ${!forPdfGeneration ? `
+      <button class="print-button" onclick="downloadPDF()" title="Se abrirá el diálogo de impresión. Selecciona 'Guardar como PDF' como destino.">
+        📥 Descargar PDF
+      </button>` : ''}
       
       <div class="header">
         <div class="company-name">TREE Uniformes & Kodiak Industrial</div>
@@ -1931,27 +1936,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      // Generate PDF-ready HTML content (sin botón de imprimir)
-      const pdfHtml = generateQuotePDFHTML(quote, true);
+      // Generate print-ready HTML with auto-print functionality
+      const pdfHtml = generateQuotePDFHTML(quote, false);
       
-      // Generate PDF from HTML
-      const file = { content: pdfHtml };
-      const options = { 
-        format: 'A4',
-        margin: {
-          top: '20px',
-          right: '20px',
-          bottom: '20px',
-          left: '20px'
-        }
-      };
-      
-      const pdfBuffer = await pdf.generatePdf(file, options);
-      
-      // Set headers for PDF download
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="Presupuesto-${quote.quoteNumber}.pdf"`);
-      res.send(pdfBuffer);
+      // Return HTML that will auto-open print dialog
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(pdfHtml);
       
     } catch (error) {
       console.error("Error generating PDF:", error);
