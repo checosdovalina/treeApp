@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 interface OrderEmailData {
   orderNumber: string;
@@ -256,6 +256,11 @@ function createQuoteRequestHTML(data: QuoteEmailData): string {
 
 // Enviar confirmación de pedido al cliente
 export async function sendOrderConfirmationEmail(data: OrderEmailData) {
+  if (!resend) {
+    console.log('Email service not configured. Skipping order confirmation email to:', data.customerEmail);
+    return null;
+  }
+  
   try {
     const result = await resend.emails.send({
       from: FROM_EMAIL,
@@ -268,12 +273,17 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
     return result;
   } catch (error) {
     console.error('Error sending order confirmation email:', error);
-    throw error;
+    return null;
   }
 }
 
 // Enviar notificación de pedido al administrador
 export async function sendOrderNotificationToAdmin(data: OrderEmailData) {
+  if (!resend) {
+    console.log('Email service not configured. Skipping order notification to admin.');
+    return null;
+  }
+  
   try {
     const result = await resend.emails.send({
       from: FROM_EMAIL,
@@ -294,12 +304,17 @@ export async function sendOrderNotificationToAdmin(data: OrderEmailData) {
     return result;
   } catch (error) {
     console.error('Error sending order notification to admin:', error);
-    throw error;
+    return null;
   }
 }
 
 // Enviar confirmación de solicitud de presupuesto al cliente
 export async function sendQuoteConfirmationEmail(data: QuoteEmailData) {
+  if (!resend) {
+    console.log('Email service not configured. Skipping quote confirmation email to:', data.customerEmail);
+    return null;
+  }
+  
   try {
     const result = await resend.emails.send({
       from: FROM_EMAIL,
@@ -312,12 +327,17 @@ export async function sendQuoteConfirmationEmail(data: QuoteEmailData) {
     return result;
   } catch (error) {
     console.error('Error sending quote confirmation email:', error);
-    throw error;
+    return null;
   }
 }
 
 // Enviar notificación de presupuesto al administrador
 export async function sendQuoteNotificationToAdmin(data: QuoteEmailData) {
+  if (!resend) {
+    console.log('Email service not configured. Skipping quote notification to admin.');
+    return null;
+  }
+  
   try {
     const result = await resend.emails.send({
       from: FROM_EMAIL,
@@ -339,6 +359,6 @@ export async function sendQuoteNotificationToAdmin(data: QuoteEmailData) {
     return result;
   } catch (error) {
     console.error('Error sending quote notification to admin:', error);
-    throw error;
+    return null;
   }
 }

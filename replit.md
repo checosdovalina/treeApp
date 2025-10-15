@@ -63,9 +63,10 @@ Login Credentials: admin/admin123 or registered admin emails work perfectly, cus
 
 ### Email Notifications
 - **Provider**: Resend (resend.com)
-- **Configuration**: Requires `RESEND_API_KEY` environment variable (configured with full access)
+- **Configuration**: Optional - Requires `RESEND_API_KEY` environment variable
 - **Implementation**: `server/email.service.ts` - Service with HTML email templates and notification functions
-- **Current Status**: PARTIALLY OPERATIONAL - Emails send successfully to admin (angelitosfoto@gmail.com) only
+- **Fallback Behavior**: If RESEND_API_KEY is not configured, the application works normally but emails are not sent (logged to console instead)
+- **Current Status**: PARTIALLY OPERATIONAL in development - Emails send successfully to admin (angelitosfoto@gmail.com) only
 - **Domain Status**: treeuniforme.com registered in Resend but NOT YET VERIFIED (waiting for DNS propagation, 1-48 hours)
 - **Current Limitation**: Using onboarding@resend.dev (test email) - can only send to angelitosfoto@gmail.com
 - **Features**: 
@@ -75,10 +76,11 @@ Login Credentials: admin/admin123 or registered admin emails work perfectly, cus
   - Quote notifications to admin for new quote requests
   - Professional HTML templates with brand colors (#1F4287) and styling
   - Non-blocking email sending (doesn't fail order/quote creation if email fails)
-- **Next Steps**: 
-  1. Wait for treeuniforme.com DNS verification (check resend.com/domains periodically)
-  2. Once verified, change FROM_EMAIL in server/email.service.ts to 'pedidos@treeuniforme.com'
-  3. Then emails will be sent to all customers (not just admin)
+- **Production Setup**: 
+  1. Add RESEND_API_KEY to production environment variables
+  2. Wait for treeuniforme.com DNS verification (check resend.com/domains periodically)
+  3. Once verified, change FROM_EMAIL in server/email.service.ts to 'pedidos@treeuniforme.com'
+  4. Then emails will be sent to all customers (not just admin)
 
 ### UI Libraries
 - **Radix UI**: Component primitives
